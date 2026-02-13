@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 10 14% 6%;
+    --foreground: 200 100% 95%;
+    --card: 10 14% 8%;
+    --card-foreground: 200 100% 95%;
+    --popover: 10 14% 8%;
+    --popover-foreground: 200 100% 95%;
+    --primary: 200 100% 55%;
+    --primary-foreground: 10 14% 6%;
+    --secondary: 270 100% 55%;
+    --secondary-foreground: 10 14% 6%;
+    --muted: 10 14% 20%;
+    --muted-foreground: 200 100% 70%;
+    --accent: 270 100% 60%;
+    --accent-foreground: 10 14% 6%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 80% 30%;
+    --input: 10 14% 15%;
+    --ring: 200 100% 55%;
+    --chart-1: 200 100% 55%;
+    --chart-2: 270 100% 55%;
+    --chart-3: 150 100% 50%;
+    --chart-4: 300 100% 60%;
+    --chart-5: 180 100% 50%;
+    --radius: 0.75rem;
+  }
+
+  :root.light {
+    --background: 200 40% 96%;
+    --foreground: 200 60% 20%;
+    --card: 200 50% 98%;
+    --card-foreground: 200 60% 20%;
+    --popover: 200 50% 98%;
+    --popover-foreground: 200 60% 20%;
+    --primary: 200 100% 50%;
+    --primary-foreground: 200 40% 96%;
+    --secondary: 270 100% 50%;
+    --secondary-foreground: 200 40% 96%;
+    --muted: 200 30% 80%;
+    --muted-foreground: 200 40% 40%;
+    --accent: 270 100% 50%;
+    --accent-foreground: 200 40% 96%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 60% 85%;
+    --input: 200 50% 90%;
+    --ring: 200 100% 50%;
+    --chart-1: 200 100% 50%;
+    --chart-2: 270 100% 50%;
+    --chart-3: 150 100% 45%;
+    --chart-4: 300 100% 50%;
+    --chart-5: 180 100% 45%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #0a0e0f 0%, #0f1a1f 100%);
+  }
+
+  :root.light body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f7 100%);
+  }
+}
+
+@layer components {
+  .neon-border {
+    border: 1px solid hsl(var(--primary));
+    box-shadow: 0 0 10px rgba(0, 150, 255, 0.3), inset 0 0 10px rgba(0, 150, 255, 0.1);
+  }
+
+  .neon-border-purple {
+    border: 1px solid hsl(var(--secondary));
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.3), inset 0 0 10px rgba(138, 43, 226, 0.1);
+  }
+
+  .neon-glow {
+    text-shadow: 0 0 10px rgba(0, 150, 255, 0.8);
+  }
+
+  .neon-glow-purple {
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+  }
+
+  .glassmorphism {
+    background: rgba(10, 14, 15, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 150, 255, 0.2);
+  }
+
+  .strategic-vision {
+    background: linear-gradient(90deg, rgba(0, 150, 255, 0.1), rgba(138, 43, 226, 0.1));
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  :root.light .neon-border {
+    border: 2px solid hsl(var(--primary));
+    box-shadow: 0 0 15px rgba(0, 100, 200, 0.2);
+  }
+
+  :root.light .neon-border-purple {
+    border: 2px solid hsl(var(--secondary));
+    box-shadow: 0 0 15px rgba(100, 50, 200, 0.2);
+  }
+
+  :root.light .neon-glow {
+    text-shadow: 0 0 8px rgba(0, 100, 200, 0.6);
+  }
+
+  :root.light .neon-glow-purple {
+    text-shadow: 0 0 8px rgba(100, 50, 200, 0.6);
+  }
+
+  :root.light .glassmorphism {
+    background: rgba(200, 220, 240, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 100, 200, 0.15);
+  }
+}

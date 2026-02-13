@@ -1,0 +1,75 @@
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
+  try {
+    var sheetName = "Registrations";
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(sheetName);
+
+    // If the sheet doesn't exist, create it and set the headers
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      var headers = [
+        "Timestamp",
+        "Event Name",
+        "TL Name", "TL Email", "TL Phone", "TL College", "TL Year", "TL Dept",
+        "Member 2 Name", "Member 2 Email", "Member 2 Phone", "Member 2 College", "Member 2 Year", "Member 2 Dept",
+        "Member 3 Name", "Member 3 Email", "Member 3 Phone", "Member 3 College", "Member 3 Year", "Member 3 Dept",
+        "Member 4 Name", "Member 4 Email", "Member 4 Phone", "Member 4 College", "Member 4 Year", "Member 4 Dept"
+      ];
+      sheet.appendRow(headers);
+    }
+
+    var timestamp = new Date();
+    var data = {};
+
+    try {
+        if (e.postData && e.postData.contents) {
+            data = JSON.parse(e.postData.contents);
+        }
+    } catch (parseError) {
+        data = e.parameter || {};
+    }
+    
+    if (!data) data = {};
+
+    var eventName = data.eventName || "";
+    var teamMembers = data.teamMembers || [];
+
+    function getMember(index) {
+        if (teamMembers && teamMembers[index]) {
+            return teamMembers[index];
+        }
+        return {};
+    }
+
+    // Build the row according to the requested column order
+    var row = [
+        timestamp,
+        eventName
+    ];
+
+    // Loop for 4 members (TL is index 0)
+    for (var i = 0; i < 4; i++) {
+        var m = getMember(i);
+        row.push(m.name || "");
+        row.push(m.email || "");
+        row.push("'" + (m.phone || "")); // Force string for phone
+        row.push(m.collegeName || "");
+        row.push(m.year || "");
+        row.push(m.department || "");
+    }
+
+    sheet.appendRow(row);
+
+    return ContentService.createTextOutput(JSON.stringify({ "result": "success", "row": row.length }))
+        .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": e.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}
