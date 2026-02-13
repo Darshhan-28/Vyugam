@@ -1,4 +1,4 @@
-Insight Arena: [URL] : https://script.google.com/macros/s/AKfycbxyE12Qh7El9qnH69cuhKt_2GiFSJ1Ccm6JLNGFZrOauwGzn6RtbMlmzpMkCodc8GZ0zQ/exec
+Insight Arena: [URL] : https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec
 BrainBlitz: [URL] :
 Bug Hunters: [URL] :
 Frontend Fusion: [URL] :

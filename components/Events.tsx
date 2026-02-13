@@ -30,7 +30,7 @@ const events: Event[] = [
       'All team members must register and attend',
     ],
     specialNote: 'Paper must be sent to viyugam2k26@gmail.com on or before February 25, 2026',
-    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbxyE12Qh7El9qnH69cuhKt_2GiFSJ1Ccm6JLNGFZrOauwGzn6RtbMlmzpMkCodc8GZ0zQ/exec',
+    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
   },
   {
     id: 2,
@@ -46,7 +46,7 @@ const events: Event[] = [
       'Top scorers will be recognized',
       'Tie-breaking round if needed',
     ],
-    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbxyE12Qh7El9qnH69cuhKt_2GiFSJ1Ccm6JLNGFZrOauwGzn6RtbMlmzpMkCodc8GZ0zQ/exec',
+    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
   },
   {
     id: 3,
@@ -62,7 +62,7 @@ const events: Event[] = [
       'All actions are monitored and logged',
       'Ethical hacking standards must be followed',
     ],
-    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbxyE12Qh7El9qnH69cuhKt_2GiFSJ1Ccm6JLNGFZrOauwGzn6RtbMlmzpMkCodc8GZ0zQ/exec',
+    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
   },
   {
     id: 4,
@@ -78,7 +78,7 @@ const events: Event[] = [
       'Use of frameworks like React, Vue is permitted',
       'Creativity and usability are key evaluation criteria',
     ],
-    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbxyE12Qh7El9qnH69cuhKt_2GiFSJ1Ccm6JLNGFZrOauwGzn6RtbMlmzpMkCodc8GZ0zQ/exec',
+    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
   },
   {
     id: 5,
@@ -94,7 +94,7 @@ const events: Event[] = [
       'Original artwork only',
       'Submission via email before deadline',
     ],
-    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbxyE12Qh7El9qnH69cuhKt_2GiFSJ1Ccm6JLNGFZrOauwGzn6RtbMlmzpMkCodc8GZ0zQ/exec',
+    googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
   },
 ]
 

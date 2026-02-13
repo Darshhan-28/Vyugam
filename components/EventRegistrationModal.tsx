@@ -94,6 +94,8 @@ export default function EventRegistrationModal({
         payload[`${prefix} Dept`] = member.department
       }
 
+      console.log('Submitting payload to Apps Script:', payload)
+
       // Submit to Google Sheets via Apps Script
       const response = await fetch(
         event?.googleSheetScriptUrl || '',
