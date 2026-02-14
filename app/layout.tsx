@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Space_Mono, Orbitron } from 'next/font/google'
 
 import './globals.css'
+import { Toaster } from 'sonner'
 
 const spaceMono = Space_Mono({
   weight: ['400', '700'],
@@ -33,7 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceMono.variable} ${orbitron.variable}`}>
-      <body className="font-mono antialiased bg-background text-foreground">{children}</body>
+      <body className="font-mono antialiased bg-background text-foreground">
+        {children}
+        <Toaster position="bottom-right" theme="dark" richColors />
+      </body>
     </html>
   )
 }

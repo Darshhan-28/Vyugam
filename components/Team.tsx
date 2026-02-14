@@ -1,29 +1,32 @@
 'use client'
 
+import { Phone, MessageCircle } from 'lucide-react'
+import { toast } from 'sonner'
+
 export default function Team() {
   const teamMembers = [
     {
-      name: 'K.Guru Raaj',
+      name: 'Mr. K.Guru Raaj',
       phone: '+91 80725 49057',
       title: 'Event Coordinator',
       whatsapp: true,
     },
     {
-      name: 'M.Kabilan',
+      name: 'Mr. M.Kabilan',
       phone: '+91 75986 82797',
-      title: 'Technical Lead',
+      title: 'Event Coordinator',
       whatsapp: true,
     },
     {
-      name: 'N.Harthika',
+      name: 'Ms. N.Harthika',
       phone: '+91 63697 76459',
-      title: 'Student Coordinator',
+      title: 'Event Coordinator',
       whatsapp: true,
     },
     {
-      name: 'S.Madhu Shree',
+      name: 'Ms. S.Madhu Shree',
       phone: '+91 63813 59507',
-      title: 'Operations Manager',
+      title: 'Event Coordinator',
       whatsapp: true,
     },
   ]
@@ -71,19 +74,19 @@ export default function Team() {
                 {/* Call Icon */}
                 <button
                   onClick={() => handleCall(member.phone)}
-                  className="p-3 rounded-lg neon-border hover:shadow-[0_0_15px_rgba(0,150,255,0.3)] transition-all"
+                  className="p-3 rounded-lg neon-border hover:shadow-[0_0_15px_rgba(0,150,255,0.3)] transition-all text-primary"
                   title="Call"
                 >
-                  <span className="text-lg">📞</span>
+                  <Phone className="w-5 h-5" />
                 </button>
 
                 {/* WhatsApp Icon */}
                 <button
                   onClick={() => handleWhatsApp(member.phone)}
-                  className="p-3 rounded-lg neon-border-purple hover:shadow-[0_0_15px_rgba(138,43,226,0.3)] transition-all"
+                  className="p-3 rounded-lg neon-border-purple hover:shadow-[0_0_15px_rgba(138,43,226,0.3)] transition-all text-secondary"
                   title="WhatsApp"
                 >
-                  <span className="text-lg">💬</span>
+                  <MessageCircle className="w-5 h-5" />
                 </button>
               </div>
 

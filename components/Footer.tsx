@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Instagram, MessageCircle, Linkedin } from 'lucide-react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -14,10 +15,9 @@ export default function Footer() {
   ]
 
   const socialLinks = [
-    { icon: '👍', label: 'Facebook', url: 'https://facebook.com' },
-    { icon: '📷', label: 'Instagram', url: 'https://instagram.com' },
-    { icon: '𝕏', label: 'Twitter', url: 'https://twitter.com' },
-    { icon: '🔗', label: 'LinkedIn', url: 'https://linkedin.com' },
+    { icon: Instagram, label: 'Instagram', url: 'https://www.instagram.com/pacet_castle' },
+    { icon: MessageCircle, label: 'Whatsapp', url: 'https://chat.whatsapp.com/LD5VxyGdc5Y4pBwORpozq0' },
+    { icon: Linkedin, label: 'LinkedIn', url: 'https://www.linkedin.com/in/pacet-pollachi-5a003a2b7' },
   ]
 
   return (
@@ -84,11 +84,8 @@ export default function Footer() {
               <p>
                 <span className="text-secondary font-bold">Email:</span>
                 <a href="mailto:viyugam2k26@gmail.com" className="hover:text-primary transition-colors">
-                  {' '}viyugam2k26@gmail.com
+                  {' '}vyugam2k26@gmail.com
                 </a>
-              </p>
-              <p>
-                <span className="text-secondary font-bold">Phone:</span> +91 98765 43210
               </p>
               <p>
                 <span className="text-secondary font-bold">Location:</span> Pollachi, Tamil Nadu
@@ -111,7 +108,7 @@ export default function Footer() {
                   className="w-10 h-10 md:w-12 md:h-12 neon-border rounded-lg flex items-center justify-center hover:shadow-[0_0_15px_rgba(0,150,255,0.3)] transition-all duration-300 hover:border-secondary"
                   title={social.label}
                 >
-                  <span className="text-lg">{social.icon}</span>
+                  <social.icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
@@ -133,7 +130,7 @@ export default function Footer() {
             </span>
           </p>
           <p className="text-xs">
-            P.A. College of Engineering and Technology, Pollachi
+            ____________________________________________________________
           </p>
         </div>
       </div>

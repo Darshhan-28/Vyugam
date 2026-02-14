@@ -5,7 +5,7 @@ export default function Location() {
     <section id="location" className="relative py-20 px-4 border-b neon-border">
       <div className="max-w-7xl mx-auto">
         <h2 className="font-heading text-4xl md:text-5xl font-bold text-center text-primary neon-glow mb-4">
-          VENUE & LOGISTICS
+          VENUE
         </h2>
         <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
           Find us at our state-of-the-art venue in Pollachi with excellent connectivity and facilities
@@ -26,7 +26,7 @@ export default function Location() {
                     <span className="text-secondary font-bold">Date:</span> March 2, 2026
                   </p>
                   <p className="text-foreground text-sm md:text-base">
-                    <span className="text-secondary font-bold">Time:</span> 9:00 AM - 6:00 PM
+                    <span className="text-secondary font-bold">Time:</span> 9:00 AM - 5:00 PM
                   </p>
                 </div>
               </div>

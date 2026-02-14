@@ -29,7 +29,7 @@ const events: Event[] = [
       'Original research or case studies preferred',
       'All team members must register and attend',
     ],
-    specialNote: 'Paper must be sent to viyugam2k26@gmail.com on or before February 25, 2026',
+    specialNote: 'Paper must be sent to vyugam2k26@gmail.com on or before February 25, 2026',
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
   },
   {
