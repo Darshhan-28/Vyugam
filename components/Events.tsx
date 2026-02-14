@@ -14,6 +14,7 @@ interface Event {
   rules: string[]
   specialNote?: string
   googleSheetScriptUrl: string
+  contactPhone: string // Added contact phone
 }
 
 const events: Event[] = [
@@ -34,6 +35,7 @@ const events: Event[] = [
     ],
     specialNote: 'Paper must be sent to vyugam2k26@gmail.com on or before February 25, 2026',
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
+    contactPhone: '+91 98765 43210',
   },
   {
     id: 2,
@@ -51,6 +53,7 @@ const events: Event[] = [
       'Tie-breaking round if needed',
     ],
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
+    contactPhone: '+91 87654 32109',
   },
   {
     id: 3,
@@ -68,6 +71,7 @@ const events: Event[] = [
       'Ethical hacking standards must be followed',
     ],
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
+    contactPhone: '+91 76543 21098',
   },
   {
     id: 4,
@@ -85,6 +89,7 @@ const events: Event[] = [
       'Creativity and usability are key evaluation criteria',
     ],
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
+    contactPhone: '+91 65432 10987',
   },
   {
     id: 5,
@@ -102,6 +107,7 @@ const events: Event[] = [
       'Submission via email before deadline',
     ],
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
+    contactPhone: '+91 91234 56789',
   },
 ]
 

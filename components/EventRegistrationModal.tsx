@@ -12,6 +12,7 @@ interface Event {
   rules: string[]
   specialNote?: string
   googleSheetScriptUrl: string
+  contactPhone: string // Added contact phone
 }
 
 interface EventRegistrationModalProps {
@@ -201,8 +202,8 @@ export default function EventRegistrationModal({
                       <p className="text-2xl font-bold text-primary neon-glow">{event.teamSize} Member{event.teamSize !== 1 ? 's' : ''}</p>
                     </div>
                     <div className="neon-border rounded-lg p-4">
-                      <p className="text-muted-foreground text-sm mb-2">Event Type</p>
-                      <p className="text-lg font-bold text-secondary">{event.subtitle}</p>
+                      <p className="text-muted-foreground text-sm mb-2">Contact Number</p>
+                      <p className="text-lg font-bold text-secondary">{event.contactPhone}</p>
                     </div>
                   </div>
 
