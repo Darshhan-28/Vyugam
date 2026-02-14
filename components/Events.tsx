@@ -111,6 +111,10 @@ export default function Events() {
           Participate in exciting competitions and showcase your technical skills across various domains
         </p>
 
+        <p className="text-center text-red-500 font-bold mb-12 uppercase tracking-[0.2em] animate-pulse drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+          Separate Registrations Required for Every Event
+        </p>
+
         {/* Flash Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
           {events.map((event) => (
