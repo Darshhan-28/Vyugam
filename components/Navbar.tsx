@@ -62,9 +62,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo/Brand */}
         <Link href="#" className="flex items-center gap-2 group">
-          <span className="font-heading text-xl md:text-2xl font-bold text-primary neon-glow group-hover:text-secondary transition-colors duration-300">
-            VYUGAM
-          </span>
+          <img src="/logo.png" alt="VYUGAM Logo" className="h-10 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-110" />
         </Link>
 
         {/* Desktop Navigation */}
