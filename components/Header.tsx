@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="relative w-full py-16 px-4 border-b neon-border overflow-hidden mt-20">
+    <header className="relative w-full py-12 md:py-16 lg:py-20 px-4 border-b neon-border overflow-hidden mt-20">
       {/* Background grid lines */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-primary/50 to-transparent transform -translate-x-1/2"></div>
@@ -31,7 +31,7 @@ export default function Header() {
 
         {/* Department and Symposium Info */}
         <div className="space-y-6 text-center mb-12">
-          <p className="text-xs md:text-base text-muted-foreground">
+          <p className="text-[10px] sm:text-xs md:text-base text-muted-foreground px-2">
             Department of <span className="text-primary font-bold">INFORMATION TECHNOLOGY</span> Organizes
           </p>
 
@@ -48,7 +48,7 @@ export default function Header() {
           <div className="mt-8 max-w-4xl mx-auto space-y-4">
             <div className="neon-border rounded-lg p-4 md:p-6 glassmorphism">
               <h3 className="font-heading text-lg md:text-xl text-primary neon-glow mb-3">About VYUGAM</h3>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                 VYUGAM is a premier technical symposium organized by the Department of Information Technology to showcase innovation, creativity, and technical excellence. It brings together students from across institutions to compete, collaborate, and celebrate technological advancement.
               </p>
             </div>
