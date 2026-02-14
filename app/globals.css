@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply font-sans;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
@@ -71,6 +71,22 @@ body {
   body {
     @apply bg-background text-foreground;
     background: linear-gradient(135deg, #0a0e0f 0%, #0f1a1f 100%);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 150, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 150, 255, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(circle at 50% 50%, black, transparent 80%);
+    pointer-events: none;
+    z-index: -1;
+    animation: grid-move 20s linear infinite;
   }
 
   :root.light body {
@@ -80,6 +96,13 @@ body {
       linear-gradient(90deg, rgba(0, 150, 255, 0.05) 1px, transparent 1px),
       linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     background-size: 100% 100%, 40px 40px, 40px 40px, 100% 100%;
+  }
+
+  :root.light body::before {
+    background-image:
+      linear-gradient(rgba(0, 150, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 150, 255, 0.1) 1px, transparent 1px);
+    animation: grid-move 30s linear infinite;
   }
 }
 
@@ -106,39 +129,75 @@ body {
     background: rgba(10, 14, 15, 0.6);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 150, 255, 0.2);
+    transition: all 0.3s ease;
   }
 
-  .strategic-vision {
-    background: linear-gradient(90deg, rgba(0, 150, 255, 0.1), rgba(138, 43, 226, 0.1));
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    letter-spacing: 0.1em;
+  .glassmorphism:hover {
+    background: rgba(10, 14, 15, 0.8);
+    border-color: rgba(0, 150, 255, 0.4);
+    box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
   }
 
-  :root.light .neon-border {
-    border: 1px solid rgba(0, 150, 255, 0.4);
-    box-shadow: 0 0 15px rgba(0, 150, 255, 0.15), inset 0 0 10px rgba(0, 150, 255, 0.05);
+  .neon-pulse {
+    animation: neon-pulse 2s ease-in-out infinite;
   }
 
-  :root.light .neon-border-purple {
-    border: 1px solid rgba(138, 43, 226, 0.4);
-    box-shadow: 0 0 15px rgba(138, 43, 226, 0.15), inset 0 0 10px rgba(138, 43, 226, 0.05);
+  .floating {
+    animation: floating 3s ease-in-out infinite;
   }
 
-  :root.light .neon-glow {
-    text-shadow: 0 0 10px rgba(0, 150, 255, 0.4);
-    filter: brightness(0.9);
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  :root.light .neon-glow-purple {
-    text-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
-    filter: brightness(0.9);
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  :root.light .glassmorphism {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 150, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  @keyframes grid-move {
+    0% {
+      transform: translateY(0);
+    }
+
+    100% {
+      transform: translateY(50px);
+    }
+  }
+
+  @keyframes neon-pulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 10px rgba(0, 150, 255, 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 20px rgba(0, 150, 255, 0.6);
+    }
+  }
+
+  @keyframes floating {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+
+    100% {
+      transform: translateY(100%);
+    }
   }
 }

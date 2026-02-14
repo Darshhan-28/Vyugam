@@ -9,7 +9,9 @@ export default function Header() {
     <header className="relative w-full py-12 md:py-16 lg:py-20 px-4 border-b neon-border overflow-hidden mt-20">
       {/* Background grid lines */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-primary/50 to-transparent transform -translate-x-1/2"></div>
+        <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-primary/50 to-transparent transform -translate-x-1/2 animate-pulse"></div>
+        <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+        <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -35,13 +37,19 @@ export default function Header() {
             Department of <span className="text-primary font-bold">INFORMATION TECHNOLOGY</span> Organizes
           </p>
 
-          <div className="inline-block px-4 md:px-6 py-3 neon-border-purple rounded-lg">
-            <h2 className="font-heading text-3xl md:text-4xl font-black text-secondary neon-glow-purple">
-              VYUGAM
-            </h2>
-            <p className="text-xs text-secondary/80 mt-2 animate-pulse">
-              ▄︻═ Strategic Vision Intelligent Innovation ═︻▄
-            </p>
+          <div className="relative inline-block group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative px-6 py-4 bg-background rounded-lg border border-primary/20 neon-pulse">
+              <h2 className="font-heading text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary to-secondary tracking-widest text-center">
+                VYUGAM
+              </h2>
+              <div className="mt-2 text-center">
+                <span className="strategic-vision text-[10px] sm:text-xs md:text-sm font-bold text-secondary-foreground inline-flex items-center gap-2">
+                  <span className="w-2 h-2 bg-secondary rounded-full animate-ping"></span>
+                  Strategic Vision Intelligent Innovation
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* About VYUGAM Section */}

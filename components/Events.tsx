@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { X, Calendar, MapPin, Clock, Trophy, MessageCircle, Instagram, Linkedin, Phone } from 'lucide-react'
 import EventRegistrationModal from '@/components/EventRegistrationModal'
 
 interface Event {
   id: number
   title: string
   subtitle: string
+  tagline: string // Added tagline
   description: string
   teamSize: number
   rules: string[]
@@ -19,6 +21,7 @@ const events: Event[] = [
     id: 1,
     title: 'Insight Arena',
     subtitle: 'Paper Presentation',
+    tagline: 'Present your innovative research and technical insights to showcase your ideas and expertise.', // Added tagline
     description: 'Present your innovative research and technical insights to showcase your ideas and expertise.',
     teamSize: 4,
     rules: [
@@ -36,6 +39,7 @@ const events: Event[] = [
     id: 2,
     title: 'BrainBlitz',
     subtitle: 'Quiz',
+    tagline: 'Test your knowledge across various technical and general topics in an exciting quiz competition.', // Added tagline
     description: 'Test your knowledge across various technical and general topics in an exciting quiz competition.',
     teamSize: 2,
     rules: [
@@ -52,6 +56,7 @@ const events: Event[] = [
     id: 3,
     title: 'Bug Hunters',
     subtitle: 'CTF Challenge',
+    tagline: 'Hunt for vulnerabilities and solve security challenges to prove your cybersecurity expertise.', // Added tagline
     description: 'Hunt for vulnerabilities and solve security challenges to prove your cybersecurity expertise.',
     teamSize: 1,
     rules: [
@@ -68,6 +73,7 @@ const events: Event[] = [
     id: 4,
     title: 'Frontend Fusion',
     subtitle: 'UI/UX Challenge',
+    tagline: 'Design and develop stunning user interfaces with exceptional user experience in this creative challenge.', // Added tagline
     description: 'Design and develop stunning user interfaces with exceptional user experience in this creative challenge.',
     teamSize: 1,
     rules: [
@@ -84,6 +90,7 @@ const events: Event[] = [
     id: 5,
     title: 'Canva Canvas',
     subtitle: 'Poster Design',
+    tagline: 'Create visually stunning and creative posters that convey messages effectively and innovatively.', // Added tagline
     description: 'Create visually stunning and creative posters that convey messages effectively and innovatively.',
     teamSize: 1,
     rules: [
@@ -99,10 +106,28 @@ const events: Event[] = [
 ]
 
 export default function Events() {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<typeof events[0] | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          entries[0].target.classList.add('visible')
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <section id="events" className="relative py-20 px-4 border-b neon-border">
+    <section id="events" ref={sectionRef} className="relative py-20 px-4 border-b neon-border scroll-reveal">
       <div className="max-w-7xl mx-auto">
         <h2 className="font-heading text-4xl md:text-5xl font-bold text-center text-primary neon-glow mb-4">
           EVENTS
@@ -117,22 +142,27 @@ export default function Events() {
 
         {/* Flash Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-          {events.map((event) => (
+          {events.map((event, index) => (
             <div
               key={event.id}
               onClick={() => setSelectedEvent(event)}
-              className="group cursor-pointer neon-border rounded-lg p-5 md:p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,150,255,0.4)] hover:border-secondary"
+              className="group cursor-pointer neon-border rounded-lg p-5 md:p-6 transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,150,255,0.4)] hover:border-secondary glassmorphism relative overflow-hidden"
+              style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="space-y-3">
-                <div className="h-1 w-8 bg-secondary group-hover:w-12 transition-all duration-300"></div>
+              {/* Tech corner accents */}
+              <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary/20 group-hover:border-primary/60 transition-colors"></div>
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary/20 group-hover:border-primary/60 transition-colors"></div>
+
+              <div className="space-y-3 relative z-10">
+                <div className="h-1 w-8 bg-secondary group-hover:w-full transition-all duration-500 ease-out"></div>
                 <h3 className="font-heading text-lg md:text-xl font-bold text-primary group-hover:text-secondary transition-colors line-clamp-2">
                   {event.title}
                 </h3>
                 <p className="text-xs md:text-sm text-secondary group-hover:text-primary transition-colors font-semibold">
                   {event.subtitle}
                 </p>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {event.description}
+                <p className="text-xs text-muted-foreground line-clamp-2 group-hover:text-foreground transition-colors">
+                  {event.tagline}
                 </p>
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-xs text-secondary bg-secondary/20 px-2 py-1 rounded font-bold">
