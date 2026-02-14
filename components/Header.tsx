@@ -7,9 +7,11 @@ import Link from 'next/link'
 
 export default function Header() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [mounted, setMounted] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    setMounted(true)
     const handleMouseMove = (e: MouseEvent) => {
       if (!headerRef.current) return
       const rect = headerRef.current.getBoundingClientRect()
@@ -26,7 +28,7 @@ export default function Header() {
     <header ref={headerRef} className="relative w-full py-12 md:py-16 lg:py-20 px-4 border-b neon-border overflow-hidden mt-20">
       {/* Background tech particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(15)].map((_, i) => (
+        {mounted && [...Array(15)].map((_, i) => (
           <div
             key={i}
             className="tech-particle"

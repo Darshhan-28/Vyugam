@@ -88,11 +88,11 @@ export default function Location() {
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.7109784687345!2d77.0311864751889!3d10.679527289463385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba8379603118171%3A0xaabce92d2cdd4e50!2sP.%20A.%20College%20of%20Engineering%20and%20Technology%20(Autonomous)%2C%20Pollachi%2C%20Coimbatore!5e0!3m2!1sen!2sin!4v1770970402480!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
-                style={{ border: 0, filter: 'grayscale(100%) invert(90%) contrast(90%)' }}
+                style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full opacity-60 group-hover:opacity-90 contrast-125 transition-all duration-500 group-hover:grayscale-0 group-hover:invert-0"
+                className="w-full h-full opacity-80 group-hover:opacity-100 transition-all duration-500"
               ></iframe>
               <div className="absolute inset-0 pointer-events-none border-2 border-primary/20 group-hover:border-primary/40 transition-colors"></div>
             </div>

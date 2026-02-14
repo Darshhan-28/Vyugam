@@ -12,7 +12,6 @@ interface Event {
   rules: string[]
   specialNote?: string
   googleSheetScriptUrl: string
-  contactPhone: string // Added contact phone
 }
 
 interface EventRegistrationModalProps {
@@ -157,21 +156,23 @@ export default function EventRegistrationModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black backdrop-blur-md z-[100] flex items-center justify-center p-2 md:p-4"
       onClick={(e) => e.target === e.currentTarget && handleClose()}
       onKeyDown={(e) => e.key === 'Escape' && handleClose(e)}
     >
-      <div className="neon-border rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
-        {/* Close Button */}
-        <button
-          onClick={() => handleClose()}
-          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center text-2xl text-primary hover:text-secondary transition-colors font-heading"
-          aria-label="Close modal"
-        >
-          ✕
-        </button>
+      <div className="neon-border rounded-lg max-w-3xl w-full max-h-[80vh] md:max-h-[75vh] overflow-y-auto relative bg-background">
+        {/* Close Button - Sticky at top right */}
+        <div className="sticky top-0 right-0 z-[110] flex justify-end p-2 pointer-events-none">
+          <button
+            onClick={() => handleClose()}
+            className="w-10 h-10 flex items-center justify-center text-2xl text-primary hover:text-secondary transition-colors font-heading glassmorphism rounded-full pointer-events-auto shadow-lg"
+            aria-label="Close modal"
+          >
+            ✕
+          </button>
+        </div>
 
-        <div className="p-6 md:p-8 space-y-6">
+        <div className="px-4 pb-8 md:px-8 md:pb-10 -mt-10">
           {submitted ? (
             <div className="flex flex-col items-center justify-center py-16 space-y-4">
               <div className="w-20 h-20 rounded-full border-3 border-primary flex items-center justify-center text-5xl">
@@ -196,14 +197,14 @@ export default function EventRegistrationModal({
                 </div>
 
                 <div className="border-t border-primary/30 pt-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="neon-border rounded-lg p-4">
-                      <p className="text-muted-foreground text-sm mb-2">Team Size</p>
-                      <p className="text-2xl font-bold text-primary neon-glow">{event.teamSize} Member{event.teamSize !== 1 ? 's' : ''}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="neon-border rounded-lg p-4 bg-background/20">
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Max Team Size</p>
+                      <p className="text-xl font-bold text-primary neon-glow">{event.teamSize} Member{event.teamSize !== 1 ? 's' : ''}</p>
                     </div>
-                    <div className="neon-border rounded-lg p-4">
-                      <p className="text-muted-foreground text-sm mb-2">Contact Number</p>
-                      <p className="text-lg font-bold text-secondary">{event.contactPhone}</p>
+                    <div className="neon-border rounded-lg p-4 bg-background/20">
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Event Type</p>
+                      <p className="text-xl font-bold text-secondary uppercase tracking-tight">{event.subtitle}</p>
                     </div>
                   </div>
 
@@ -224,7 +225,15 @@ export default function EventRegistrationModal({
                   {event.specialNote && (
                     <div className="neon-border-purple rounded-lg p-4 bg-secondary/5">
                       <p className="text-secondary font-bold mb-2">Important Note:</p>
-                      <p className="text-foreground text-sm">{event.specialNote}</p>
+                      <p className="text-foreground text-sm">
+                        {event.specialNote.split(/(vyugam2k26@gmail\.com)/gi).map((part, i) =>
+                          part.toLowerCase() === 'vyugam2k26@gmail.com' ? (
+                            <span key={i} className="text-primary font-bold neon-glow underline decoration-primary/30 underline-offset-4 bg-primary/10 px-1 rounded">
+                              {part}
+                            </span>
+                          ) : part
+                        )}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -293,16 +302,30 @@ export default function EventRegistrationModal({
                       </div>
                       <div>
                         <label className="text-sm text-muted-foreground block mb-2">
-                          Phone *
+                          Phone (10-digit) *
                         </label>
                         <input
                           type="tel"
                           value={member.phone}
-                          onChange={(e) => handleMemberChange(index, 'phone', e.target.value)}
+                          onChange={(e) => {
+                            let val = e.target.value.replace(/\D/g, '')
+                            // Enforce first digit is 6, 7, 8, or 9
+                            if (val.length > 0 && !['6', '7', '8', '9'].includes(val[0])) {
+                              val = ''
+                            }
+                            val = val.slice(0, 10)
+                            handleMemberChange(index, 'phone', val)
+                          }}
+                          pattern="[6-9][0-9]{9}"
+                          title="Phone number must be 10 digits and start with 6, 7, 8, or 9"
                           required
-                          placeholder="Enter phone number"
-                          className="w-full px-4 py-2 neon-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-secondary transition-colors"
+                          placeholder="9876543210"
+                          className={`w-full px-4 py-2 neon-border rounded-lg bg-background text-foreground text-sm focus:outline-none transition-colors ${member.phone.length > 0 && member.phone.length < 10 ? 'border-red-500/50' : 'focus:border-secondary'
+                            }`}
                         />
+                        {member.phone.length > 0 && member.phone.length < 10 && (
+                          <p className="text-[10px] text-red-400 mt-1">Must be 10 digits starting with 6, 7, 8, or 9</p>
+                        )}
                       </div>
                     </div>
 
