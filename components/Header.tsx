@@ -93,11 +93,10 @@ export default function Header() {
               <h2 className="font-heading text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary to-secondary tracking-widest text-center hover-glitch cursor-default transition-all duration-300">
                 VYUGAM
               </h2>
-              <div className="mt-2 text-center">
-                <span className="strategic-vision text-[10px] sm:text-xs md:text-sm font-bold text-secondary-foreground inline-flex items-center gap-2">
-                  <span className="w-2 h-2 bg-secondary rounded-full animate-ping"></span>
-                  Strategic Vision Intelligent Innovation
-                </span>
+              <div className="mt-4 text-center">
+                <p className="font-heading text-[10px] sm:text-xs md:text-sm lg:text-base tracking-[0.2em] md:tracking-[0.4em] text-secondary neon-glow-purple uppercase font-bold opacity-80">
+                  Strategic Vision <span className="text-primary mx-1 md:mx-2 animate-pulse">&bull;</span> Intelligent Innovation
+                </p>
               </div>
             </div>
           </div>
