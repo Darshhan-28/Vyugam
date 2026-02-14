@@ -40,9 +40,9 @@ export default function Header() {
           <div className="relative inline-block group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
             <div className="relative px-6 py-4 bg-background rounded-lg border border-primary/20 neon-pulse">
-              <div className="flex justify-center -mt-8 -mb-4">
-                <img src="/logo.png" alt="VYUGAM Logo" className="h-48 sm:h-72 md:h-96 lg:h-[32rem] w-auto object-contain neon-glow" />
-              </div>
+              <h2 className="font-heading text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary to-secondary tracking-widest text-center">
+                VYUGAM
+              </h2>
               <div className="mt-2 text-center">
                 <span className="strategic-vision text-[10px] sm:text-xs md:text-sm font-bold text-secondary-foreground inline-flex items-center gap-2">
                   <span className="w-2 h-2 bg-secondary rounded-full animate-ping"></span>
