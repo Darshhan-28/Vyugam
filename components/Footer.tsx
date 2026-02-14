@@ -129,9 +129,7 @@ export default function Footer() {
               Information Technology
             </span>
           </p>
-          <p className="text-xs">
-            ____________________________________________________________
-          </p>
+
         </div>
       </div>
     </footer>
