@@ -8,12 +8,18 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
+  const [scrollProgress, setScrollProgress] = useState(0)
+
   useEffect(() => {
     const theme = localStorage.getItem('theme') || 'dark'
     setIsDark(theme === 'dark')
     applyTheme(theme === 'dark')
 
     const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight
+      const currentScroll = window.scrollY
+      setScrollProgress((currentScroll / totalScroll) * 100)
+
       if (window.scrollY > 10) {
         setIsScrolled(true)
       } else {
@@ -29,6 +35,10 @@ export default function Navbar() {
       window.removeEventListener('touchmove', handleScroll)
     }
   }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const applyTheme = (dark: boolean) => {
     const root = document.documentElement
@@ -55,73 +65,91 @@ export default function Navbar() {
   ]
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-      ? 'py-3 px-4 md:px-8 glassmorphism border-b neon-border bg-background/95'
-      : 'py-6 px-4 md:px-8 bg-transparent'
-      }`}>
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo/Brand */}
-        <Link href="#" className="flex items-center gap-2 group">
-          <span className="font-heading text-xl md:text-2xl font-bold text-primary neon-glow group-hover:text-secondary transition-colors duration-300">
-            VYUGAM
-          </span>
-        </Link>
+    <>
+      {/* Scroll Progress Bar */}
+      <div
+        className="fixed top-0 left-0 h-1 z-[60] bg-gradient-to-r from-primary via-secondary to-primary transition-all duration-150 ease-out"
+        style={{ width: `${scrollProgress}%` }}
+      ></div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-foreground/80 hover:text-primary transition-all duration-300 text-sm font-medium hover:tracking-widest uppercase"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
-        {/* Theme Toggle and Mobile Menu */}
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="w-10 h-10 rounded-lg neon-border flex items-center justify-center hover:shadow-[0_0_15px_rgba(0,150,255,0.4)] transition-all text-lg bg-background/50"
-            aria-label="Toggle theme"
-          >
-            <span className={isDark ? 'animate-pulse' : ''}>{isDark ? '🌙' : '☀️'}</span>
-          </button>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 text-foreground relative"
-            aria-label="Toggle menu"
-          >
-            <span className={`w-6 h-0.5 bg-primary rounded transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`w-6 h-0.5 bg-primary rounded transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-            <span className={`w-6 h-0.5 bg-primary rounded transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'max-h-screen opacity-100 mt-4 pt-4 border-t border-primary/30 bg-background/98 px-4' : 'max-h-0 opacity-0 pointer-events-none'
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? 'py-3 px-4 md:px-8 glassmorphism border-b neon-border bg-background/95'
+        : 'py-6 px-4 md:px-8 bg-transparent'
         }`}>
-        <div className="space-y-4 pb-6">
-          {navLinks.map((link, index) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className={`block text-foreground/80 hover:text-primary transition-all duration-300 text-sm font-bold py-2 uppercase tracking-widest ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-4'
-                }`}
-              style={{ transitionDelay: `${index * 50}ms` }}
-              onClick={() => setIsMobileMenuOpen(false)}
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo/Brand */}
+          <Link href="#" className="flex items-center gap-2 group">
+            <span className="font-heading text-xl md:text-2xl font-bold text-primary neon-glow group-hover:text-secondary transition-colors duration-300">
+              VYUGAM
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-foreground/80 hover:text-primary transition-all duration-300 text-sm font-medium hover:tracking-widest uppercase"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Theme Toggle and Mobile Menu */}
+          <div className="flex items-center gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-lg neon-border flex items-center justify-center hover:shadow-[0_0_15px_rgba(0,150,255,0.4)] transition-all text-lg bg-background/50"
+              aria-label="Toggle theme"
             >
-              {link.label}
-            </Link>
-          ))}
+              <span className={isDark ? 'animate-pulse' : ''}>{isDark ? '🌙' : '☀️'}</span>
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 text-foreground relative"
+              aria-label="Toggle menu"
+            >
+              <span className={`w-6 h-0.5 bg-primary rounded transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`w-6 h-0.5 bg-primary rounded transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`w-6 h-0.5 bg-primary rounded transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+
+        {/* Mobile Navigation */}
+        <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'max-h-screen opacity-100 mt-4 pt-4 border-t border-primary/30 bg-background/98 px-4' : 'max-h-0 opacity-0 pointer-events-none'
+          }`}>
+          <div className="space-y-4 pb-6">
+            {navLinks.map((link, index) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={`block text-foreground/80 hover:text-primary transition-all duration-300 text-sm font-bold py-2 uppercase tracking-widest ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-4'
+                  }`}
+                style={{ transitionDelay: `${index * 50}ms` }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-8 right-8 z-[60] w-12 h-12 glassmorphism neon-border rounded-lg flex items-center justify-center transition-all duration-500 ${isScrolled ? 'translate-y-0 opacity-100 rotate-0' : 'translate-y-24 opacity-0 rotate-180 pointer-events-none'
+          } hover:shadow-[0_0_20px_rgba(0,150,255,0.4)] group`}
+        aria-label="Back to top"
+      >
+        <span className="text-xl transition-transform duration-300 group-hover:-translate-y-1">↑</span>
+      </button>
+    </>
   )
 }

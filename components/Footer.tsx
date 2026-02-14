@@ -21,53 +21,69 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="relative border-t neon-border px-4 py-16 md:py-20">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <footer className="relative border-t neon-border px-4 py-20 glassmorphism mt-20 overflow-hidden">
+      {/* Footer Cyber Accents */}
+      <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-primary/30 opacity-60"></div>
+      <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-secondary/30 opacity-60"></div>
+      <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-secondary/30 opacity-60"></div>
+      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-primary/30 opacity-60"></div>
+
+      <div className="max-w-7xl mx-auto space-y-16 relative z-10">
         {/* Event Introduction */}
-        <div className="text-center space-y-4">
-          <h3 className="font-heading text-2xl md:text-3xl font-bold text-primary neon-glow">
-            VYUGAM 2026
-          </h3>
-          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+        <div className="text-center space-y-6">
+          <div className="inline-block relative">
+            <h3 className="font-heading text-3xl md:text-5xl font-black text-primary neon-glow tracking-tighter hover-glitch cursor-default">
+              VYUGAM 2026
+            </h3>
+            <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+          </div>
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-lg font-medium">
             VYUGAM is the premier technical symposium organized by the Department of Information Technology,
             bringing together innovative minds to showcase their talents and celebrate technical excellence.
           </p>
-          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-            Join us for an unforgettable experience of competition, collaboration, and continuous learning
-            in the rapidly evolving world of technology and innovation.
-          </p>
+          <div className="flex justify-center gap-2">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" style={{ animationDelay: `${i * 0.2}s` }}></div>
+            ))}
+          </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-primary/30"></div>
+        {/* Divider with Center Accent */}
+        <div className="relative border-t border-primary/20">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border border-primary bg-background"></div>
+        </div>
 
         {/* Inspirational Quote Section */}
-        <div className="text-center space-y-4 py-8">
-          <p className="font-heading text-lg md:text-xl text-secondary neon-glow-purple italic">
+        <div className="text-center space-y-4 py-8 group">
+          <p className="font-heading text-xl md:text-2xl text-secondary neon-glow-purple italic transition-all duration-500 group-hover:tracking-wider">
             &quot;Innovation distinguishes between a leader and a follower.&quot;
           </p>
-          <p className="text-muted-foreground text-sm md:text-base">
+          <p className="text-muted-foreground text-sm md:text-base font-bold tracking-widest uppercase">
             — Steve Jobs
           </p>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-primary/30"></div>
+        {/* Divider with Center Accent */}
+        <div className="relative border-t border-primary/20">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border border-primary bg-background"></div>
+        </div>
 
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Quick Links */}
-          <div>
-            <h4 className="font-heading font-bold text-primary mb-6 neon-glow uppercase text-sm">
+          <div className="group">
+            <h4 className="font-heading font-bold text-primary mb-8 neon-glow uppercase text-sm tracking-[0.3em] flex items-center gap-2">
+              <span className="w-4 h-[1px] bg-primary"></span>
               Quick Links
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm md:text-base"
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 text-sm md:text-base flex items-center gap-2 group/link"
                   >
+                    <span className="w-0 h-[1px] bg-primary group-hover/link:w-3 transition-all"></span>
                     {link.label}
                   </Link>
                 </li>
@@ -76,39 +92,42 @@ export default function Footer() {
           </div>
 
           {/* Contact Us */}
-          <div>
-            <h4 className="font-heading font-bold text-primary mb-6 neon-glow uppercase text-sm">
+          <div className="group">
+            <h4 className="font-heading font-bold text-primary mb-8 neon-glow uppercase text-sm tracking-[0.3em] flex items-center gap-2">
+              <span className="w-4 h-[1px] bg-primary"></span>
               Contact Us
             </h4>
-            <div className="space-y-2 text-muted-foreground text-sm md:text-base">
-              <p>
-                <span className="text-secondary font-bold">Email:</span>
-                <a href="mailto:viyugam2k26@gmail.com" className="hover:text-primary transition-colors">
-                  {' '}vyugam2k26@gmail.com
+            <div className="space-y-4 text-muted-foreground text-sm md:text-base">
+              <p className="flex items-center gap-3 group/item">
+                <span className="text-secondary font-bold min-w-[80px]">Email:</span>
+                <a href="mailto:viyugam2k26@gmail.com" className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4">
+                  viyugam2k26@gmail.com
                 </a>
               </p>
-              <p>
-                <span className="text-secondary font-bold">Location:</span> Pollachi, Tamil Nadu
+              <p className="flex items-center gap-3">
+                <span className="text-secondary font-bold min-w-[80px]">Location:</span>
+                <span>Pollachi, Tamil Nadu</span>
               </p>
             </div>
           </div>
 
           {/* Follow Us */}
-          <div>
-            <h4 className="font-heading font-bold text-secondary mb-6 neon-glow-purple uppercase text-sm">
+          <div className="group">
+            <h4 className="font-heading font-bold text-secondary mb-8 neon-glow-purple uppercase text-sm tracking-[0.3em] flex items-center gap-2">
+              <span className="w-4 h-[1px] bg-secondary"></span>
               Follow Us
             </h4>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 md:w-12 md:h-12 neon-border rounded-lg flex items-center justify-center hover:shadow-[0_0_15px_rgba(0,150,255,0.3)] transition-all duration-300 hover:border-secondary"
+                  className="w-12 h-12 md:w-14 md:h-14 neon-border rounded-xl flex items-center justify-center hover:shadow-[0_0_20px_rgba(0,150,255,0.4)] transition-all duration-500 hover:-translate-y-2 group/social bg-background/40 hover:bg-background/80"
                   title={social.label}
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.icon className="w-6 h-6 transition-transform duration-500 group-hover/social:scale-110" />
                 </a>
               ))}
             </div>
@@ -116,20 +135,19 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-primary/30"></div>
+        <div className="border-t border-primary/10"></div>
 
-        {/* Copyright */}
-        <div className="text-center space-y-3 text-muted-foreground text-xs md:text-sm">
-          <p>
-            &copy; {currentYear} VYUGAM Technical Symposium. All rights reserved.
+        {/* Copyright Area */}
+        <div className="text-center space-y-4 py-4 backdrop-blur-sm bg-primary/5 rounded-2xl border border-primary/10">
+          <p className="text-muted-foreground text-xs md:text-sm tracking-wide">
+            &copy; {currentYear} <span className="text-primary font-bold">VYUGAM</span> Technical Symposium. All rights reserved.
           </p>
-          <p>
+          <p className="text-muted-foreground text-[10px] md:text-xs font-medium tracking-[0.2em] uppercase">
             Organized by Department of{' '}
-            <span className="text-primary font-bold neon-glow">
+            <span className="text-primary font-black neon-glow">
               Information Technology
             </span>
           </p>
-
         </div>
       </div>
     </footer>
