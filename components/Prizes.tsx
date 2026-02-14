@@ -21,7 +21,7 @@ export default function Prizes() {
           {prizes.map((prize, idx) => (
             <div
               key={idx}
-              className="neon-border-purple rounded-lg p-8 text-center space-y-4 transition-all duration-300 hover:shadow-[0_0_20px_rgba(138,43,226,0.3)] group"
+              className="neon-border-purple rounded-lg p-5 md:p-8 text-center space-y-3 md:space-y-4 transition-all duration-300 hover:shadow-[0_0_20px_rgba(138,43,226,0.3)] group"
             >
               <div className="text-6xl md:text-7xl group-hover:scale-110 transition-transform duration-300">
                 {prize.icon}

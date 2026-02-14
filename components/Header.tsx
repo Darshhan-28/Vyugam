@@ -15,7 +15,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto relative z-10">
         {/* College Name Container */}
         <div className="flex flex-col items-center justify-center gap-2 mb-8">
-          <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary neon-glow text-center">
+          <h1 className="font-heading text-xl md:text-2xl lg:text-4xl font-bold text-primary neon-glow text-center">
             P.A. COLLEGE OF ENGINEERING AND TECHNOLOGY
           </h1>
           <p className="text-sm md:text-lg text-secondary font-semibold">
