@@ -1,19 +1,17 @@
 import type { Metadata } from 'next'
-import { Space_Mono, Orbitron } from 'next/font/google'
+import { Inter, Outfit } from 'next/font/google'
 
 import './globals.css'
 import { Toaster } from 'sonner'
 
-const spaceMono = Space_Mono({
-  weight: ['400', '700'],
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-space-mono'
+  variable: '--font-inter'
 })
 
-const orbitron = Orbitron({
-  weight: ['400', '700', '900'],
+const outfit = Outfit({
   subsets: ['latin'],
-  variable: '--font-orbitron'
+  variable: '--font-outfit'
 })
 
 export const metadata: Metadata = {
@@ -33,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceMono.variable} ${orbitron.variable}`}>
-      <body className="font-mono antialiased bg-background text-foreground">
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+      <body className="font-sans antialiased bg-background text-foreground">
         {children}
         <Toaster position="bottom-right" theme="dark" richColors />
       </body>
