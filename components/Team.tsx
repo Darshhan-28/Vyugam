@@ -1,9 +1,26 @@
-'use client'
-
+import { useRef, useEffect } from 'react'
 import { Phone, MessageCircle } from 'lucide-react'
-import { toast } from 'sonner'
 
 export default function Team() {
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          entries[0].target.classList.add('visible')
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   const teamMembers = [
     {
       name: 'Mr. K.Guru Raaj',
@@ -40,7 +57,7 @@ export default function Team() {
   }
 
   return (
-    <section id="team" className="relative py-20 px-4 border-b neon-border">
+    <section id="team" ref={sectionRef} className="relative py-20 px-4 border-b neon-border scroll-reveal">
       <div className="max-w-7xl mx-auto">
         <h2 className="font-heading text-4xl md:text-5xl font-bold text-center text-secondary neon-glow-purple mb-4">
           MEET OUR TEAM
@@ -53,7 +70,8 @@ export default function Team() {
           {teamMembers.map((member, idx) => (
             <div
               key={idx}
-              className="neon-border-purple rounded-lg p-5 md:p-6 space-y-4 transition-all duration-300 hover:shadow-[0_0_20px_rgba(138,43,226,0.3)] hover:border-primary"
+              className="neon-border-purple rounded-lg p-5 md:p-6 space-y-4 transition-all duration-500 hover:shadow-[0_0_20px_rgba(138,43,226,0.3)] hover:border-primary opacity-0 translate-y-8 [.visible_&]:opacity-100 [.visible_&]:translate-y-0"
+              style={{ transitionDelay: `${idx * 150}ms` }}
             >
               {/* Avatar Placeholder */}
               <div className="w-14 h-14 md:w-16 md:h-16 neon-border rounded-full mx-auto flex items-center justify-center bg-secondary/10">

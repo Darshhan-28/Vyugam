@@ -215,6 +215,72 @@ body {
     }
   }
 
+  /* Glitch Animation */
+  @keyframes glitch {
+    0% {
+      transform: translate(0);
+    }
+
+    20% {
+      transform: translate(-2px, 2px);
+    }
+
+    40% {
+      transform: translate(-2px, -2px);
+    }
+
+    60% {
+      transform: translate(2px, 2px);
+    }
+
+    80% {
+      transform: translate(2px, -2px);
+    }
+
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  .hover-glitch:hover {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+    text-shadow:
+      2px 0 #00f,
+      -2px 0 #f0f;
+  }
+
+  /* Particle Base */
+  .tech-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: hsla(200, 100%, 50%, 0.2);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    animation: float-particle 20s linear infinite;
+  }
+
+  @keyframes float-particle {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    90% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
   :root.light .neon-border {
     border: 1px solid rgba(0, 150, 255, 0.5);
     box-shadow: 0 4px 20px rgba(0, 150, 255, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.5);
