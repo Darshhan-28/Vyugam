@@ -15,7 +15,7 @@ const eventCoordinatorsData: EventCoordinatorsGroup[] = [
   {
     event: 'Insight Arena',
     coordinators: [
-      { name: 'Priya Sharma', phone: '+91 98765 43210', event: 'Insight Arena' },
+      { name: 'K.Guru Raaj', phone: '+91 8072549057', event: 'Insight Arena' },
       { name: 'Rahul Kumar', phone: '+91 98765 43211', event: 'Insight Arena' },
       { name: 'Ananya Singh', phone: '+91 98765 43212', event: 'Insight Arena' },
       { name: 'Vikram Patel', phone: '+91 98765 43213', event: 'Insight Arena' },

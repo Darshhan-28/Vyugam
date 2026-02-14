@@ -3,26 +3,26 @@
 export default function Team() {
   const teamMembers = [
     {
-      name: 'Dr. Rajesh Kumar',
-      phone: '+91 98765 43210',
+      name: 'K.Guru Raaj',
+      phone: '+91 80725 49057',
       title: 'Event Coordinator',
       whatsapp: true,
     },
     {
-      name: 'Prof. Anita Singh',
-      phone: '+91 98765 43211',
+      name: 'M.Kabilan',
+      phone: '+91 75986 82797',
       title: 'Technical Lead',
       whatsapp: true,
     },
     {
-      name: 'Arjun Patel',
-      phone: '+91 98765 43212',
+      name: 'N.Harthika',
+      phone: '+91 63697 76459',
       title: 'Student Coordinator',
       whatsapp: true,
     },
     {
-      name: 'Priya Sharma',
-      phone: '+91 98765 43213',
+      name: 'S.Madhu Shree',
+      phone: '+91 63813 59507',
       title: 'Operations Manager',
       whatsapp: true,
     },

@@ -26,10 +26,10 @@ export default function Footer() {
         {/* Event Introduction */}
         <div className="text-center space-y-4">
           <h3 className="font-heading text-2xl md:text-3xl font-bold text-primary neon-glow">
-            VIYUGAM 2026
+            VYUGAM 2026
           </h3>
           <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-            VIYUGAM is the premier technical symposium organized by the Department of Information Technology,
+            VYUGAM is the premier technical symposium organized by the Department of Information Technology,
             bringing together innovative minds to showcase their talents and celebrate technical excellence.
           </p>
           <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
@@ -124,7 +124,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="text-center space-y-3 text-muted-foreground text-xs md:text-sm">
           <p>
-            &copy; {currentYear} VIYUGAM Technical Symposium. All rights reserved.
+            &copy; {currentYear} VYUGAM Technical Symposium. All rights reserved.
           </p>
           <p>
             Organized by Department of{' '}

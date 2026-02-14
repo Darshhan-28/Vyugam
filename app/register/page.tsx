@@ -74,7 +74,7 @@ export default function RegisterPage() {
             </Button>
           </Link>
           <h1 className="font-heading text-4xl md:text-5xl font-bold text-primary neon-glow mb-2">
-            REGISTER FOR VIYUGAM
+            REGISTER FOR VYUGAM
           </h1>
           <p className="text-muted-foreground">
             Join us for an amazing technical symposium experience

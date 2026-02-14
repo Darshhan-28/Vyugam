@@ -37,19 +37,19 @@ export default function Header() {
 
           <div className="inline-block px-4 md:px-6 py-3 neon-border-purple rounded-lg">
             <h2 className="font-heading text-3xl md:text-4xl font-black text-secondary neon-glow-purple">
-              VIYUGAM
+              VYUGAM
             </h2>
             <p className="text-xs text-secondary/80 mt-2 animate-pulse">
               ▄︻═ Strategic Vision Intelligent Innovation ═︻▄
             </p>
           </div>
 
-          {/* About VIYUGAM Section */}
+          {/* About VYUGAM Section */}
           <div className="mt-8 max-w-4xl mx-auto space-y-4">
             <div className="neon-border rounded-lg p-4 md:p-6 glassmorphism">
-              <h3 className="font-heading text-lg md:text-xl text-primary neon-glow mb-3">About VIYUGAM</h3>
+              <h3 className="font-heading text-lg md:text-xl text-primary neon-glow mb-3">About VYUGAM</h3>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                VIYUGAM is a premier technical symposium organized by the Department of Information Technology to showcase innovation, creativity, and technical excellence. It brings together students from across institutions to compete, collaborate, and celebrate technological advancement.
+                VYUGAM is a premier technical symposium organized by the Department of Information Technology to showcase innovation, creativity, and technical excellence. It brings together students from across institutions to compete, collaborate, and celebrate technological advancement.
               </p>
             </div>
 
