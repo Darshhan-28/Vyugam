@@ -76,7 +76,7 @@ const events: Event[] = [
   {
     id: 4,
     title: 'Frontend Fusion',
-    subtitle: 'UI/UX Challenge',
+    subtitle: 'AI Prompting',
     tagline: 'Design and develop stunning user interfaces with exceptional user experience in this creative challenge.', // Added tagline
     description: 'Design and develop stunning user interfaces with exceptional user experience in this creative challenge.',
     teamSize: 1,
@@ -84,7 +84,7 @@ const events: Event[] = [
       'Individual participation required',
       'Build responsive web interfaces',
       'HTML, CSS, and JavaScript allowed',
-      'Time limit: 3 hours',
+      'AI tools must be used for the development',
       'Use of frameworks like React, Vue is permitted',
       'Creativity and usability are key evaluation criteria',
     ],
@@ -104,7 +104,7 @@ const events: Event[] = [
       'Theme will be provided on the day',
       'High resolution submissions (300 DPI) required',
       'Original artwork only',
-      'Submission via email before deadline',
+      'Designing is done on the Event day',
     ],
     googleSheetScriptUrl: 'https://script.google.com/macros/s/AKfycbx8pxGgO5ErgkXXg3myukf85ZLhCsw44ed21zi1PgQ56SiVhXAOHm4N7ZBeN9G97CA-UQ/exec',
     contactPhone: '+91 91234 56789',
@@ -172,7 +172,7 @@ export default function Events() {
                 </p>
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-xs text-secondary bg-secondary/20 px-2 py-1 rounded font-bold">
-                    Team: {event.teamSize}
+                    Team Size: {event.teamSize} Members
                   </span>
                   <span className="text-primary text-lg group-hover:translate-x-1 transition-transform">→</span>
                 </div>

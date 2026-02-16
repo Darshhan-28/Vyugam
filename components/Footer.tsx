@@ -100,8 +100,8 @@ export default function Footer() {
             <div className="space-y-4 text-muted-foreground text-sm md:text-base">
               <p className="flex items-center gap-3 group/item">
                 <span className="text-secondary font-bold min-w-[80px]">Email:</span>
-                <a href="mailto:viyugam2k26@gmail.com" className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4">
-                  viyugam2k26@gmail.com
+                <a href="mailto:vyugam2k26@gmail.com" className="hover:text-primary transition-colors hover:underline decoration-primary/30 underline-offset-4">
+                  vyugam2k26@gmail.com
                 </a>
               </p>
               <p className="flex items-center gap-3">
