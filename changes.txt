@@ -1,0 +1,14 @@
+# Changes Made to Vyugam Project
+
+1. **Frontend Fusion Event (components/Events.tsx)**
+   - Changed subtitle from "UI/UX Challenge" to **"AI Prompting"**.
+   - Updated rule: Removed "Time limit: 3 hours" and added **"AI tools must be used for the development"**.
+
+2. **Canva Canvas Event (components/Events.tsx)**
+   - Updated rule: Removed "Submission via email before deadline" and added **"Designing is done on the Event day"**.
+
+3. **Contact Information (components/Footer.tsx)**
+   - Corrected contact email from "viyugam2k26@gmail.com" to **"vyugam2k26@gmail.com"**.
+
+4. **Event Display (components/Events.tsx)**
+   - Updated team size display format from "Team: X" to **"Team Size: X Members"** for all events.

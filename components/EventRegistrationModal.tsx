@@ -9,6 +9,7 @@ interface Event {
   subtitle: string
   description: string
   teamSize: number
+  minTeamSize?: number
   rules: string[]
   specialNote?: string
   googleSheetScriptUrl: string
@@ -40,7 +41,7 @@ export default function EventRegistrationModal({
     teamMembers: TeamMember[]
   }>({
     eventName: event?.title || '',
-    teamMembers: Array(event?.teamSize || 1)
+    teamMembers: Array(event?.minTeamSize || event?.teamSize || 1)
       .fill(null)
       .map(() => ({
         name: '',
@@ -63,6 +64,25 @@ export default function EventRegistrationModal({
     const newMembers = [...formData.teamMembers]
     newMembers[index] = { ...newMembers[index], [field]: value }
     setFormData({ ...formData, teamMembers: newMembers })
+  }
+
+  const handleAddMember = () => {
+    if (!event || formData.teamMembers.length >= event.teamSize) return
+
+    setFormData({
+      ...formData,
+      teamMembers: [
+        ...formData.teamMembers,
+        {
+          name: '',
+          email: '',
+          phone: '',
+          collegeName: '',
+          year: '',
+          department: '',
+        },
+      ],
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,7 +138,7 @@ export default function EventRegistrationModal({
         setStep('details')
         setFormData({
           eventName: event?.title || '',
-          teamMembers: Array(event?.teamSize || 1)
+          teamMembers: Array(event?.minTeamSize || event?.teamSize || 1)
             .fill(null)
             .map(() => ({
               name: '',
@@ -199,8 +219,8 @@ export default function EventRegistrationModal({
                 <div className="border-t border-primary/30 pt-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="neon-border rounded-lg p-4 bg-background/20">
-                      <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Max Team Size</p>
-                      <p className="text-xl font-bold text-primary neon-glow">{event.teamSize} Member{event.teamSize !== 1 ? 's' : ''}</p>
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Team Size</p>
+                      <p className="text-xl font-bold text-primary neon-glow">{event.minTeamSize ? `${event.minTeamSize} - ${event.teamSize}` : event.teamSize} Members</p>
                     </div>
                     <div className="neon-border rounded-lg p-4 bg-background/20">
                       <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-1">Event Type</p>
@@ -269,7 +289,7 @@ export default function EventRegistrationModal({
                 {formData.teamMembers.map((member, index) => (
                   <div key={index} className="border-t border-primary/30 pt-6 space-y-4">
                     <h3 className="font-heading text-lg text-primary neon-glow">
-                      {index === 0 ? 'Team Leader' : `Team Member ${index}`} Details
+                      {index === 0 ? 'Team Leader' : `Team Member ${index + 1}`} Details
                     </h3>
 
                     <div>
@@ -380,6 +400,15 @@ export default function EventRegistrationModal({
 
                 {/* Submit Buttons */}
                 <div className="flex gap-4 pt-4 border-t border-primary/30">
+                  {formData.teamMembers.length < event.teamSize && (
+                    <button
+                      type="button"
+                      onClick={handleAddMember}
+                      className="px-6 py-3 font-heading neon-border rounded-lg text-secondary hover:text-primary transition-colors font-bold uppercase text-sm"
+                    >
+                      + Add Member
+                    </button>
+                  )}
                   <button
                     type="submit"
                     disabled={isLoading}

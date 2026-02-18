@@ -11,6 +11,7 @@ interface Event {
   tagline: string // Added tagline
   description: string
   teamSize: number
+  minTeamSize?: number // Added minTeamSize
   rules: string[]
   specialNote?: string
   googleSheetScriptUrl: string
@@ -25,8 +26,9 @@ const events: Event[] = [
     tagline: 'Present your innovative research and technical insights to showcase your ideas and expertise.', // Added tagline
     description: 'Present your innovative research and technical insights to showcase your ideas and expertise.',
     teamSize: 4,
+    minTeamSize: 1,
     rules: [
-      'Teams should consist of 4 members',
+      'Teams can consist of 1 to 4 members',
       'Technical content is mandatory',
       'Presentation time: 10 minutes + 5 minutes Q&A',
       'PowerPoint or PDF presentations allowed',
@@ -172,7 +174,7 @@ export default function Events() {
                 </p>
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-xs text-secondary bg-secondary/20 px-2 py-1 rounded font-bold">
-                    Team Size: {event.teamSize} Members
+                    Team Size: {event.minTeamSize ? `${event.minTeamSize} - ${event.teamSize}` : event.teamSize} Members
                   </span>
                   <span className="text-primary text-lg group-hover:translate-x-1 transition-transform">→</span>
                 </div>
