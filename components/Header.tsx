@@ -136,7 +136,7 @@ export default function Header() {
               size="lg"
               className="font-heading bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-base font-bold uppercase tracking-wider transition-all duration-300 hover:tracking-[0.2em] hover:shadow-[0_0_30px_rgba(0,150,255,0.4)]"
             >
-              View Events & Register
+              View Events
             </Button>
           </Link>
         </div>

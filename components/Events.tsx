@@ -145,7 +145,7 @@ export default function Events() {
         </p>
 
         <p className="text-center text-red-500 font-bold mb-12 uppercase tracking-[0.2em] animate-pulse drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
-          Separate Registrations Required for Every Event
+          Registrations for Vyugam are now closed
         </p>
 
         {/* Flash Cards Grid */}

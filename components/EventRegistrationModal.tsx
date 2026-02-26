@@ -260,10 +260,10 @@ export default function EventRegistrationModal({
 
                 <div className="flex gap-4 pt-4 border-t border-primary/30">
                   <button
-                    onClick={() => setStep('register')}
-                    className="flex-1 px-6 py-3 font-heading bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors font-bold uppercase text-sm"
+                    disabled
+                    className="flex-1 px-6 py-3 font-heading bg-muted text-muted-foreground rounded-lg font-bold uppercase text-sm cursor-not-allowed"
                   >
-                    Register Now
+                    Registrations Closed
                   </button>
                   <button
                     type="button"
