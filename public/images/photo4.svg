@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="g2" x1="0" x2="1">
+      <stop offset="0%" stop-color="#C1121F" />
+      <stop offset="100%" stop-color="#7A0606" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#050505" />
+  <rect x="120" y="120" width="960" height="560" rx="12" fill="url(#g2)" opacity="0.14" />
+  <text x="50%" y="50%" fill="#FDB515" font-family="Barlow, sans-serif" font-size="64" font-weight="700" text-anchor="middle" dy="20">Event Photo 4</text>
+</svg>

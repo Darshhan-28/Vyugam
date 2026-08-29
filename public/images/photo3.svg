@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="100%" height="100%" fill="#061016" />
+  <rect x="80" y="120" width="1040" height="560" rx="18" fill="#111" stroke="#FDB515" stroke-width="6" />
+  <text x="50%" y="50%" fill="#FF4A12" font-family="Barlow, sans-serif" font-size="64" font-weight="700" text-anchor="middle" dy="20">Event Photo 3</text>
+</svg>

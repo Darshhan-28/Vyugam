@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="100%" height="100%" fill="#050505" />
+  <circle cx="600" cy="400" r="220" fill="#7A0606" opacity="0.9" />
+  <text x="50%" y="50%" fill="#FDB515" font-family="Barlow, sans-serif" font-size="64" font-weight="700" text-anchor="middle" dy="20">Event Photo 2</text>
+</svg>

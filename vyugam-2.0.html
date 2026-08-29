@@ -1,0 +1,3528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYUGAM 2.0 — Strategic Vision. Intelligent Innovation.</title>
+  <meta name="description"
+    content="VYUGAM 2.0 — National Level Technical Symposium organized by Department of Information Technology, P.A. College of Engineering and Technology, Pollachi. September 24, 2026. Free Registration.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   VYUGAM 2.0 — Design tokens & Base system
+   Obsidian/Oxblood/Ember/Marigold comic-poster system
+   ============================================================ */
+    :root {
+      --obsidian: #050505;
+      --carbon: #101010;
+      --carbon-2: #161412;
+      --oxblood: #7A0606;
+      --crimson: #C1121F;
+      --ember: #FF4A12;
+      --marigold: #FDB515;
+      --mustard: #D99A00;
+      --cream: #F5E6B8;
+      --smoke: #F2F2EA;
+      --success: #10B981;
+      --error: #EF4444;
+
+      --font-display: 'Anton', 'Archivo Black', sans-serif;
+      --font-heading: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --grain-opacity: 0.09;
+      --border-thick: 4px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--obsidian);
+      color: var(--smoke);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ---------- global print grain overlay ---------- */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      opacity: var(--grain-opacity);
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .halftone-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image: radial-gradient(circle, #000 1px, transparent 1.4px);
+      background-size: 5px 5px;
+    }
+
+    ::selection {
+      background: var(--marigold);
+      color: var(--obsidian);
+    }
+
+    /* ---------- reduced motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ============================================================
+   Top strip (accreditation / motto)
+   ============================================================ */
+    .top-strip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 501;
+      background: var(--obsidian);
+      border-bottom: 1px solid var(--oxblood);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .top-strip-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 5px 16px;
+      flex-wrap: wrap;
+    }
+
+    .motto-tag {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      color: var(--obsidian);
+      background: var(--marigold);
+      padding: 2px 10px;
+      clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+    }
+
+    .top-strip-text {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.03em;
+      color: var(--cream);
+      opacity: 0.85;
+    }
+
+    @media(max-width:640px) {
+      .top-strip-text--hide-sm {
+        display: none;
+      }
+
+      .top-strip-inner {
+        gap: 8px;
+      }
+    }
+
+    /* ============================================================
+   Sticky Nav
+   ============================================================ */
+    .nav {
+      position: fixed;
+      top: 26px;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(5, 5, 5, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--marigold);
+      transition: padding 0.3s ease, top 0.3s ease;
+    }
+
+    .nav::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ember) 0 6px, transparent 6px 14px);
+      opacity: 0.7;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      letter-spacing: 0.04em;
+      color: var(--marigold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .nav-logo .spark {
+      width: 8px;
+      height: 8px;
+      background: var(--ember);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      animation: spark-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes spark-pulse {
+
+      0%,
+      100% {
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      position: relative;
+      padding: 4px 2px;
+      transition: color 0.2s;
+    }
+
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 0;
+      height: 2px;
+      background: var(--marigold);
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--marigold);
+    }
+
+    .nav-links a:hover::before,
+    .nav-links a.active::before {
+      width: 100%;
+    }
+
+    .nav-cta {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      color: var(--obsidian);
+      background: var(--marigold);
+      border: 2px solid var(--obsidian);
+      padding: 8px 18px;
+      text-decoration: none;
+      box-shadow: 3px 3px 0 var(--crimson);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .nav-cta:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 var(--crimson);
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .nav-toggle span {
+      width: 24px;
+      height: 3px;
+      background: var(--marigold);
+      transition: transform 0.3s;
+    }
+
+    @media(max-width:880px) {
+      .nav-links {
+        position: fixed;
+        top: 83px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: var(--obsidian);
+        border-bottom: 2px solid var(--marigold);
+        padding: 18px 32px;
+        gap: 18px;
+        transform: translateY(-140%);
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+      }
+
+      .nav-links.open {
+        transform: translateY(0);
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .nav-cta {
+        display: none;
+      }
+    }
+
+    /* ============================================================
+   COLLEGE HEADER STRIP (top of hero)
+   ============================================================ */
+    .college-header {
+      position: relative;
+      z-index: 30;
+      width: 100%;
+      padding: 56px 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .header-tags {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .header-tag {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      background: var(--marigold);
+      color: var(--obsidian);
+      padding: 5px 18px;
+      clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      max-width: 950px;
+    }
+
+    .header-logo {
+      width: 84px;
+      height: 84px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 2px solid var(--marigold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 0 16px rgba(253, 181, 21, 0.45);
+      padding: 3px;
+      transition: transform 0.3s ease;
+    }
+
+    .header-logo.left-logo {
+      background: #FFFFFF;
+    }
+
+    .header-logo.right-logo {
+      background: #FFFFFF;
+    }
+
+    .header-logo:hover {
+      transform: scale(1.08);
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+
+    .header-college-name {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: clamp(1.1rem, 3.4vw, 1.8rem);
+      color: var(--smoke);
+      text-transform: uppercase;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    .header-accred {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      color: var(--cream);
+      margin-top: 6px;
+    }
+
+    .header-loc {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--marigold);
+      letter-spacing: 0.05em;
+    }
+
+    .header-loc svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .header-dept {
+      margin-top: 8px;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: var(--smoke);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-dept::before,
+    .header-dept::after {
+      content: '';
+      width: 34px;
+      height: 1px;
+      background: var(--marigold);
+    }
+
+    @media(max-width:700px) {
+      .header-row {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .college-header {
+        padding-top: 70px;
+      }
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 120% 90% at 50% 45%, var(--oxblood) 0%, var(--obsidian) 62%),
+        var(--obsidian);
+      padding-bottom: 80px;
+    }
+
+    /* radial streak tunnel */
+    .hero-streaks {
+      position: absolute;
+      inset: -10%;
+      background:
+        repeating-conic-gradient(from 0deg at 50% 45%,
+          transparent 0deg, transparent 3deg,
+          rgba(255, 74, 18, 0.09) 3.4deg, transparent 4deg,
+          transparent 9deg);
+      animation: streak-rotate 90s linear infinite;
+    }
+
+    @keyframes streak-rotate {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 45%, transparent 40%, var(--obsidian) 92%);
+      pointer-events: none;
+    }
+
+    /* golden border frame */
+    .hero-frame {
+      position: absolute;
+      inset: 14px;
+      border: var(--border-thick) solid var(--marigold);
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .hero-frame::before,
+    .hero-frame::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border: 3px solid var(--crimson);
+    }
+
+    .hero-frame::before {
+      top: -3px;
+      left: -3px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .hero-frame::after {
+      bottom: -3px;
+      right: -3px;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* starburst */
+    .starburst-wrap {
+      position: absolute;
+      left: 50%;
+      top: 56%;
+      transform: translate(-50%, -50%);
+      width: min(78vw, 780px);
+      height: min(78vw, 780px);
+      z-index: 5;
+    }
+
+    .starburst {
+      width: 100%;
+      height: 100%;
+      animation: burst-breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes burst-breathe {
+
+      0%,
+      100% {
+        transform: scale(1) rotate(0deg);
+      }
+
+      50% {
+        transform: scale(1.035) rotate(1.2deg);
+      }
+    }
+
+    /* ember particles */
+    .embers {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .ember-particle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--ember);
+      box-shadow: 0 0 8px 2px var(--ember);
+      opacity: 0;
+      animation: ember-rise linear infinite;
+    }
+
+    @keyframes ember-rise {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.6);
+      }
+
+      10% {
+        opacity: 0.9;
+      }
+
+      90% {
+        opacity: 0.5;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-420px) scale(0.2);
+      }
+    }
+
+    /* hero content */
+    .hero-content {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 24px 20px 40px;
+      max-width: 1000px;
+    }
+
+    .hero-presents {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-style: italic;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      color: var(--oxblood);
+      background: var(--marigold);
+      padding: 5px 22px;
+      margin-bottom: 6px;
+      clip-path: polygon(4% 0, 100% 0, 96% 100%, 0% 100%);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 12vw, 8.5rem);
+      line-height: 0.88;
+      letter-spacing: 0.01em;
+      color: var(--crimson);
+      -webkit-text-stroke: 3px var(--marigold);
+      text-shadow:
+        5px 5px 0 var(--obsidian),
+        9px 9px 0 rgba(0, 0, 0, 0.55),
+        0 0 40px rgba(193, 18, 31, 0.4);
+      text-transform: uppercase;
+    }
+
+    .hero-title .sub {
+      display: block;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(1.1rem, 3vw, 1.9rem);
+      letter-spacing: 0.06em;
+      color: var(--marigold);
+      -webkit-text-stroke: 0;
+      text-shadow: 2px 2px 0 var(--obsidian);
+      margin-top: 14px;
+      text-transform: uppercase;
+    }
+
+    .hero-subhead {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--cream);
+      max-width: 640px;
+      margin: 26px auto 0;
+      line-height: 1.5;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 36px;
+    }
+
+    .badge {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      background: var(--carbon);
+      color: var(--smoke);
+      border: 2px solid var(--marigold);
+      padding: 9px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 3px 3px 0 var(--oxblood);
+      transform: rotate(var(--tilt, 0deg));
+    }
+
+    .badge:nth-child(1) {
+      --tilt: -1.5deg;
+    }
+
+    .badge:nth-child(2) {
+      --tilt: 1deg;
+    }
+
+    .badge:nth-child(3) {
+      --tilt: -0.8deg;
+      border-color: var(--ember);
+      color: var(--marigold);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--ember);
+      border-radius: 50%;
+    }
+
+    /* Countdown Timer */
+    .countdown-box {
+      margin-top: 36px;
+      z-index: 30;
+      background: rgba(16, 16, 16, 0.85);
+      border: 2px solid var(--marigold);
+      padding: 16px 24px;
+      box-shadow: 5px 5px 0 var(--oxblood);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .countdown-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--marigold);
+    }
+
+    .timer-grid {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .timer-segment {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 55px;
+    }
+
+    .timer-num {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1;
+      color: var(--smoke);
+      background: var(--obsidian);
+      border: 1px solid var(--marigold);
+      padding: 4px 8px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 2px 2px 0 var(--crimson);
+    }
+
+    .timer-label {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: var(--mustard);
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 32px;
+    }
+
+    .btn-primary {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 1rem;
+      color: var(--obsidian);
+      background: var(--marigold);
+      border: 3px solid var(--obsidian);
+      padding: 16px 34px;
+      text-decoration: none;
+      position: relative;
+      box-shadow: 5px 5px 0 var(--crimson);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      animation: cta-pulse 2.6s ease-in-out infinite;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 8px 8px 0 var(--crimson);
+    }
+
+    @keyframes cta-pulse {
+
+      0%,
+      100% {
+        box-shadow: 5px 5px 0 var(--crimson), 0 0 0 rgba(253, 181, 21, 0);
+      }
+
+      50% {
+        box-shadow: 5px 5px 0 var(--crimson), 0 0 22px rgba(253, 181, 21, 0.55);
+      }
+    }
+
+    .btn-secondary {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 1rem;
+      color: var(--marigold);
+      background: transparent;
+      border: 3px solid var(--marigold);
+      padding: 16px 34px;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: var(--marigold);
+      color: var(--obsidian);
+    }
+
+    /* megaphones lower corners */
+    .megaphone {
+      position: absolute;
+      bottom: -2%;
+      width: min(30vw, 300px);
+      z-index: 15;
+      opacity: 0.92;
+      filter: drop-shadow(4px 6px 0 rgba(0, 0, 0, 0.6));
+    }
+
+    .megaphone.left {
+      left: -4%;
+      transform: rotate(18deg) scaleX(1);
+    }
+
+    .megaphone.right {
+      right: -4%;
+      transform: rotate(-18deg) scaleX(-1);
+    }
+
+    @media(max-width:700px) {
+      .megaphone {
+        width: 34vw;
+        opacity: 0.55;
+      }
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--marigold);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+    }
+
+    .scroll-cue .chevron {
+      width: 14px;
+      height: 14px;
+      border-right: 2px solid var(--marigold);
+      border-bottom: 2px solid var(--marigold);
+      transform: rotate(45deg);
+      animation: chevron-bounce 1.6s ease-in-out infinite;
+    }
+
+    @keyframes chevron-bounce {
+
+      0%,
+      100% {
+        transform: rotate(45deg) translate(0, 0);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: rotate(45deg) translate(4px, 4px);
+        opacity: 1;
+      }
+    }
+
+    /* ============================================================
+   SECTION 1 — THE SIGNAL IGNITES & ABOUT CARDS
+   ============================================================ */
+    .section {
+      position: relative;
+      padding: 110px 24px;
+    }
+
+    .section-signal {
+      background-image:
+        radial-gradient(ellipse 90% 65% at 50% 0%, rgba(122, 6, 6, 0.55) 0%, transparent 65%),
+        radial-gradient(circle at 50% 100%, rgba(253, 181, 21, 0.12) 0%, transparent 55%),
+        linear-gradient(to right, rgba(253, 181, 21, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(253, 181, 21, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      background-color: #050505;
+      overflow: hidden;
+    }
+
+    .circuit-svg {
+      position: absolute;
+      left: 50%;
+      top: -2%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 104%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .section-inner {
+      max-width: 880px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 5;
+      text-align: center;
+    }
+
+    .section-tab {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      background: var(--marigold);
+      color: var(--obsidian);
+      padding: 8px 22px;
+      clip-path: polygon(3% 0, 100% 0, 97% 100%, 0% 100%);
+      box-shadow: 4px 4px 0 var(--oxblood);
+      margin-bottom: 30px;
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      color: var(--smoke);
+      text-transform: uppercase;
+      line-height: 1.05;
+      margin-bottom: 22px;
+      text-shadow: 3px 3px 0 var(--oxblood);
+    }
+
+    .section-body {
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: var(--cream);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .section-body strong {
+      color: var(--marigold);
+      font-weight: 700;
+    }
+
+    .about-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+      text-align: left;
+    }
+
+    .about-card {
+      background: var(--carbon);
+      border: 2px solid var(--marigold);
+      padding: 26px 28px;
+      box-shadow: 6px 6px 0 var(--oxblood);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .about-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 8px 8px 0 var(--crimson);
+    }
+
+    .about-card-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--marigold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .about-card-desc {
+      font-size: 0.92rem;
+      color: var(--cream);
+      line-height: 1.65;
+    }
+
+    .node-row {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+    }
+
+    .node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      opacity: 0.35;
+      transition: opacity 0.6s ease;
+    }
+
+    .node.lit {
+      opacity: 1;
+    }
+
+    .node-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--carbon);
+      border: 2px solid var(--marigold);
+      box-shadow: 0 0 0 rgba(253, 181, 21, 0);
+      transition: box-shadow 0.6s ease, background 0.6s ease;
+    }
+
+    .node.lit .node-dot {
+      background: var(--ember);
+      box-shadow: 0 0 16px 4px rgba(255, 74, 18, 0.65);
+    }
+
+    .node-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mustard);
+    }
+
+    /* ============================================================
+   SECTION 2 — CHALLENGE ARENAS & EVENT REGISTRATION
+   ============================================================ */
+    .section-arenas {
+      background-image:
+        radial-gradient(ellipse 100% 70% at 50% 10%, rgba(122, 6, 6, 0.6) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 50% at 50% 90%, rgba(255, 74, 18, 0.22) 0%, transparent 65%),
+        linear-gradient(to right, rgba(255, 74, 18, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 74, 18, 0.035) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      background-color: #080505;
+      border-top: var(--border-thick) solid var(--marigold);
+      border-bottom: var(--border-thick) solid var(--marigold);
+    }
+
+    .arenas-head {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .arenas-announcement {
+      color: var(--success);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 14px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--success);
+      padding: 10px 20px;
+      display: inline-block;
+      border-radius: 4px;
+      animation: spark-pulse 2.2s infinite;
+    }
+
+    .arenas-grid {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 28px;
+    }
+
+    .arena-card {
+      position: relative;
+      background: var(--obsidian);
+      border: 3px solid var(--carbon-2);
+      padding: 30px 22px 26px;
+      cursor: default;
+      box-shadow: 6px 6px 0 var(--oxblood);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .arena-card:hover {
+      transform: rotate(-1deg) translate(-4px, -4px);
+      box-shadow: 10px 10px 0 var(--oxblood);
+      border-color: var(--marigold);
+    }
+
+    .arena-card:nth-child(even):hover {
+      transform: rotate(1deg) translate(-4px, -4px);
+    }
+
+    .arena-ribbon {
+      position: absolute;
+      top: -2px;
+      right: 16px;
+      background: var(--marigold);
+      color: var(--obsidian);
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px 8px;
+      clip-path: polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%);
+    }
+
+    .arena-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 20px;
+      transition: filter 0.25s ease;
+    }
+
+    .arena-card:hover .arena-icon {
+      filter: drop-shadow(0 0 8px rgba(253, 181, 21, 0.75));
+    }
+
+    .arena-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .arena-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--smoke);
+      margin-bottom: 8px;
+    }
+
+    .arena-line {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--cream);
+      min-height: 50px;
+    }
+
+    .arena-team-badge {
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--marigold);
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      background: rgba(253, 181, 21, 0.1);
+      border: 1px solid rgba(253, 181, 21, 0.3);
+      padding: 4px 8px;
+      display: inline-block;
+      border-radius: 2px;
+      width: fit-content;
+    }
+
+    .arena-reg-btn {
+      margin-top: 16px;
+      width: 100%;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      background: var(--marigold);
+      color: var(--obsidian);
+      border: 2px solid var(--obsidian);
+      padding: 10px 14px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--crimson);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .arena-reg-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--crimson);
+      background: var(--cream);
+    }
+
+    .arena-tag {
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mustard);
+    }
+
+    /* ============================================================
+   SECTION 3 — COMPETITION PATH
+   ============================================================ */
+    .section-path {
+      background-image:
+        radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255, 74, 18, 0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(122, 6, 6, 0.55) 0%, transparent 70%),
+        linear-gradient(to right, rgba(253, 181, 21, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(253, 181, 21, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
+      background-color: #050505;
+      overflow: hidden;
+    }
+
+    .path-track {
+      position: relative;
+      max-width: 1100px;
+      margin: 70px auto 0;
+      padding: 20px 0;
+    }
+
+    .path-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--marigold) 8%, var(--marigold) 92%, transparent);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .path-line::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(90deg, var(--ember) 0 4px, transparent 4px 12px);
+      opacity: 0.4;
+    }
+
+    .path-scroll {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding-bottom: 16px;
+      position: relative;
+      z-index: 2;
+      scrollbar-width: thin;
+      scrollbar-color: var(--marigold) var(--carbon);
+    }
+
+    .path-node {
+      flex: 0 0 auto;
+      width: 190px;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 14px;
+      opacity: 0.3;
+      transform: translateY(14px) scale(0.94);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .path-node.stamped {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .path-node.stamped:nth-child(odd) {
+      transform-origin: center;
+      animation: stamp-in 0.4s ease-out;
+    }
+
+    @keyframes stamp-in {
+      0% {
+        transform: scale(1.3) translateY(0);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(0.94) translateY(0);
+      }
+
+      100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .path-star {
+      width: 46px;
+      height: 46px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .path-star svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .path-node-label {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 1rem;
+      color: var(--smoke);
+      margin-bottom: 6px;
+    }
+
+    .path-node-time {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--marigold);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .path-node-desc {
+      font-size: 0.82rem;
+      color: var(--cream);
+      line-height: 1.4;
+    }
+
+    /* ============================================================
+   SECTION 4 — BUILT FOR EVERY BUILDER
+   ============================================================ */
+    .section-builders {
+      background: var(--carbon);
+      border-top: var(--border-thick) solid var(--marigold);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .builders-collage {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .float-obj {
+      position: absolute;
+      opacity: 0.16;
+      color: var(--marigold);
+    }
+
+    .builders-content {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+    }
+
+    .value-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 50px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .value-badge {
+      background: var(--obsidian);
+      border: 3px solid var(--marigold);
+      padding: 22px 30px;
+      flex: 1 1 220px;
+      max-width: 280px;
+      box-shadow: 5px 5px 0 var(--crimson);
+    }
+
+    .value-badge-icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+
+    .value-badge-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+      color: var(--marigold);
+      letter-spacing: 0.03em;
+      margin-bottom: 8px;
+    }
+
+    .value-badge-desc {
+      font-size: 0.85rem;
+      color: var(--cream);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+   NEW SECTION — PRIZES & PERKS
+   ============================================================ */
+    .section-prizes {
+      background-image:
+        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(253, 181, 21, 0.22) 0%, rgba(122, 6, 6, 0.45) 50%, transparent 80%),
+        linear-gradient(to right, rgba(253, 181, 21, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(253, 181, 21, 0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 36px 36px, 36px 36px;
+      background-color: #050505;
+      border-top: var(--border-thick) solid var(--marigold);
+      border-bottom: var(--border-thick) solid var(--marigold);
+      text-align: center;
+    }
+
+    .prizes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 26px;
+      max-width: 1100px;
+      margin: 50px auto 0;
+    }
+
+    .prize-card {
+      background: var(--carbon);
+      border: 3px solid var(--carbon-2);
+      padding: 32px 20px;
+      box-shadow: 6px 6px 0 var(--oxblood);
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .prize-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--marigold);
+      box-shadow: 8px 8px 0 var(--crimson);
+    }
+
+    .prize-icon {
+      font-size: 2.8rem;
+      margin-bottom: 14px;
+      display: inline-block;
+    }
+
+    .prize-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--marigold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .prize-desc {
+      font-size: 0.88rem;
+      color: var(--smoke);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+   SECTION 5 — VENUE BURST & GOOGLE MAPS
+   ============================================================ */
+    .section-venue {
+      background-image:
+        radial-gradient(circle at 50% 40%, rgba(255, 74, 18, 0.25) 0%, rgba(122, 6, 6, 0.5) 45%, transparent 80%),
+        linear-gradient(to right, rgba(255, 74, 18, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 74, 18, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 36px 36px, 36px 36px;
+      background-color: #060404;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 100px;
+      padding-bottom: 110px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .venue-burst-bg {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px;
+      height: 900px;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .venue-card {
+      position: relative;
+      z-index: 5;
+      max-width: 760px;
+      width: 100%;
+      background: var(--carbon-2);
+      border: 5px solid var(--marigold);
+      padding: 44px 40px;
+      text-align: center;
+      box-shadow: 8px 8px 0 var(--oxblood);
+    }
+
+    .venue-flanking {
+      display: none;
+    }
+
+    @media(min-width:900px) {
+      .venue-flanking {
+        display: block;
+        position: absolute;
+        z-index: 4;
+        width: 150px;
+        opacity: 0.8;
+        filter: drop-shadow(4px 6px 0 rgba(0, 0, 0, 0.6));
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .venue-flanking.vleft {
+        left: 4%;
+        transform: translateY(-50%) rotate(14deg);
+      }
+
+      .venue-flanking.vright {
+        right: 4%;
+        transform: translateY(-50%) rotate(-14deg) scaleX(-1);
+      }
+    }
+
+    .venue-detail-grid {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      flex-wrap: wrap;
+      margin: 30px 0;
+    }
+
+    .venue-detail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .venue-detail-icon {
+      width: 38px;
+      height: 38px;
+    }
+
+    .venue-detail-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .venue-detail-label {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--smoke);
+      text-transform: uppercase;
+    }
+
+    .venue-detail-sub {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--mustard);
+      letter-spacing: 0.08em;
+    }
+
+    .venue-sep {
+      width: 60px;
+      height: 2px;
+      background: var(--marigold);
+      margin: 24px auto;
+      opacity: 0.6;
+    }
+
+    .venue-loc {
+      font-size: 0.95rem;
+      color: var(--cream);
+      line-height: 1.6;
+    }
+
+    .venue-map-wrap {
+      margin-top: 32px;
+      border: 3px solid var(--marigold);
+      box-shadow: 6px 6px 0 var(--oxblood);
+      overflow: hidden;
+    }
+
+    /* ============================================================
+   SECTION 5B — ASSOCIATION MEMBERS
+   ============================================================ */
+    .section-members {
+      background:
+        radial-gradient(ellipse 90% 60% at 50% 30%, rgba(122, 6, 6, 0.4) 0%, rgba(253, 181, 21, 0.08) 60%, transparent 80%),
+        #080606;
+      border-top: var(--border-thick) solid var(--marigold);
+      border-bottom: var(--border-thick) solid var(--marigold);
+    }
+
+    .members-grid {
+      max-width: 1080px;
+      margin: 60px auto 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 30px;
+    }
+
+    .member-card {
+      background: var(--obsidian);
+      border: 3px solid var(--carbon-2);
+      padding: 26px 20px 22px;
+      text-align: center;
+      box-shadow: 6px 6px 0 var(--oxblood);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .member-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 9px 9px 0 var(--oxblood);
+      border-color: var(--marigold);
+    }
+
+    .member-avatar {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 18px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 50%;
+      border: 3px solid rgba(253, 181, 21, 0.12);
+    }
+
+    .member-avatar svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55));
+    }
+
+    .member-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
+    .member-role-tag {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      background: var(--marigold);
+      color: var(--obsidian);
+      padding: 4px 12px;
+      margin-bottom: 12px;
+      clip-path: polygon(4% 0, 100% 0, 96% 100%, 0% 100%);
+    }
+
+    .member-name {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      color: var(--smoke);
+      letter-spacing: 0.01em;
+      margin-bottom: 6px;
+    }
+
+    .member-contact {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--mustard);
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .member-contact:hover {
+      color: var(--marigold);
+      text-decoration: underline;
+    }
+
+    /* ============================================================
+   SECTION 6 — REGISTER FREE & REGISTRATION FORM
+   ============================================================ */
+    .section-register {
+      background:
+        radial-gradient(circle at 50% 40%, rgba(253, 181, 21, 0.14) 0%, transparent 55%),
+        var(--carbon);
+      border-top: var(--border-thick) solid var(--marigold);
+      border-bottom: var(--border-thick) solid var(--marigold);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .register-burst {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      opacity: 0.22;
+      z-index: 0;
+      animation: burst-breathe 8s ease-in-out infinite;
+    }
+
+    .register-panel {
+      position: relative;
+      z-index: 5;
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--obsidian);
+      border: 4px solid var(--marigold);
+      padding: 44px 32px;
+      text-align: left;
+      box-shadow: 8px 8px 0 var(--crimson);
+    }
+
+    .register-panel-head {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    /* Registration Form styling */
+    .reg-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media(max-width:600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--marigold);
+    }
+
+    .form-control {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      background: var(--carbon);
+      color: var(--smoke);
+      border: 2px solid var(--carbon-2);
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--marigold);
+      box-shadow: 0 0 8px rgba(253, 181, 21, 0.3);
+    }
+
+    .form-control.invalid {
+      border-color: var(--error);
+    }
+
+    select.form-control {
+      cursor: pointer;
+    }
+
+    select.form-control option {
+      background: var(--carbon);
+      color: var(--smoke);
+    }
+
+    .form-error-msg {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--error);
+      display: none;
+    }
+
+    .form-error-msg.visible {
+      display: block;
+    }
+
+    .form-submit-btn {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      letter-spacing: 0.05em;
+      color: var(--obsidian);
+      background: var(--marigold);
+      padding: 16px 36px;
+      text-transform: uppercase;
+      border: 3px solid var(--obsidian);
+      box-shadow: 5px 5px 0 var(--crimson);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      width: 100%;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-submit-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 var(--crimson);
+    }
+
+    .form-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Success Ticket Card */
+    .reg-success-card {
+      display: none;
+      text-align: center;
+      padding: 30px 20px;
+      border: 3px dashed var(--marigold);
+      background: rgba(16, 16, 16, 0.9);
+      animation: pop-in 0.4s ease-out;
+    }
+
+    @keyframes pop-in {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .reg-success-card.active {
+      display: block;
+    }
+
+    .success-badge {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--marigold);
+      color: var(--obsidian);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 20px rgba(253, 181, 21, 0.6);
+    }
+
+    .success-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--marigold);
+      margin-bottom: 8px;
+    }
+
+    .success-body {
+      font-size: 0.95rem;
+      color: var(--smoke);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .ticket-details {
+      background: var(--obsidian);
+      border: 1px solid var(--marigold);
+      padding: 16px;
+      text-align: left;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cream);
+    }
+
+    .ticket-details div {
+      margin-bottom: 6px;
+    }
+
+    .ticket-details strong {
+      color: var(--marigold);
+    }
+
+    /* Setup Notice Banner */
+    .script-notice {
+      background: rgba(217, 154, 0, 0.15);
+      border: 1px solid var(--mustard);
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--cream);
+      margin-bottom: 20px;
+      border-radius: 2px;
+      line-height: 1.4;
+    }
+
+    /* ============================================================
+   SECTION 7 — PING US (FOOTER & SOCIALS)
+   ============================================================ */
+    .footer {
+      background: var(--obsidian);
+      border-top: var(--border-thick) solid var(--marigold);
+      padding: 80px 24px 40px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+      text-align: left;
+    }
+
+    .contact-chip {
+      background: var(--carbon);
+      border: 2px solid var(--mustard);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .contact-chip:hover {
+      border-color: var(--marigold);
+      transform: translateY(-2px);
+    }
+
+    .contact-chip-label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--marigold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .contact-chip-label::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--ember);
+      border-radius: 50%;
+    }
+
+    .contact-chip-value {
+      font-family: var(--font-body);
+      font-weight: 600;
+      color: var(--smoke);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-quote {
+      margin: 42px 0 24px;
+      text-align: center;
+      padding: 18px;
+      border-top: 1px solid rgba(253, 181, 21, 0.2);
+      border-bottom: 1px solid rgba(253, 181, 21, 0.2);
+    }
+
+    .quote-text {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--marigold);
+      letter-spacing: 0.02em;
+    }
+
+    .quote-author {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--mustard);
+      text-transform: uppercase;
+      margin-top: 6px;
+      letter-spacing: 0.1em;
+    }
+
+    .social-chips {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .social-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--carbon);
+      border: 2px solid var(--marigold);
+      padding: 12px 20px;
+      color: var(--cream);
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0 var(--oxblood);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .social-chip:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 var(--crimson);
+      background: var(--marigold);
+      color: var(--obsidian);
+    }
+
+    .footer-closing {
+      margin-top: 48px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      letter-spacing: 0.02em;
+      color: var(--marigold);
+      text-transform: uppercase;
+    }
+
+    .footer-legal {
+      margin-top: 30px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--mustard);
+      opacity: 0.6;
+      letter-spacing: 0.05em;
+    }
+
+    /* Floating Elements: Back-to-Top & Floating Reg Pill */
+    .floating-actions {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .floating-reg-btn {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--marigold);
+      color: var(--obsidian);
+      padding: 12px 20px;
+      border: 2px solid var(--obsidian);
+      box-shadow: 4px 4px 0 var(--crimson);
+      text-decoration: none;
+      display: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .floating-reg-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--crimson);
+    }
+
+    .floating-reg-btn.visible {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-to-top {
+      width: 44px;
+      height: 44px;
+      background: var(--carbon);
+      color: var(--marigold);
+      border: 2px solid var(--marigold);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 3px 3px 0 var(--oxblood);
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .back-to-top:hover {
+      background: var(--marigold);
+      color: var(--obsidian);
+      transform: translateY(-3px);
+    }
+
+    .back-to-top.visible {
+      display: flex;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--obsidian);
+      border: 2px solid var(--marigold);
+      padding: 12px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--smoke);
+      box-shadow: 4px 4px 0 var(--oxblood);
+      animation: toast-in 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.success {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .toast.error {
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    @keyframes toast-in {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ---------- shared reveal utility ---------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 3D gallery styles for static page */
+    .gallery-grid {
+      perspective: 1200px;
+      perspective-origin: 50% 40%;
+    }
+
+    .gallery-grid .gallery-thumb {
+      border-radius: 6px;
+      transition: transform 350ms cubic-bezier(.2, .9, .3, 1), box-shadow 300ms;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+
+    .gallery-grid .gallery-thumb:hover {
+      transform: translateY(-8px) rotateX(4deg) rotateY(-6deg) translateZ(8px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    #galleryModal {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="halftone-overlay"></div>
+
+  <!-- ============ TOP STRIP ============ -->
+  <div class="top-strip">
+    <div class="top-strip-inner">
+      <span class="motto-tag">Learn</span>
+      <span class="top-strip-text">An Autonomous Institution &middot; Accredited by NBA &amp; NAAC with 'A' Grade</span>
+      <span class="motto-tag">Work</span>
+      <span class="top-strip-text top-strip-text--hide-sm">Pollachi, Coimbatore &ndash; 642002</span>
+      <span class="motto-tag">Succeed</span>
+    </div>
+  </div>
+
+  <!-- ============ NAV ============ -->
+  <nav class="nav">
+    <a href="#hero" class="nav-logo"><span class="spark"></span>VYUGAM 2.0</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#signal">About</a></li>
+      <li><a href="#arenas">Events</a></li>
+      <li><a href="#path">Schedule</a></li>
+      <li><a href="#prizes">Prizes</a></li>
+      <li><a href="#venue">Venue</a></li>
+      <li><a href="#register">Register</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#register" class="nav-cta">Register Free</a>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="hero">
+    <div class="hero-streaks"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-frame"></div>
+
+    <!-- College header strip -->
+    <div class="college-header">
+      <div class="header-tags">
+        <span class="header-tag">Learn</span>
+        <span class="header-tag">Work</span>
+        <span class="header-tag">Succeed</span>
+      </div>
+      <div class="header-row">
+        <div class="header-logo left-logo">
+          <img src="pacet-logo-nobg.png" alt="P.A. College of Engineering and Technology Logo">
+        </div>
+        <div>
+          <div class="header-college-name">P.A. College of Engineering<br>and Technology</div>
+          <div class="header-accred">An Autonomous Institution (Accredited by NBA and NAAC with 'A' Grade)</div>
+        </div>
+        <div class="header-logo right-logo">
+          <img src="it-dept-logo.png" alt="Department of Information Technology Logo">
+        </div>
+      </div>
+      <div class="header-loc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FDB515" stroke-width="2">
+          <path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z" />
+          <circle cx="12" cy="9" r="2.5" />
+        </svg>
+        Pollachi, Coimbatore &ndash; 642002
+      </div>
+      <div class="header-dept">Department of Information Technology</div>
+    </div>
+
+    <!-- Starburst SVG -->
+    <div class="starburst-wrap">
+      <svg class="starburst" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="burstGrad" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#FDB515" />
+            <stop offset="55%" stop-color="#FF4A12" />
+            <stop offset="100%" stop-color="#C1121F" />
+          </radialGradient>
+        </defs>
+        <polygon
+          points="300,10 330,180 460,70 380,220 580,210 400,290 560,400 370,350 420,540 300,380 180,540 230,350 40,400 200,290 20,210 220,220 140,70 270,180"
+          fill="url(#burstGrad)" stroke="#050505" stroke-width="6" stroke-linejoin="round" />
+        <polygon
+          points="300,80 320,200 410,120 355,240 500,235 370,290 480,370 340,335 375,470 300,350 225,470 260,335 120,370 230,290 100,235 245,240 190,120 280,200"
+          fill="none" stroke="#F5E6B8" stroke-width="2" opacity="0.5" />
+      </svg>
+    </div>
+
+    <!-- ember particles injected by JS -->
+    <div class="embers" id="embers"></div>
+
+    <!-- Megaphones -->
+    <svg class="megaphone left" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 70 L70 40 L70 120 L10 90 Z" fill="#C1121F" stroke="#050505" stroke-width="4" />
+      <path d="M70 40 L150 10 L150 150 L70 120 Z" fill="#7A0606" stroke="#050505" stroke-width="4" />
+      <rect x="0" y="72" width="14" height="16" fill="#101010" />
+      <g stroke="#FDB515" stroke-width="3" opacity="0.85">
+        <path d="M155 45 L185 25" />
+        <path d="M160 70 L195 65" />
+        <path d="M155 115 L185 130" />
+      </g>
+    </svg>
+    <svg class="megaphone right" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 70 L70 40 L70 120 L10 90 Z" fill="#C1121F" stroke="#050505" stroke-width="4" />
+      <path d="M70 40 L150 10 L150 150 L70 120 Z" fill="#7A0606" stroke="#050505" stroke-width="4" />
+      <rect x="0" y="72" width="14" height="16" fill="#101010" />
+      <g stroke="#FDB515" stroke-width="3" opacity="0.85">
+        <path d="M155 45 L185 25" />
+        <path d="M160 70 L195 65" />
+        <path d="M155 115 L185 130" />
+      </g>
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-presents">Presents</div>
+      <h1 class="hero-title">VYUGAM 2.0
+        <span class="sub">Strategic Vision. Intelligent Innovation.</span>
+      </h1>
+      <p class="hero-subhead">A national-level technical symposium where code, logic, design, tactics, and ideas
+        collide.</p>
+
+      <div class="hero-badges">
+        <div class="badge"><span class="badge-dot"></span>24 September 2026</div>
+        <div class="badge"><span class="badge-dot"></span>IT Seminar Hall</div>
+        <div class="badge"><span class="badge-dot"></span>Free Registration</div>
+      </div>
+
+      <!-- Countdown Timer -->
+      <div class="countdown-box">
+        <div class="countdown-title">⚡ Event Countdown</div>
+        <div class="timer-grid">
+          <div class="timer-segment">
+            <div class="timer-num" id="days">00</div>
+            <div class="timer-label">Days</div>
+          </div>
+          <div class="timer-segment">
+            <div class="timer-num" id="hours">00</div>
+            <div class="timer-label">Hours</div>
+          </div>
+          <div class="timer-segment">
+            <div class="timer-num" id="minutes">00</div>
+            <div class="timer-label">Mins</div>
+          </div>
+          <div class="timer-segment">
+            <div class="timer-num" id="seconds">00</div>
+            <div class="timer-label">Secs</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-ctas">
+        <a href="#register" class="btn-primary" id="registerHeroBtn">Register Free</a>
+        <a href="#arenas" class="btn-secondary">Explore Events</a>
+      </div>
+    </div>
+
+    <div class="scroll-cue"><span>SCROLL</span><span class="chevron"></span></div>
+  </header>
+
+  <!-- ============ SECTION 1: THE SIGNAL IGNITES & ABOUT ============ -->
+  <section class="section section-signal" id="signal">
+    <div class="section-inner">
+      <span class="section-tab">The Signal Ignites</span>
+      <h2 class="section-heading">One Day. Every Discipline. One Arena.</h2>
+      <p class="section-body">
+        VYUGAM 2.0 is a one-day arena built for <strong>builders, problem-solvers, designers, and presenters.</strong>
+        Five challenge tracks. One relentless clock. Students arrive with half-finished ideas and leave with
+        finished momentum — sharper skills, sharper teams, and a result they can point to.
+        This isn't a seminar to sit through. It's a signal to answer.
+      </p>
+
+      <!-- About Cards -->
+      <div class="about-cards-grid reveal">
+        <div class="about-card">
+          <h3 class="about-card-title">💡 About VYUGAM 2.0</h3>
+          <p class="about-card-desc">VYUGAM 2.0 is a premier technical symposium organized by the Department of
+            Information Technology to showcase innovation, creativity, and technical excellence. It brings together
+            students from across institutions to compete, collaborate, and celebrate technological advancement.</p>
+        </div>
+        <div class="about-card">
+          <h3 class="about-card-title">🚀 About IT Department</h3>
+          <p class="about-card-desc">The Department of Information Technology at P.A. College of Engineering and
+            Technology is committed to fostering technical expertise and innovation. We provide a platform for students
+            to develop cutting-edge solutions and build industry-ready skills through practical hands-on experiences.
+          </p>
+        </div>
+      </div>
+
+      <div class="node-row" id="nodeRow">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-label">Compete</div>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-label">Collaborate</div>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-label">Build</div>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-label">Ship</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2: CHALLENGE ARENAS & SEPARATE EVENT REGISTRATIONS ============ -->
+  <section class="section section-arenas" id="arenas">
+    <div class="arenas-head reveal">
+      <span class="section-tab">Challenge Arenas</span>
+      <h2 class="section-heading">Five Tracks. Pick Your Fight.</h2>
+      <div class="arenas-announcement">
+        ⚡ Registrations for Vyugam 2.0 are Open! Select an event below to register
+      </div>
+    </div>
+
+    <div class="arenas-grid">
+      <!-- 1. Code Crusade -->
+      <div class="arena-card reveal">
+        <span class="arena-ribbon">Coding</span>
+        <div class="arena-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+            <path d="M16 14 L6 24 L16 34" />
+            <path d="M32 14 L42 24 L32 34" />
+            <path d="M28 10 L20 38" />
+          </svg></div>
+        <div>
+          <h3 class="arena-title">Code Crusade</h3>
+          <p class="arena-line">Solve complex algorithmic problems and beat the clock. Ship the smartest solution.</p>
+          <div class="arena-team-badge">👥 Team Size: 1 Member</div>
+        </div>
+        <div>
+          <button class="arena-reg-btn" onclick="selectEventRegistration('Code Crusade (Coding Challenge)', 1)">Register
+            for Event &rarr;</button>
+          <div class="arena-tag">// Coding Challenge</div>
+        </div>
+      </div>
+
+      <!-- 2. Logic Arena -->
+      <div class="arena-card reveal">
+        <span class="arena-ribbon">Quiz</span>
+        <div class="arena-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+            <circle cx="24" cy="24" r="17" />
+            <path d="M18 19c0-4 4-6 6-6s6 2 6 6c0 4-6 5-6 9" stroke-linecap="round" />
+            <circle cx="24" cy="33" r="1.5" fill="#FDB515" />
+          </svg></div>
+        <div>
+          <h3 class="arena-title">Logic Arena</h3>
+          <p class="arena-line">Test your logical reasoning and technical knowledge in an exciting quiz competition.</p>
+          <div class="arena-team-badge">👤 Team Size: 1 Member</div>
+        </div>
+        <div>
+          <button class="arena-reg-btn" onclick="selectEventRegistration('Logic Arena (Quiz Competition)', 1)">Register
+            for Event &rarr;</button>
+          <div class="arena-tag">// Quiz Competition</div>
+        </div>
+      </div>
+
+      <!-- 3. UI/UX Studio -->
+      <div class="arena-card reveal">
+        <span class="arena-ribbon">Design</span>
+        <div class="arena-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+            <rect x="8" y="10" width="32" height="22" rx="2" />
+            <path d="M8 26 L18 18 L26 24 L40 12" />
+            <circle cx="24" cy="40" r="2" fill="#FDB515" />
+          </svg></div>
+        <div>
+          <h3 class="arena-title">UI/UX Studio</h3>
+          <p class="arena-line">Design stunning user interfaces with exceptional user experience in this creative
+            challenge.</p>
+          <div class="arena-team-badge">👥 Team Size: 1 Member</div>
+        </div>
+        <div>
+          <button class="arena-reg-btn" onclick="selectEventRegistration('UI/UX Studio (Design Challenge)', 1)">Register
+            for Event &rarr;</button>
+          <div class="arena-tag">// Design Challenge</div>
+        </div>
+      </div>
+
+      <!-- 4. Tech Tactics -->
+      <div class="arena-card reveal">
+        <span class="arena-ribbon">Paper</span>
+        <div class="arena-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+            <rect x="12" y="6" width="24" height="36" rx="1" />
+            <path d="M18 16h12M18 22h12M18 28h8" stroke-linecap="round" />
+          </svg></div>
+        <div>
+          <h3 class="arena-title">Tech Tactics</h3>
+          <p class="arena-line">Present your innovative research and technical insights to showcase your ideas and
+            expertise.</p>
+          <div class="arena-team-badge">👥 Team Size: 1 - 4 Members</div>
+        </div>
+        <div>
+          <button class="arena-reg-btn"
+            onclick="selectEventRegistration('Tech Tactics (Paper Presentation)', 4)">Register for Event &rarr;</button>
+          <div class="arena-tag">// Paper Presentation</div>
+        </div>
+      </div>
+
+      <!-- 5. Pixel Pulse -->
+      <div class="arena-card reveal">
+        <span class="arena-ribbon">Poster</span>
+        <div class="arena-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+            <rect x="10" y="8" width="28" height="32" rx="1" />
+            <circle cx="18" cy="18" r="3" />
+            <path d="M12 32l8-8 6 6 10-10 v14 h-24z" stroke-linejoin="round" />
+          </svg></div>
+        <div>
+          <h3 class="arena-title">Pixel Pulse</h3>
+          <p class="arena-line">Create visually stunning and creative posters that convey messages effectively.</p>
+          <div class="arena-team-badge">👥 Team Size: 1 Member</div>
+        </div>
+        <div>
+          <button class="arena-reg-btn" onclick="selectEventRegistration('Pixel Pulse (Poster Design)', 1)">Register for
+            Event &rarr;</button>
+          <div class="arena-tag">// Poster Design</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 3: COMPETITION PATH ============ -->
+  <section class="section section-path" id="path">
+    <div class="section-inner reveal">
+      <span class="section-tab">Competition Path</span>
+      <h2 class="section-heading">How The Day Unfolds</h2>
+    </div>
+
+    <div class="path-track">
+      <div class="path-line"></div>
+      <div class="path-scroll" id="pathScroll">
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Arrival</div>
+          <div class="path-node-time">08:30 AM</div>
+          <div class="path-node-desc">Gates open. Squads assemble.</div>
+        </div>
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Check-In</div>
+          <div class="path-node-time">09:00 AM</div>
+          <div class="path-node-desc">Badges out. Track assignments locked.</div>
+        </div>
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Prelims</div>
+          <div class="path-node-time">09:30 AM</div>
+          <div class="path-node-desc">First cut. Prove you belong here.</div>
+        </div>
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Finalist Stage</div>
+          <div class="path-node-time">12:00 PM</div>
+          <div class="path-node-desc">Top squads. Full pressure. Full focus.</div>
+        </div>
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Showcase</div>
+          <div class="path-node-time">02:30 PM</div>
+          <div class="path-node-desc">Work goes on display for all.</div>
+        </div>
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Results</div>
+          <div class="path-node-time">04:00 PM</div>
+          <div class="path-node-desc">Winners named. Tension breaks.</div>
+        </div>
+        <div class="path-node">
+          <div class="path-star"><svg viewBox="0 0 48 48">
+              <polygon points="24,2 29,18 46,18 32,28 37,44 24,34 11,44 16,28 2,18 19,18" fill="#FDB515"
+                stroke="#050505" stroke-width="2" />
+            </svg></div>
+          <div class="path-node-label">Closing Blast</div>
+          <div class="path-node-time">04:30 PM</div>
+          <div class="path-node-desc">One last spark before the arena empties.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 4: BUILT FOR EVERY BUILDER ============ -->
+  <section class="section section-builders" id="builders">
+    <div class="builders-collage" aria-hidden="true">
+      <div class="float-obj" data-speed="0.3" style="top:12%; left:8%; font-size:2.4rem;">&lt;/&gt;</div>
+      <div class="float-obj" data-speed="0.5" style="top:70%; left:12%; font-size:2rem;">&#9679;&#9679;&#9679;</div>
+      <div class="float-obj" data-speed="0.2" style="top:20%; right:10%; font-size:2.2rem;">&#128161;</div>
+      <div class="float-obj" data-speed="0.45" style="top:65%; right:14%; font-size:2rem;">&#9670;</div>
+      <div class="float-obj" data-speed="0.35" style="top:40%; left:4%; font-size:1.8rem;">&#128227;</div>
+      <div class="float-obj" data-speed="0.25" style="top:45%; right:4%; font-size:1.8rem;">&#9998;</div>
+    </div>
+    <div class="builders-content">
+      <div class="reveal">
+        <span class="section-tab">Built For Every Builder</span>
+        <h2 class="section-heading">Coders. Strategists. Designers. First-Timers.</h2>
+        <p class="section-body">Every track needs a different mind. Whether you ship code, sketch interfaces,
+          argue ideas, or you're just curious what a symposium floor feels like — there's a seat in the arena for you.
+        </p>
+      </div>
+
+      <div class="value-badges">
+        <div class="value-badge reveal">
+          <div class="value-badge-icon">&#9889;</div>
+          <div class="value-badge-title">Compete Boldly</div>
+          <div class="value-badge-desc">Five arenas, real stakes, real prizes. Show up to win, not just watch.</div>
+        </div>
+        <div class="value-badge reveal">
+          <div class="value-badge-icon">&#129504;</div>
+          <div class="value-badge-title">Think Sharper</div>
+          <div class="value-badge-desc">Every round pushes your instincts further than a classroom ever will.</div>
+        </div>
+        <div class="value-badge reveal">
+          <div class="value-badge-icon">&#129309;</div>
+          <div class="value-badge-title">Meet Your Tribe</div>
+          <div class="value-badge-desc">Builders from every campus, all speaking the same language: ship it.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEW SECTION: PRIZES & PERKS ============ -->
+  <section class="section section-prizes" id="prizes">
+    <div class="section-inner reveal">
+      <span class="section-tab">Rewards &amp; Glory</span>
+      <h2 class="section-heading">What You Win &amp; What You Get</h2>
+      <p class="section-body">More than just trophies — walk away with recognition, networking, and awesome perks.</p>
+    </div>
+
+    <div class="prizes-grid">
+      <div class="prize-card reveal">
+        <div class="prize-icon">🏆</div>
+        <h3 class="prize-title">Cash &amp; Trophies</h3>
+        <p class="prize-desc">Exciting cash awards and championship trophies for top performers in each arena.</p>
+      </div>
+      <div class="prize-card reveal">
+        <div class="prize-icon">📜</div>
+        <h3 class="prize-title">Certificates</h3>
+        <p class="prize-desc">Official Certificate of Merit for winners and Certificate of Participation for all active
+          participants.</p>
+      </div>
+      <div class="prize-card reveal">
+        <div class="prize-icon">🍱</div>
+        <h3 class="prize-title">Food &amp; Drinks</h3>
+        <p class="prize-desc">Delicious complimentary lunch and high-energy refreshment sessions provided to all
+          delegates.</p>
+      </div>
+      <div class="prize-card reveal">
+        <div class="prize-icon">🚀</div>
+        <h3 class="prize-title">Zero Entry Fee</h3>
+        <p class="prize-desc">100% Free Registration for all college students across all tracks and events.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 5: VENUE BURST & GOOGLE MAPS ============ -->
+  <section class="section section-venue" id="venue">
+    <svg class="venue-burst-bg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+      <polygon
+        points="300,10 330,180 460,70 380,220 580,210 400,290 560,400 370,350 420,540 300,380 180,540 230,350 40,400 200,290 20,210 220,220 140,70 270,180"
+        fill="#FDB515" opacity="0.5" />
+    </svg>
+
+    <svg class="venue-flanking vleft" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 70 L70 40 L70 120 L10 90 Z" fill="#C1121F" stroke="#050505" stroke-width="4" />
+      <path d="M70 40 L150 10 L150 150 L70 120 Z" fill="#7A0606" stroke="#050505" stroke-width="4" />
+    </svg>
+    <svg class="venue-flanking vright" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 70 L70 40 L70 120 L10 90 Z" fill="#C1121F" stroke="#050505" stroke-width="4" />
+      <path d="M70 40 L150 10 L150 150 L70 120 Z" fill="#7A0606" stroke="#050505" stroke-width="4" />
+    </svg>
+
+    <div class="venue-card reveal" id="venueCard">
+      <span class="section-tab">Venue Burst</span>
+      <h2 class="section-heading" style="font-size:clamp(1.6rem,4vw,2.2rem);">The Arena Is Set</h2>
+
+      <div class="venue-detail-grid">
+        <div class="venue-detail">
+          <div class="venue-detail-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+              <rect x="8" y="10" width="32" height="30" rx="2" />
+              <path d="M8 18h32M16 6v8M32 6v8" />
+            </svg></div>
+          <div class="venue-detail-label">24-09-2026</div>
+          <div class="venue-detail-sub">9:00 AM - 5:00 PM</div>
+        </div>
+        <div class="venue-detail" id="venuePin">
+          <div class="venue-detail-icon"><svg viewBox="0 0 48 48" fill="none" stroke="#FDB515" stroke-width="2.5">
+              <path d="M24 4c-8 0-14 6-14 14 0 10 14 26 14 26s14-16 14-26c0-8-6-14-14-14z" />
+              <circle cx="24" cy="18" r="5" />
+            </svg></div>
+          <div class="venue-detail-label">IT Department Block</div>
+          <div class="venue-detail-sub">Main Campus</div>
+        </div>
+      </div>
+
+      <div class="venue-sep"></div>
+      <p class="venue-loc">P.A. College of Engineering and Technology, Pollachi, Coimbatore &ndash; 642002.<br>
+        Easily reachable from Coimbatore city and Pollachi bus stand — parking available on campus.</p>
+
+      <!-- Google Maps Embed -->
+      <div class="venue-map-wrap">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.7109784687345!2d77.0311864751889!3d10.679527289463385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba8379603118171%3A0xaabce92d2cdd4e50!2sP.%20A.%20College%20of%20Engineering%20and%20Technology%20(Autonomous)%2C%20Pollachi%2C%20Coimbatore!5e0!3m2!1sen!2sin!4v1770970402480!5m2!1sen!2sin"
+          width="100%" height="340" style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+  </section>
+
+  <!-- ============ SECTION: GALLERY ============ -->
+  <section class="section section-gallery" id="gallery">
+    <div class="section-inner reveal">
+      <span class="section-tab">Gallery</span>
+      <h2 class="section-heading">Event Photos</h2>
+      <p class="section-body">Moments captured from our events — click any photo to enlarge.</p>
+    </div>
+
+    <div class="gallery-grid"
+      style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:12px; padding:24px 18px; max-width:1100px; margin:0 auto;">
+      <!-- Local images placed in public/images/ -->
+      <img class="gallery-thumb" src="/images/image.png" alt="Event photo 1"
+        style="width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:6px;" />
+      <img class="gallery-thumb" src="/images/image2.jpeg" alt="Event photo 2"
+        style="width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:6px;" />
+      <img class="gallery-thumb" src="/images/image3.jpeg" alt="Event photo 3"
+        style="width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:6px;" />
+      <img class="gallery-thumb" src="/images/image4.jpeg" alt="Event photo 4"
+        style="width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:6px;" />
+      <img class="gallery-thumb" src="/images/image5.png" alt="Event photo 5"
+        style="width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:6px;" />
+      <img class="gallery-thumb" src="/images/photo2.svg" alt="Event photo 6"
+        style="width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:6px;" />
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="galleryModal"
+      style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+      <img id="galleryModalImg" src="" alt="Expanded"
+        style="max-width:95%; max-height:95%; border-radius:8px; box-shadow:0 12px 40px rgba(0,0,0,0.7);" />
+    </div>
+  </section>
+
+  <!-- ============ SECTION 5B: ASSOCIATION MEMBERS ============ -->
+  <section class="section section-members" id="members">
+    <div class="section-inner reveal">
+      <span class="section-tab">The Team Behind It</span>
+      <h2 class="section-heading">IT Association Office-Bearers</h2>
+      <p class="section-body">The students steering VYUGAM 2.0 from paperwork to closing blast.</p>
+    </div>
+
+    <div class="members-grid">
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="/images/abhilash.jpeg" alt="Mr. H. Abhilash" />
+        </div>
+        <span class="member-role-tag">Secretary</span>
+        <div class="member-name">Mr. H. Abhilash</div>
+        <a href="tel:7558108034" class="member-contact">📞 7558108034</a>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="/images/arundhathi.jpeg" alt="Ms. C. Arundhathi" />
+        </div>
+        <span class="member-role-tag">Joint Secretary</span>
+        <div class="member-name">Ms. C. Arundhathi</div>
+        <a href="tel:8667718766" class="member-contact">📞 8667718766</a>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="/images/rubeswari.jpeg" alt="Ms. M. Rubeswari" />
+        </div>
+        <span class="member-role-tag">Additional Secretary</span>
+        <div class="member-name">Ms. M. Rubeswari</div>
+        <a href="tel:8144055431" class="member-contact">📞 8144055431</a>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="/images/vishnuprasad.jpeg" alt="Mr. H. Vishnuprasad" />
+        </div>
+        <span class="member-role-tag">Treasurer</span>
+        <div class="member-name">Mr. H. Vishnuprasad</div>
+        <a href="tel:9360438970" class="member-contact">📞 9360438970</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 6: REGISTER FREE ============ -->
+  <section class="section section-register" id="register">
+    <svg class="register-burst" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+      <polygon
+        points="300,10 330,180 460,70 380,220 580,210 400,290 560,400 370,350 420,540 300,380 180,540 230,350 40,400 200,290 20,210 220,220 140,70 270,180"
+        fill="#FDB515" />
+    </svg>
+
+    <div class="register-panel reveal">
+      <div class="register-panel-head">
+        <span class="section-tab">Register Free</span>
+        <h2 class="section-heading" style="font-size:clamp(1.8rem,5vw,2.6rem);">Claim Your Spot In The Arena</h2>
+        <p class="section-body">No entry fee. No catch. Fill out your details to secure your ticket.</p>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="registrationForm" class="reg-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regName">Full Name *</label>
+            <input type="text" id="regName" name="name" class="form-control" placeholder="e.g. John Doe" required>
+            <div class="form-error-msg" id="nameError">Please enter your name</div>
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Email Address *</label>
+            <input type="email" id="regEmail" name="email" class="form-control" placeholder="e.g. john@college.edu"
+              required>
+            <div class="form-error-msg" id="emailError">Please enter a valid email</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regPhone">Phone Number *</label>
+            <input type="tel" id="regPhone" name="phone" class="form-control" placeholder="10-digit Mobile Number"
+              required pattern="[0-9]{10}">
+            <div class="form-error-msg" id="phoneError">Please enter valid 10-digit phone number</div>
+          </div>
+          <div class="form-group">
+            <label for="regCollege">College / Institution *</label>
+            <input type="text" id="regCollege" name="college" class="form-control" placeholder="Your College Name"
+              required>
+            <div class="form-error-msg" id="collegeError">Please enter your college name</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regYear">Year of Study *</label>
+            <select id="regYear" name="year" class="form-control" required>
+              <option value="">-- Select Year --</option>
+              <option value="I Year">I Year</option>
+              <option value="II Year">II Year</option>
+              <option value="III Year">III Year</option>
+              <option value="IV Year">IV Year</option>
+            </select>
+            <div class="form-error-msg" id="yearError">Please select your year of study</div>
+          </div>
+          <div class="form-group">
+            <label for="regDept">Department / Branch *</label>
+            <input type="text" id="regDept" name="dept" class="form-control" placeholder="e.g. IT, CSE, ECE" required>
+            <div class="form-error-msg" id="deptError">Please enter your department</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regEvent">Event Track *</label>
+            <select id="regEvent" name="event" class="form-control" required>
+              <option value="">-- Select Event --</option>
+              <option value="Code Crusade (Coding Challenge)">Code Crusade (Coding Challenge)</option>
+              <option value="Logic Arena (Quiz Competition)">Logic Arena (Quiz Competition)</option>
+              <option value="UI/UX Studio (Design Challenge)">UI/UX Studio (Design Challenge)</option>
+              <option value="Tech Tactics (Paper Presentation)">Tech Tactics (Paper Presentation)</option>
+              <option value="Pixel Pulse (Poster Design)">Pixel Pulse (Poster Design)</option>
+            </select>
+            <div class="form-error-msg" id="eventError">Please select an event track</div>
+          </div>
+          <div class="form-group">
+            <label for="regTeamSize">Team Participation</label>
+            <select id="regTeamSize" name="teamSize" class="form-control">
+              <option value="Individual (1 Member)">Individual (1 Member)</option>
+              <option value="Team of 2">Team of 2</option>
+              <option value="Team of 3">Team of 3</option>
+              <option value="Team of 4">Team of 4</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="regTeamMembersContainer"></div>
+
+        <div class="form-group">
+          <label for="regMessage">Additional Note / Query (Optional)</label>
+          <textarea id="regMessage" name="message" class="form-control" rows="2"
+            placeholder="Any specific requirements or questions?"></textarea>
+        </div>
+
+        <button type="submit" class="form-submit-btn" id="regSubmitBtn">⚡ Complete Registration</button>
+      </form>
+
+      <!-- Success Confirmation State -->
+      <div id="regSuccessCard" class="reg-success-card">
+        <div class="success-badge">✓</div>
+        <h3 class="success-title">Registration Confirmed!</h3>
+        <p class="success-body">Welcome to VYUGAM 2.0. Your spot in the arena is reserved.</p>
+
+        <div class="ticket-details">
+          <div>Participant: <strong id="ticketName">-</strong></div>
+          <div>Track: <strong id="ticketEvent">-</strong></div>
+          <div>Date: <strong>24 September 2026</strong></div>
+          <div>Venue: <strong>IT Seminar Hall, PACET</strong></div>
+        </div>
+
+        <p class="register-sub" style="margin-bottom:16px;">Lunch and refreshments are included with your pass.</p>
+        <button id="regAnotherBtn" class="btn-secondary"
+          style="border-width:2px; padding:10px 24px; cursor:pointer;">Register Another Student</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SECTION 7: PING US (FOOTER & SOCIALS) ============ -->
+  <footer class="footer" id="contact">
+    <div class="footer-inner reveal">
+      <span class="section-tab">Ping Us</span>
+      <h2 class="section-heading" style="font-size:clamp(1.6rem,4vw,2.2rem);">Questions Before You Enter?</h2>
+      <p class="section-body">Ask us about registration, event rules, or team participation — we'll get back fast.</p>
+
+      <!-- Contact Chips -->
+      <div class="contact-grid">
+        <a href="https://wa.me/917558108034" target="_blank" class="contact-chip">
+          <div class="contact-chip-label">Mr. H. Abhilash</div>
+          <div class="contact-chip-value">💬 7558108034</div>
+        </a>
+        <a href="https://wa.me/916381359507" target="_blank" class="contact-chip">
+          <div class="contact-chip-label">Ms. M. Madhusree </div>
+          <div class="contact-chip-value">💬 6381359507</div>
+        </a>
+        <a href="https://wa.me/918610234748" target="_blank" class="contact-chip">
+          <div class="contact-chip-label">Mr. S. Oviyan </div>
+          <div class="contact-chip-value">💬 8610234748</div>
+        </a>
+        <a href="https://wa.me/917598682797" target="_blank" class="contact-chip">
+          <div class="contact-chip-label">Mr. M. Kabilan </div>
+          <div class="contact-chip-value">💬 7598682797</div>
+        </a>
+        <a href="mailto:Vyugam2k262.0@gmail.com" class="contact-chip">
+          <div class="contact-chip-label">Official Email</div>
+          <div class="contact-chip-value">✉️Vyugam2k262.0@gmail.com</div>
+        </a>
+      </div>
+
+      <!-- Steve Jobs Quote -->
+      <div class="footer-quote">
+        <p class="quote-text">"Innovation distinguishes between a leader and a follower."</p>
+        <p class="quote-author">— Steve Jobs</p>
+      </div>
+
+      <!-- Social Chips -->
+      <div class="social-chips">
+        <a href="https://www.instagram.com/pacet_castle" target="_blank" class="social-chip">📷 Instagram
+          @pacet_castle</a>
+        <a href="https://chat.whatsapp.com/EtqLdlkEg3V7eQI9r6ci8R?s=cl&p=a&ilr=1" target="_blank" class="social-chip">💬
+          Join WhatsApp
+          Group</a>
+        <a href="https://www.linkedin.com/in/pacet-pollachi-5a003a2b7" target="_blank" class="social-chip">💼 LinkedIn
+          PACET</a>
+      </div>
+
+      <div class="footer-closing">Bring your strategy. Build your vision. Enter the arena.</div>
+      <div class="footer-legal">VYUGAM 2.0 &mdash; Dept. of Information Technology, P.A. College of Engineering and
+        Technology (Autonomous), Pollachi, Coimbatore &ndash; 642002 &copy; 2026</div>
+    </div>
+  </footer>
+
+  <!-- Floating Action Controls -->
+  <div class="floating-actions">
+    <a href="#register" class="floating-reg-btn" id="floatingRegBtn">⚡ Register Now</a>
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ============================================================
+    // GOOGLE APPS SCRIPT WEB APP INTEGRATION
+    // ============================================================
+    // Replace the URL below with your deployed Google Apps Script Web App URL!
+    // See Code.gs for instructions.
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiwKcyftHjhj_tkzZxl1oF1r9cMiyqBY_uDnrYYaVAXC0mbpBRIGAgwNEwTNdgkbtFOw/exec';
+
+    // ---- Mobile nav toggle ----
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+    // ---- Ember particles in hero ----
+    const emberContainer = document.getElementById('embers');
+    const EMBER_COUNT = 26;
+    for (let i = 0; i < EMBER_COUNT; i++) {
+      const el = document.createElement('div');
+      el.className = 'ember-particle';
+      const size = 2 + Math.random() * 3;
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.left = (Math.random() * 100) + '%';
+      el.style.bottom = (Math.random() * 30) + '%';
+      el.style.animationDuration = (5 + Math.random() * 6) + 's';
+      el.style.animationDelay = (Math.random() * 8) + 's';
+      emberContainer.appendChild(el);
+    }
+
+    // ---- Live Countdown Timer ----
+    const eventDate = new Date('2026-09-24T08:30:00+05:30').getTime();
+    function updateTimer() {
+      const now = new Date().getTime();
+      const diff = eventDate - now;
+
+      if (diff <= 0) {
+        document.getElementById('days').innerText = '00';
+        document.getElementById('hours').innerText = '00';
+        document.getElementById('minutes').innerText = '00';
+        document.getElementById('seconds').innerText = '00';
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('days').innerText = String(days).padStart(2, '0');
+      document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+      document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // ---- Scroll-triggered node lighting (Signal Ignites) ----
+    const nodes = document.querySelectorAll('#nodeRow .node');
+    const nodeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = Array.from(nodes).indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add('lit'), idx * 220);
+          nodeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    nodes.forEach(n => nodeObserver.observe(n));
+
+    // ---- Nav scroll behaviors & Active link highlighting ----
+    const nav = document.querySelector('.nav');
+    const topStrip = document.querySelector('.top-strip');
+    const floatingRegBtn = document.getElementById('floatingRegBtn');
+    const backToTopBtn = document.getElementById('backToTop');
+    const sections = document.querySelectorAll('header, section, footer');
+    const navAnchors = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+
+      if (scrollY > 60) {
+        nav.style.padding = '10px 32px';
+        nav.style.top = '0px';
+        topStrip.style.transform = 'translateY(-100%)';
+      } else {
+        nav.style.padding = '14px 32px';
+        nav.style.top = '26px';
+        topStrip.style.transform = 'translateY(0)';
+      }
+
+      // Floating controls visibility
+      if (scrollY > 400) {
+        floatingRegBtn.classList.add('visible');
+        backToTopBtn.classList.add('visible');
+      } else {
+        floatingRegBtn.classList.remove('visible');
+        backToTopBtn.classList.remove('visible');
+      }
+
+      // Active Nav Link Update
+      let currentSection = '';
+      sections.forEach(sec => {
+        const secTop = sec.offsetTop - 120;
+        const secHeight = sec.offsetHeight;
+        if (scrollY >= secTop && scrollY < secTop + secHeight) {
+          currentSection = sec.getAttribute('id');
+        }
+      });
+
+      navAnchors.forEach(a => {
+        a.classList.remove('active');
+        if (currentSection && a.getAttribute('href') === `#${currentSection}`) {
+          a.classList.add('active');
+        }
+      });
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ---- Generic reveal-on-scroll ----
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ---- Competition Path: stamp-in nodes as they enter view ----
+    const pathNodes = document.querySelectorAll('.path-node');
+    const pathObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('stamped');
+          pathObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3, root: null });
+    pathNodes.forEach(n => pathObserver.observe(n));
+
+    // ---- Built For Every Builder: parallax float objects ----
+    const floatObjs = document.querySelectorAll('.float-obj');
+    const buildersSection = document.getElementById('builders');
+    window.addEventListener('scroll', () => {
+      if (!buildersSection) return;
+      const rect = buildersSection.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        floatObjs.forEach(obj => {
+          const speed = parseFloat(obj.dataset.speed) || 0.3;
+          const offset = (window.innerHeight - rect.top) * speed * 0.15;
+          obj.style.transform = `translateY(${-offset}px)`;
+        });
+      }
+    }, { passive: true });
+
+    // ---- Venue pin bounce on enter ----
+    const venuePin = document.getElementById('venuePin');
+    const venueObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          venuePin.style.animation = 'pin-drop 0.6s ease';
+          venueObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    venueObserver.observe(venuePin);
+    const pinDropStyle = document.createElement('style');
+    pinDropStyle.textContent = `@keyframes pin-drop{0%{transform:translateY(-24px);opacity:0;}60%{transform:translateY(4px);opacity:1;}100%{transform:translateY(0);}}`;
+    document.head.appendChild(pinDropStyle);
+
+    // ---- Toast Notification System ----
+    function showToast(msg, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerText = msg;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // ---- Dynamic Team Size Options & Member Fields Based on Event ----
+    function updateTeamMemberInputs() {
+      const teamSizeSelect = document.getElementById('regTeamSize');
+      const container = document.getElementById('regTeamMembersContainer');
+      if (!teamSizeSelect || !container) return;
+
+      const val = teamSizeSelect.value || '';
+      let count = 0;
+      if (val.includes('Team of 4')) count = 3;
+      else if (val.includes('Team of 3')) count = 2;
+      else if (val.includes('Team of 2')) count = 1;
+
+      if (count === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let html = '<div style="margin-top:16px; margin-bottom:16px; padding:14px; border:2px solid rgba(253,181,21,0.4); background:rgba(253,181,21,0.05); border-radius:4px;"><div style="font-weight:bold; font-size:12px; text-transform:uppercase; color:#FDB515; margin-bottom:8px;">Additional Team Member Details</div>';
+      for (let i = 0; i < count; i++) {
+        html += `
+          <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1);">
+            <div style="font-size:11px; font-weight:bold; color:#f5f5f5; margin-bottom:6px; text-transform:uppercase;">Member ${i + 2} Details</div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:8px;">
+              <input type="text" id="member_${i}_name" class="form-control" placeholder="Member ${i + 2} Full Name *" required />
+              <input type="email" id="member_${i}_email" class="form-control" placeholder="Member ${i + 2} Email" />
+              <input type="tel" id="member_${i}_phone" class="form-control" placeholder="Member ${i + 2} Phone" />
+            </div>
+          </div>
+        `;
+      }
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function updateTeamSizeOptions(eventVal, selectedTeamSize = null) {
+      const teamSizeSelect = document.getElementById('regTeamSize');
+      if (!teamSizeSelect) return;
+
+      teamSizeSelect.innerHTML = '';
+      if (eventVal.includes('Tech Tactics')) {
+        teamSizeSelect.innerHTML = `
+      <option value="1 Member">1 Member (Solo)</option>
+      <option value="Team of 2">Team of 2 Members</option>
+      <option value="Team of 3">Team of 3 Members</option>
+      <option value="Team of 4">Team of 4 Members</option>
+    `;
+      } else {
+        teamSizeSelect.innerHTML = `
+      <option value="Individual (1 Member)">Individual (1 Member)</option>
+    `;
+      }
+
+      if (selectedTeamSize) {
+        teamSizeSelect.value = selectedTeamSize;
+      }
+
+      updateTeamMemberInputs();
+    }
+
+    function selectEventRegistration(eventName, maxMembers) {
+      const eventSelect = document.getElementById('regEvent');
+      if (eventSelect) {
+        eventSelect.value = eventName;
+        updateTeamSizeOptions(eventName);
+      }
+
+      const regSection = document.getElementById('register');
+      if (regSection) {
+        regSection.scrollIntoView({ behavior: 'smooth' });
+        const regPanel = document.querySelector('.register-panel');
+        if (regPanel) {
+          regPanel.style.transition = 'all 0.3s ease';
+          regPanel.style.borderColor = '#FF4A12';
+          regPanel.style.boxShadow = '0 0 30px rgba(255, 74, 18, 0.8)';
+          setTimeout(() => {
+            regPanel.style.borderColor = 'var(--marigold)';
+            regPanel.style.boxShadow = '8px 8px 0 var(--crimson)';
+          }, 1800);
+        }
+      }
+    }
+
+    document.getElementById('regEvent')?.addEventListener('change', (e) => {
+      updateTeamSizeOptions(e.target.value);
+    });
+
+    document.getElementById('regTeamSize')?.addEventListener('change', updateTeamMemberInputs);
+
+    // ---- Confetti / Ember Burst Effect on Registration Success ----
+    function triggerEmberBurst() {
+      const count = 40;
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.left = (50 + (Math.random() * 40 - 20)) + '%';
+        particle.style.top = '60%';
+        particle.style.width = (4 + Math.random() * 6) + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.background = Math.random() > 0.5 ? '#FDB515' : '#FF4A12';
+        particle.style.borderRadius = '50%';
+        particle.style.boxShadow = '0 0 10px #FDB515';
+        particle.style.zIndex = '99999';
+        particle.style.pointerEvents = 'none';
+
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = 80 + Math.random() * 200;
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity - 100;
+
+        document.body.appendChild(particle);
+
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${vx}px, ${vy + 300}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1200 + Math.random() * 800,
+          easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+          fill: 'forwards'
+        });
+
+        setTimeout(() => particle.remove(), 2200);
+      }
+    }
+
+    // ---- Form Validation & Submission Logic ----
+    const regForm = document.getElementById('registrationForm');
+    const regSubmitBtn = document.getElementById('regSubmitBtn');
+    const regSuccessCard = document.getElementById('regSuccessCard');
+    const regAnotherBtn = document.getElementById('regAnotherBtn');
+
+    function validateForm() {
+      let isValid = true;
+
+      const name = document.getElementById('regName');
+      const email = document.getElementById('regEmail');
+      const phone = document.getElementById('regPhone');
+      const college = document.getElementById('regCollege');
+      const year = document.getElementById('regYear');
+      const dept = document.getElementById('regDept');
+      const event = document.getElementById('regEvent');
+
+      // Name check
+      if (!name.value.trim()) {
+        name.classList.add('invalid');
+        document.getElementById('nameError').classList.add('visible');
+        isValid = false;
+      } else {
+        name.classList.remove('invalid');
+        document.getElementById('nameError').classList.remove('visible');
+      }
+
+      // Email check
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.value.trim())) {
+        email.classList.add('invalid');
+        document.getElementById('emailError').classList.add('visible');
+        isValid = false;
+      } else {
+        email.classList.remove('invalid');
+        document.getElementById('emailError').classList.remove('visible');
+      }
+
+      // Phone check
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(phone.value.trim())) {
+        phone.classList.add('invalid');
+        document.getElementById('phoneError').classList.add('visible');
+        isValid = false;
+      } else {
+        phone.classList.remove('invalid');
+        document.getElementById('phoneError').classList.remove('visible');
+      }
+
+      // College check
+      if (!college.value.trim()) {
+        college.classList.add('invalid');
+        document.getElementById('collegeError').classList.add('visible');
+        isValid = false;
+      } else {
+        college.classList.remove('invalid');
+        document.getElementById('collegeError').classList.remove('visible');
+      }
+
+      // Year check
+      if (!year.value) {
+        year.classList.add('invalid');
+        document.getElementById('yearError').classList.add('visible');
+        isValid = false;
+      } else {
+        year.classList.remove('invalid');
+        document.getElementById('yearError').classList.remove('visible');
+      }
+
+      // Dept check
+      if (!dept.value.trim()) {
+        dept.classList.add('invalid');
+        document.getElementById('deptError').classList.add('visible');
+        isValid = false;
+      } else {
+        dept.classList.remove('invalid');
+        document.getElementById('deptError').classList.remove('visible');
+      }
+
+      // Event check
+      if (!event.value) {
+        event.classList.add('invalid');
+        document.getElementById('eventError').classList.add('visible');
+        isValid = false;
+      } else {
+        event.classList.remove('invalid');
+        document.getElementById('eventError').classList.remove('visible');
+      }
+
+      return isValid;
+    }
+
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!validateForm()) {
+        showToast('Please fix the errors in the form.', 'error');
+        return;
+      }
+
+      let teamMembersStr = '';
+      const teamSizeVal = document.getElementById('regTeamSize').value || '';
+      let count = 0;
+      if (teamSizeVal.includes('Team of 4')) count = 3;
+      else if (teamSizeVal.includes('Team of 3')) count = 2;
+      else if (teamSizeVal.includes('Team of 2')) count = 1;
+
+      const memberDetails = [];
+      for (let i = 0; i < count; i++) {
+        const mName = document.getElementById(`member_${i}_name`)?.value?.trim() || '';
+        const mEmail = document.getElementById(`member_${i}_email`)?.value?.trim() || '';
+        const mPhone = document.getElementById(`member_${i}_phone`)?.value?.trim() || '';
+        if (mName) {
+          memberDetails.push(`Member ${i + 2}: ${mName}${mEmail ? ' (' + mEmail + ')' : ''}${mPhone ? ' [' + mPhone + ']' : ''}`);
+        }
+      }
+      teamMembersStr = memberDetails.join('; ');
+
+      const formData = {
+        name: document.getElementById('regName').value.trim(),
+        email: document.getElementById('regEmail').value.trim(),
+        phone: document.getElementById('regPhone').value.trim(),
+        college: document.getElementById('regCollege').value.trim(),
+        year: document.getElementById('regYear').value,
+        dept: document.getElementById('regDept').value.trim(),
+        event: document.getElementById('regEvent').value,
+        teamSize: document.getElementById('regTeamSize').value,
+        teamMembers: teamMembersStr,
+        message: document.getElementById('regMessage').value.trim()
+      };
+
+      // Instant UI confirmation pass display
+      document.getElementById('ticketName').innerText = formData.name;
+      document.getElementById('ticketEvent').innerText = formData.event;
+
+      regForm.style.display = 'none';
+      regSuccessCard.classList.add('active');
+
+      triggerEmberBurst();
+      showToast('Registration successful! Welcome to VYUGAM 2.0', 'success');
+
+      // Fire & Forget Background submission to Google Sheets
+      if (SCRIPT_URL) {
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(formData)
+        }).catch((err) => console.error('Background submission error:', err));
+      }
+    });
+
+    regAnotherBtn.addEventListener('click', () => {
+      regForm.reset();
+      regForm.style.display = 'flex';
+      regSuccessCard.classList.remove('active');
+    });
+
+    // ---- Gallery lightbox handlers ----
+    const galleryModal = document.getElementById('galleryModal');
+    const galleryModalImg = document.getElementById('galleryModalImg');
+    document.querySelectorAll('.gallery-thumb').forEach((thumb) => {
+      thumb.style.transformOrigin = 'center center';
+      // click to open
+      thumb.addEventListener('click', (e) => {
+        const src = thumb.getAttribute('src');
+        if (!src || !galleryModal) return;
+        if (galleryModalImg) galleryModalImg.src = src;
+        galleryModal.style.display = 'flex';
+      });
+
+      // mouse move tilt
+      thumb.addEventListener('mousemove', (ev) => {
+        const rect = thumb.getBoundingClientRect();
+        const px = (ev.clientX - rect.left) / rect.width;
+        const py = (ev.clientY - rect.top) / rect.height;
+        const rotateY = (px - 0.5) * 10; // left-right
+        const rotateX = (0.5 - py) * 8; // top-bottom
+        thumb.style.transform = `translateZ(8px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+      });
+      thumb.addEventListener('mouseleave', () => {
+        thumb.style.transform = '';
+      });
+    });
+    if (galleryModal) {
+      galleryModal.addEventListener('click', () => {
+        if (galleryModalImg) galleryModalImg.src = '';
+        galleryModal.style.display = 'none';
+      });
+    }
+  </script>
+
+</body>
+
+</html>
