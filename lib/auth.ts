@@ -5,7 +5,7 @@
 // ============================================================
 
 import crypto from 'node:crypto';
-import { compare, hash } from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const ADMIN_SESSION_TTL_S = 86400;   // 24 hours
@@ -131,14 +131,14 @@ export function destroyAdminSession(_req: VercelRequest, res: VercelResponse): v
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
   const storedHash = process.env.ADMIN_PASSWORD_HASH;
-  if (storedHash) return compare(password, storedHash);
+  if (storedHash) return bcrypt.compare(password, storedHash);
   const plain = process.env.ADMIN_PASSWORD;
   if (plain) return password === plain;
   return false;
 }
 
 export async function hashPassword(pwd: string): Promise<string> {
-  return hash(pwd, 12);
+  return bcrypt.hash(pwd, 12);
 }
 
 // ── Coordinator Authentication ────────────────────────────────

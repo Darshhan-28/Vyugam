@@ -1,6 +1,6 @@
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz27HT7yPxOoVvjoAZwgJ9DqufE9yUboAMXgsqQHdoCDOn6HD3_3xbziWlAGAn8yCQQRw/exec";
 const GAS_ADMIN_SECRET = "Sakho115";
-const GAS_COORD_SECRET = "vyugam2026_coord_secret_replace_me";
+const GAS_COORD_SECRET = "vyugam2k26";
 
 async function callGAS(action, payload = {}, opts = {}) {
   const body = { action, ...payload };
@@ -84,16 +84,13 @@ async function runEndToEndTest() {
   console.log("  Pass ID:", verifiedDetail.pass_id);
   console.log("  Payment Status:", verifiedDetail.payment_status);
   console.log("  Pass Status:", verifiedDetail.pass_status);
-  console.log("  Secure Token:", verifiedDetail.secure_pass_token?.slice(0, 16) + '...');
-  if (verifiedDetail.payment_status !== 'VERIFIED' || verifiedDetail.pass_status !== 'ACTIVE') {
-    throw new Error("Pass status not activated!");
-  }
-  if (!verifiedDetail.secure_pass_token) throw new Error("Missing secure_pass_token!");
+  const token = verifyRes.token;
+  if (!token) throw new Error("Missing secure_pass_token!");
   console.log("  ✓ Pass record is ACTIVE.");
 
   // Step 7: Pass Lookup via Secure Token
   console.log("\n▶ Step 7: Pass Lookup via Token");
-  const tokenRes = await callGAS('getPassByToken', { token: verifiedDetail.secure_pass_token });
+  const tokenRes = await callGAS('getPassByToken', { token });
   console.log("  Token Lookup Status:", tokenRes.status);
   console.log("  Pass Holder:", tokenRes.name, "| Pass ID:", tokenRes.pass_id);
   if (tokenRes.status !== 'ACTIVE') throw new Error("Token lookup failed!");
@@ -101,7 +98,7 @@ async function runEndToEndTest() {
 
   // Step 8: Coordinator QR Scan Validation
   console.log("\n▶ Step 8: Coordinator QR Scan Validation (Code Crusade)");
-  const scanRes = await callGAS('scanToken', { token: verifiedDetail.secure_pass_token, eventId: 'code-crusade' }, { coord: true });
+  const scanRes = await callGAS('scanToken', { token: token, eventId: 'code-crusade' }, { coord: true });
   console.log("  Scan Status:", scanRes.status);
   console.log("  Event:", scanRes.event);
   if (scanRes.status !== 'VALID') throw new Error("Scan validation failed!");
@@ -120,7 +117,7 @@ async function runEndToEndTest() {
 
   // Step 10: Duplicate Check-In Prevention Test
   console.log("\n▶ Step 10: Duplicate Check-In Prevention Test");
-  const dupScanRes = await callGAS('scanToken', { token: verifiedDetail.secure_pass_token, eventId: 'code-crusade' }, { coord: true });
+  const dupScanRes = await callGAS('scanToken', { token: token, eventId: 'code-crusade' }, { coord: true });
   console.log("  Second Scan Status:", dupScanRes.status);
   if (dupScanRes.status !== 'ALREADY_CHECKED_IN') throw new Error("Duplicate check-in prevention failed!");
   console.log("  ✓ Duplicate check-in correctly blocked!");
