@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
               return next();
             }
 
-            const apiFilePath = path.join(process.cwd(), 'api', 'index.ts');
+            const apiFilePath = path.join(process.cwd(), 'api', '[...path].ts');
 
             try {
               const mod = await server.ssrLoadModule(apiFilePath);
@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
 
               if (typeof handler !== 'function') {
                 res.statusCode = 500;
-                res.end(JSON.stringify({ error: 'api/index.ts does not export default handler' }));
+                res.end(JSON.stringify({ error: 'api/[...path].ts does not export default handler' }));
                 return;
               }
 
