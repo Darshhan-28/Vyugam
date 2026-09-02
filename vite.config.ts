@@ -1,40 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import fs from 'fs';
 import path from 'path';
 
-function resolveApiRoute(urlPath: string): { filePath: string; params: Record<string, string> } | null {
-  const rootApiDir = path.join(process.cwd(), 'api');
-  const relativePath = urlPath.replace(/^\/api\//, '');
-  const directFile = path.join(rootApiDir, `${relativePath}.ts`);
-
-  if (fs.existsSync(directFile)) {
-    return { filePath: directFile, params: {} };
-  }
-
-  const parts = relativePath.split('/');
-  if (parts.length > 1) {
-    const parentDir = path.join(rootApiDir, ...parts.slice(0, -1));
-    const paramVal = parts[parts.length - 1];
-
-    if (fs.existsSync(parentDir)) {
-      const files = fs.readdirSync(parentDir);
-      const dynamicFile = files.find((f) => f.startsWith('[') && f.endsWith('].ts'));
-      if (dynamicFile) {
-        const paramName = dynamicFile.slice(1, -3);
-        return {
-          filePath: path.join(parentDir, dynamicFile),
-          params: { [paramName]: paramVal },
-        };
-      }
-    }
-  }
-
-  return null;
-}
-
 export default defineConfig(({ mode }) => {
-  // Load .env and .env.local into process.env so API handlers can read UPSTASH_REDIS_REST_URL etc.
   const env = loadEnv(mode, process.cwd(), '');
   Object.assign(process.env, env);
 
@@ -49,20 +17,15 @@ export default defineConfig(({ mode }) => {
               return next();
             }
 
-            const urlPath = req.url.split('?')[0];
-            const route = resolveApiRoute(urlPath);
-
-            if (!route) {
-              return next();
-            }
+            const apiFilePath = path.join(process.cwd(), 'api', 'index.ts');
 
             try {
-              const mod = await server.ssrLoadModule(route.filePath);
+              const mod = await server.ssrLoadModule(apiFilePath);
               const handler = mod.default;
 
               if (typeof handler !== 'function') {
                 res.statusCode = 500;
-                res.end(JSON.stringify({ error: `API route ${urlPath} does not export default handler` }));
+                res.end(JSON.stringify({ error: 'api/index.ts does not export default handler' }));
                 return;
               }
 
@@ -84,9 +47,9 @@ export default defineConfig(({ mode }) => {
               }
               (req as any).body = body;
 
-              // Parse query parameters and combine with dynamic route params
+              // Parse query parameters
               const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-              const query: Record<string, string> = { ...route.params };
+              const query: Record<string, string> = {};
               urlObj.searchParams.forEach((val, key) => { query[key] = val; });
               (req as any).query = query;
 
@@ -108,10 +71,21 @@ export default defineConfig(({ mode }) => {
                 res.end();
                 return this;
               };
+              (res as any).send = function (data: any) {
+                if (Buffer.isBuffer(data)) {
+                  res.end(data);
+                } else if (typeof data === 'object') {
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify(data));
+                } else {
+                  res.end(String(data));
+                }
+                return this;
+              };
 
               await handler(req, res);
             } catch (err: any) {
-              console.error(`[API Dev Error] ${urlPath}:`, err);
+              console.error(`[API Dev Error] ${req.url}:`, err);
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ error: err.message || 'Internal API Error' }));

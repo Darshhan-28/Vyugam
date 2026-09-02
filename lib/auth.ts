@@ -10,8 +10,13 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const ADMIN_SESSION_TTL_S = 86400;   // 24 hours
 const COORD_SESSION_TTL_S = 43200;   // 12 hours
 
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'vyugam-admin-dev-secret-change-in-prod';
-const COORD_JWT_SECRET = process.env.COORDINATOR_JWT_SECRET || 'vyugam-coord-dev-secret-change-in-prod';
+function getAdminSecret(): string {
+  return process.env.ADMIN_JWT_SECRET || 'vyugam-admin-dev-secret-change-in-prod';
+}
+
+function getCoordSecret(): string {
+  return process.env.COORDINATOR_JWT_SECRET || 'vyugam-coord-dev-secret-change-in-prod';
+}
 
 // ── Cookie helpers ────────────────────────────────────────────
 
@@ -40,7 +45,7 @@ function clearCookieHeader(name: string): string {
 export function createAdminSession(res: VercelResponse): void {
   const token = jwt.sign(
     { type: 'admin', username: process.env.ADMIN_USERNAME || 'admin' },
-    ADMIN_JWT_SECRET,
+    getAdminSecret(),
     { expiresIn: ADMIN_SESSION_TTL_S }
   );
   res.setHeader('Set-Cookie', buildCookieHeader('vyugam_admin', token, ADMIN_SESSION_TTL_S));
@@ -50,7 +55,7 @@ export function validateAdminSession(req: VercelRequest): boolean {
   const token = extractCookie(req, 'vyugam_admin');
   if (!token) return false;
   try {
-    const payload = jwt.verify(token, ADMIN_JWT_SECRET) as { type?: string };
+    const payload = jwt.verify(token, getAdminSecret()) as { type?: string };
     return payload?.type === 'admin';
   } catch {
     return false;
@@ -83,7 +88,7 @@ export function createCoordinatorSession(
 ): void {
   const token = jwt.sign(
     { type: 'coordinator', coordinator_id: coordinatorId, name: coordinatorName, assigned_event_id: assignedEventId },
-    COORD_JWT_SECRET,
+    getCoordSecret(),
     { expiresIn: COORD_SESSION_TTL_S }
   );
   res.setHeader('Set-Cookie', buildCookieHeader('vyugam_coord', token, COORD_SESSION_TTL_S));
@@ -95,7 +100,7 @@ export function validateCoordinatorSession(
   const token = extractCookie(req, 'vyugam_coord');
   if (!token) return { valid: false, coordinator_id: null, name: null, assigned_event_id: null };
   try {
-    const payload = jwt.verify(token, COORD_JWT_SECRET) as {
+    const payload = jwt.verify(token, getCoordSecret()) as {
       type?: string;
       coordinator_id?: string;
       name?: string;
