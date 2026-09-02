@@ -1,9 +1,10 @@
 // ============================================================
 // VYUGAM 2.0 — Authentication & Session Utilities
 // Stateless JWT-based sessions (replaces Upstash Redis sessions)
+// Built with native node:crypto for 100% ESM & Vercel runtime compatibility
 // ============================================================
 
-import jwt from 'jsonwebtoken';
+import crypto from 'node:crypto';
 import { compare, hash } from 'bcryptjs';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
@@ -16,6 +17,72 @@ function getAdminSecret(): string {
 
 function getCoordSecret(): string {
   return process.env.COORDINATOR_JWT_SECRET || 'vyugam-coord-dev-secret-change-in-prod';
+}
+
+// ── Native JWT Implementation (HMAC-SHA256) ───────────────────
+
+function base64urlEncode(str: string): string {
+  return Buffer.from(str)
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+function base64urlDecode(str: string): string {
+  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+  return Buffer.from(base64, 'base64').toString('utf-8');
+}
+
+function signJwt(payload: Record<string, unknown>, secret: string, expiresInSeconds: number): string {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const exp = Math.floor(Date.now() / 1000) + expiresInSeconds;
+  const fullPayload = { ...payload, exp };
+
+  const encodedHeader = base64urlEncode(JSON.stringify(header));
+  const encodedPayload = base64urlEncode(JSON.stringify(fullPayload));
+
+  const dataToSign = `${encodedHeader}.${encodedPayload}`;
+  const signature = crypto
+    .createHmac('sha256', secret)
+    .update(dataToSign)
+    .digest('base64url');
+
+  return `${dataToSign}.${signature}`;
+}
+
+function verifyJwt<T = Record<string, unknown>>(token: string, secret: string): T | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const [encodedHeader, encodedPayload, signature] = parts;
+    const dataToSign = `${encodedHeader}.${encodedPayload}`;
+
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(dataToSign)
+      .digest('base64url');
+
+    const sigBuf = Buffer.from(signature);
+    const expBuf = Buffer.from(expectedSignature);
+    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+      return null;
+    }
+
+    const payload = JSON.parse(base64urlDecode(encodedPayload)) as T & { exp?: number };
+
+    if (payload.exp && Math.floor(Date.now() / 1000) > payload.exp) {
+      return null;
+    }
+
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 // ── Cookie helpers ────────────────────────────────────────────
@@ -43,10 +110,10 @@ function clearCookieHeader(name: string): string {
 // ── Admin Authentication ──────────────────────────────────────
 
 export function createAdminSession(res: VercelResponse): void {
-  const token = jwt.sign(
+  const token = signJwt(
     { type: 'admin', username: process.env.ADMIN_USERNAME || 'admin' },
     getAdminSecret(),
-    { expiresIn: ADMIN_SESSION_TTL_S }
+    ADMIN_SESSION_TTL_S
   );
   res.setHeader('Set-Cookie', buildCookieHeader('vyugam_admin', token, ADMIN_SESSION_TTL_S));
 }
@@ -54,12 +121,8 @@ export function createAdminSession(res: VercelResponse): void {
 export function validateAdminSession(req: VercelRequest): boolean {
   const token = extractCookie(req, 'vyugam_admin');
   if (!token) return false;
-  try {
-    const payload = jwt.verify(token, getAdminSecret()) as { type?: string };
-    return payload?.type === 'admin';
-  } catch {
-    return false;
-  }
+  const payload = verifyJwt<{ type?: string }>(token, getAdminSecret());
+  return payload?.type === 'admin';
 }
 
 export function destroyAdminSession(_req: VercelRequest, res: VercelResponse): void {
@@ -86,10 +149,10 @@ export function createCoordinatorSession(
   assignedEventId: string,
   res: VercelResponse
 ): void {
-  const token = jwt.sign(
+  const token = signJwt(
     { type: 'coordinator', coordinator_id: coordinatorId, name: coordinatorName, assigned_event_id: assignedEventId },
     getCoordSecret(),
-    { expiresIn: COORD_SESSION_TTL_S }
+    COORD_SESSION_TTL_S
   );
   res.setHeader('Set-Cookie', buildCookieHeader('vyugam_coord', token, COORD_SESSION_TTL_S));
 }
@@ -99,25 +162,24 @@ export function validateCoordinatorSession(
 ): { valid: boolean; coordinator_id: string | null; name: string | null; assigned_event_id: string | null } {
   const token = extractCookie(req, 'vyugam_coord');
   if (!token) return { valid: false, coordinator_id: null, name: null, assigned_event_id: null };
-  try {
-    const payload = jwt.verify(token, getCoordSecret()) as {
-      type?: string;
-      coordinator_id?: string;
-      name?: string;
-      assigned_event_id?: string;
-    };
-    if (payload?.type !== 'coordinator' || !payload.coordinator_id) {
-      return { valid: false, coordinator_id: null, name: null, assigned_event_id: null };
-    }
-    return {
-      valid: true,
-      coordinator_id: payload.coordinator_id,
-      name: payload.name || null,
-      assigned_event_id: payload.assigned_event_id || null,
-    };
-  } catch {
+
+  const payload = verifyJwt<{
+    type?: string;
+    coordinator_id?: string;
+    name?: string;
+    assigned_event_id?: string;
+  }>(token, getCoordSecret());
+
+  if (payload?.type !== 'coordinator' || !payload.coordinator_id) {
     return { valid: false, coordinator_id: null, name: null, assigned_event_id: null };
   }
+
+  return {
+    valid: true,
+    coordinator_id: payload.coordinator_id,
+    name: payload.name || null,
+    assigned_event_id: payload.assigned_event_id || null,
+  };
 }
 
 export function destroyCoordinatorSession(_req: VercelRequest, res: VercelResponse): void {
