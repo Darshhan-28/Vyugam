@@ -27,7 +27,26 @@ export async function callGAS(
   const coordSecret = process.env.GAS_COORD_SECRET || '';
 
   if (!gasUrl) {
-    console.error(`[GAS Client Error] Action "${action}" failed: GAS_WEB_APP_URL is missing in environment variables.`);
+    const isDev = process.env.NODE_ENV !== 'production';
+    if (isDev) {
+      console.warn(`[GAS Dev Mock] Action "${action}" — GAS_WEB_APP_URL not set. Returning mock response.`);
+      if (action === 'checkEmailExists') return { exists: false };
+      if (action === 'registerParticipant') return { success: true, participantId: 'DEV-MOCK-' + Date.now() };
+      if (action === 'uploadScreenshot') return { success: true };
+      if (action === 'getPassByToken') return { status: 'ACTIVE', name: 'Dev User', college: 'PACET', department: 'IT', year: '3', pass_id: 'DEV-001', qr_data_url: '', event_date: '2026-09-24' };
+      if (action === 'getRegistrations') return { participants: [] };
+      if (action === 'getRegistration') return { error: 'Not found (dev mock)' };
+      if (action === 'verifyPayment') return { success: true };
+      if (action === 'rejectPayment') return { success: true };
+      if (action === 'cancelPass') return { success: true };
+      if (action === 'resendPassEmail') return { success: true };
+      if (action === 'getCheckinSummary') return { summary: { total_passes: 0, active_passes: 0, pending_passes: 0, total_checkins: 0, event_counts: [] }, checkins: [] };
+      if (action === 'getScreenshot') return { error: 'No screenshot (dev mock)' };
+      if (action === 'coordLogin') return { success: false, error: 'Coord login unavailable (dev mock)' };
+      if (action === 'scanToken') return { error: 'Scan unavailable (dev mock)' };
+      if (action === 'recordCheckin') return { success: true };
+      return {};
+    }
     throw new GasError(503, 'GAS_WEB_APP_URL is not configured. Add it to environment variables.');
   }
 
