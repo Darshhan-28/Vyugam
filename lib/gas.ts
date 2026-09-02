@@ -17,14 +17,18 @@ export class GasError extends Error {
  * opts.coord   — injects coordSecret into the payload (for coordinator-gated actions)
  * opts.timeoutMs — request timeout in milliseconds (default 28s)
  */
+const DEFAULT_GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz27HT7yPxOoVvjoAZwgJ9DqufE9yUboAMXgsqQHdoCDOn6HD3_3xbziWlAGAn8yCQQRw/exec';
+const DEFAULT_GAS_ADMIN_SECRET = 'Sakho115';
+const DEFAULT_GAS_COORD_SECRET = 'vyugam2k26';
+
 export async function callGAS(
   action: string,
   payload: Record<string, unknown> = {},
   opts: { admin?: boolean; coord?: boolean; timeoutMs?: number } = {}
 ): Promise<unknown> {
-  const gasUrl = process.env.GAS_WEB_APP_URL || '';
-  const adminSecret = process.env.GAS_ADMIN_SECRET || '';
-  const coordSecret = process.env.GAS_COORD_SECRET || '';
+  const gasUrl = process.env.GAS_WEB_APP_URL || DEFAULT_GAS_WEB_APP_URL;
+  const adminSecret = process.env.GAS_ADMIN_SECRET || DEFAULT_GAS_ADMIN_SECRET;
+  const coordSecret = process.env.GAS_COORD_SECRET || DEFAULT_GAS_COORD_SECRET;
 
   if (!gasUrl) {
     console.error(`[GAS Client Error] Action "${action}" failed: GAS_WEB_APP_URL is missing in environment variables.`);

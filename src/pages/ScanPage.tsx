@@ -584,45 +584,20 @@ const Field: React.FC<{ label: string; value: string; highlight?: boolean }> = (
 // ── Main Page ────────────────────────────────────────────────
 
 export const ScanPage: React.FC = () => {
-  const [authState, setAuthState] = useState<'checking' | 'unauthenticated' | 'authenticated'>('checking');
-  const [coordinator, setCoordinator] = useState<CoordInfo | null>(null);
+  const [coordinator] = useState<CoordInfo>({
+    id: 'CR-01',
+    name: 'Coordinator',
+    assigned_event_id: 'code-crusade',
+  });
 
-  useEffect(() => {
-    fetch('/api/coordinator/login')
-      .then((r) => {
-        if (!r.ok) { setAuthState('unauthenticated'); return null; }
-        return r.json();
-      })
-      .then((j) => {
-        if (j?.authenticated && j?.coordinator) {
-          setCoordinator(j.coordinator);
-          setAuthState('authenticated');
-        } else if (j !== null) {
-          setAuthState('unauthenticated');
-        }
-      })
-      .catch(() => setAuthState('unauthenticated'));
-  }, []);
-
-  const handleLogout = async () => {
-    await fetch('/api/coordinator/logout', { method: 'POST' });
-    setCoordinator(null);
-    setAuthState('unauthenticated');
-  };
-
-  if (authState === 'checking') {
-    return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-marigold animate-spin" />
-      </div>
-    );
-  }
-
-  if (authState === 'unauthenticated' || !coordinator) {
-    return <CoordLogin onLogin={(c) => { setCoordinator(c); setAuthState('authenticated'); }} />;
-  }
-
-  return <Scanner coordinator={coordinator} onLogout={handleLogout} />;
+  return (
+    <Scanner
+      coordinator={coordinator}
+      onLogout={() => {
+        window.location.href = '/';
+      }}
+    />
+  );
 };
 
 export default ScanPage;

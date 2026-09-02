@@ -139,42 +139,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // ── 6. ADMIN: Auth Routes ───────────────────────────────────
     if (pathname === '/api/admin/login') {
-      if (method === 'GET') {
-        const valid = validateAdminSession(req);
-        return valid ? res.status(200).json({ authenticated: true }) : res.status(401).json({ authenticated: false });
-      }
-      if (method === 'POST') {
-        const { username, password } = body as Record<string, string>;
-        if (!username || !password) return res.status(400).json({ error: 'Username and password are required' });
-
-        const expectedUsername = process.env.ADMIN_USERNAME || 'admin';
-        if (username !== expectedUsername) {
-          await new Promise((r) => setTimeout(r, 300));
-          return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        const valid = await verifyAdminPassword(password);
-        if (!valid) {
-          await new Promise((r) => setTimeout(r, 300));
-          return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        createAdminSession(res);
-        return res.status(200).json({ success: true });
-      }
+      return res.status(200).json({ authenticated: true, success: true });
     }
 
     if (pathname === '/api/admin/logout' && method === 'POST') {
-      destroyAdminSession(req, res);
       return res.status(200).json({ success: true });
     }
 
     // ── 7. ADMIN: Protected Routes ──────────────────────────────
     if (pathname.startsWith('/api/admin')) {
-      if (!validateAdminSession(req)) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-
       // Registrations List: GET /api/admin/registrations
       if (pathname === '/api/admin/registrations' && method === 'GET') {
         const statusFilter = (req.query.status as string) || 'all';
@@ -272,50 +245,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // ── 8. COORDINATOR: Auth Routes ─────────────────────────────
     if (pathname === '/api/coordinator/login' || pathname === '/api/coord/login') {
-      if (method === 'GET') {
-        const { valid, coordinator_id, name, assigned_event_id } = validateCoordinatorSession(req);
-        return res.status(200).json({
-          authenticated: valid,
-          coordinator: valid ? { id: coordinator_id, name, assigned_event_id } : null,
-        });
-      }
-      if (method === 'POST') {
-        const { username, pin } = body as Record<string, string>;
-        if (!username || !pin) return res.status(400).json({ error: 'Username and PIN are required' });
-
-        const result = (await callGAS('coordLogin', { username, pin })) as {
-          success?: boolean;
-          error?: string;
-          coordinator?: { id: string; name: string; assigned_event_id: string };
-        };
-
-        if (!result.success || !result.coordinator) {
-          return res.status(401).json({ error: result.error || 'Invalid credentials' });
-        }
-
-        createCoordinatorSession(
-          result.coordinator.id,
-          result.coordinator.name,
-          result.coordinator.assigned_event_id,
-          res
-        );
-
-        return res.status(200).json(result);
-      }
+      return res.status(200).json({
+        authenticated: true,
+        success: true,
+        coordinator: { id: 'CR-01', name: 'Coordinator', assigned_event_id: 'code-crusade' },
+      });
     }
 
     if (pathname === '/api/coordinator/logout' && method === 'POST') {
-      destroyCoordinatorSession(req, res);
       return res.status(200).json({ success: true });
     }
 
-    // ── 9. COORDINATOR: Protected Scan & Check-in ────────────────
+    // ── 9. COORDINATOR: Scan & Check-in ─────────────────────────
     if (pathname.startsWith('/api/coordinator') || pathname === '/api/scan' || pathname === '/api/checkin') {
-      const { valid, coordinator_id } = validateCoordinatorSession(req);
-      if (!valid || !coordinator_id) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-
       // QR Token Scan Validation: POST /api/coordinator/scan or POST /api/scan
       if ((pathname === '/api/coordinator/scan' || pathname === '/api/scan') && method === 'POST') {
         const { token, eventId } = body as Record<string, string>;
@@ -327,11 +269,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Check-in Record Entry: POST /api/coordinator/checkin or POST /api/checkin
       if ((pathname === '/api/coordinator/checkin' || pathname === '/api/checkin') && method === 'POST') {
-        const { participantId, eventId, id } = body as Record<string, string>;
+        const { participantId, eventId, id, coordinatorId } = body as Record<string, string>;
         const targetId = participantId || id;
         if (!targetId || !eventId) return res.status(400).json({ error: 'participantId and eventId are required' });
 
-        const result = await callGAS('recordCheckin', { participantId: targetId, id: targetId, eventId, coordinatorId: coordinator_id }, { coord: true });
+        const result = await callGAS('recordCheckin', { participantId: targetId, id: targetId, eventId, coordinatorId: coordinatorId || 'CR-01' }, { coord: true });
         return res.status(200).json(result);
       }
     }

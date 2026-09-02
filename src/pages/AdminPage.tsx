@@ -358,7 +358,7 @@ const ParticipantModal: React.FC<{
 // ── Main Admin Dashboard ─────────────────────────────────────
 
 export const AdminPage: React.FC = () => {
-  const [authed, setAuthed] = useState<boolean | null>(null);
+  const [authed] = useState<boolean>(true);
   const [tab, setTab] = useState<TabId>('registrations');
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [filter, setFilter] = useState<FilterId>('all');
@@ -367,13 +367,6 @@ export const AdminPage: React.FC = () => {
   const [checkins, setCheckins] = useState<CheckinSummary | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
-
-  // Check session
-  useEffect(() => {
-    fetch('/api/admin/login')
-      .then((r) => setAuthed(r.ok))
-      .catch(() => setAuthed(false));
-  }, []);
 
   const showToast = useCallback((msg: string, type: 'ok' | 'err' = 'ok') => {
     setToast({ msg, type });
@@ -398,10 +391,9 @@ export const AdminPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (authed !== true) return;
     if (tab === 'registrations') fetchRegistrations();
     else fetchCheckins();
-  }, [authed, tab, fetchRegistrations, fetchCheckins]);
+  }, [tab, fetchRegistrations, fetchCheckins]);
 
   const handleAction = async (action: string, id: string) => {
     const r = await fetch(`/api/admin/${action}`, {
@@ -417,24 +409,6 @@ export const AdminPage: React.FC = () => {
       showToast(j.error || 'Action failed', 'err');
     }
   };
-
-  const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' });
-    setAuthed(false);
-  };
-
-  // ── Loading state ──
-  if (authed === null) {
-    return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-marigold animate-spin" />
-      </div>
-    );
-  }
-
-  if (authed === false) {
-    return <AdminLogin onLogin={() => setAuthed(true)} />;
-  }
 
   // Filtered + searched participants
   const displayed = participants.filter((p) => {
@@ -482,10 +456,10 @@ export const AdminPage: React.FC = () => {
           </div>
         </div>
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-cream/60 hover:text-red-400 transition-colors"
+          onClick={() => { window.location.href = '/'; }}
+          className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-cream/60 hover:text-marigold transition-colors"
         >
-          <LogOut className="w-4 h-4" /> Logout
+          Home
         </button>
       </header>
 
