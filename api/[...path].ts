@@ -5,7 +5,7 @@
 // ============================================================
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { callGAS, GasError } from '../lib/gas';
+import { callGAS, GasError } from '../lib/gas.js';
 import {
   verifyAdminPassword,
   createAdminSession,
@@ -14,7 +14,7 @@ import {
   createCoordinatorSession,
   validateCoordinatorSession,
   destroyCoordinatorSession,
-} from '../lib/auth';
+} from '../lib/auth.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Normalize request URL path
