@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Calendar, Award, Zap, Clock } from 'lucide-react';
+import { MapPin, Calendar, Ticket, Zap, Clock } from 'lucide-react';
 
 interface HeroProps {
   onOpenRegister: () => void;
@@ -60,7 +60,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
       {/* Golden border frame */}
       <div className="hero-frame" />
 
-      {/* Starburst SVG — matching original */}
+      {/* Starburst SVG */}
       <div className="starburst-wrap">
         <svg className="w-full h-full animate-burst" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -162,13 +162,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
 
         <h1 className="font-display text-[2.2rem] xs:text-5xl sm:text-7xl lg:text-9xl text-crimson uppercase leading-none stroke-gold drop-shadow-hero break-words w-full">
           VYUGAM 2.0
-          <span className="block font-heading font-extrabold italic text-base xs:text-lg sm:text-2xl lg:text-3xl text-marigold tracking-wider mt-2 sm:mt-3 stroke-none" style={{ textShadow: '2px 2px 0 #050505' }}>
-            Strategic Vision. Intelligent Innovation.
+          <span className="block font-heading font-extrabold italic text-base xs:text-lg sm:text-xl lg:text-2xl text-marigold tracking-wider mt-2 sm:mt-3 stroke-none leading-tight" style={{ textShadow: '2px 2px 0 #050505' }}>
+            ONE PASS.&nbsp; 5+ EVENTS.&nbsp; ONE FULL-DAY EXPERIENCE.
           </span>
         </h1>
 
         <p className="font-body text-xs sm:text-base lg:text-lg text-cream max-w-2xl mt-4 sm:mt-6 leading-relaxed px-2">
-          A national-level technical symposium where code, logic, design, tactics, and ideas collide.
+          A national-level technical symposium where code, logic, design, research, creativity, and competition collide.
+          Get your VYUGAM Pass for ₹200 and experience the entire arena.
         </p>
 
         {/* Badges */}
@@ -177,25 +178,25 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
             <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ember flex-shrink-0" /> 24 September 2026
           </div>
           <div className="badge-tilt-2 font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-smoke border-2 border-marigold px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2 shadow-[3px_3px_0_#7A0606]">
-            <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ember flex-shrink-0" /> IT Seminar Hall
+            <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ember flex-shrink-0" /> IT Department Block
           </div>
           <div className="badge-tilt-3 font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-marigold border-2 border-ember px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2 shadow-[3px_3px_0_#7A0606]">
-            <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-marigold flex-shrink-0" /> Free Registration
+            <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-marigold flex-shrink-0" /> VYUGAM PASS &middot; ₹200
           </div>
         </div>
 
-        {/* Feature Cards: Dedicated Deadline Box & Live Countdown */}
+        {/* Feature Cards: Deadline & Countdown */}
         <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full max-w-xl sm:max-w-2xl">
           {/* Registration Deadline Box */}
           <div className="bg-carbon/90 border-2 border-red-500 p-3 sm:p-5 shadow-[5px_5px_0_#7A0606] flex flex-col items-center justify-center gap-2">
             <span className="font-mono text-[10px] sm:text-xs tracking-widest uppercase text-red-400 flex items-center gap-1.5 font-bold">
-              <Clock className="w-4 h-4 text-red-500 animate-pulse" /> Registration Deadline
+              <Clock className="w-4 h-4 text-red-500 animate-pulse" /> Pass Registration Deadline
             </span>
             <div className="font-display text-2xl sm:text-3xl text-smoke bg-obsidian border border-red-500/80 py-1 px-3 w-full text-center shadow-[3px_3px_0_#C1121F] tracking-wider">
               17 SEPT 2026
             </div>
             <span className="font-heading font-extrabold text-[10px] sm:text-xs uppercase text-marigold tracking-wider mt-0.5">
-              ⚡ Limited Entries Available
+              ⚡ Limited Passes Available
             </span>
           </div>
 
@@ -227,18 +228,25 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
         {/* CTA Buttons */}
         <div className="flex flex-col xs:flex-row flex-wrap gap-3 sm:gap-4 justify-center mt-6 sm:mt-8 w-full px-2 sm:px-0">
           <button
+            id="hero-pass-cta"
             onClick={onOpenRegister}
-            className="font-heading font-extrabold text-sm sm:text-base lg:text-lg tracking-wider uppercase text-obsidian bg-marigold border-[3px] border-obsidian px-6 sm:px-8 py-3.5 sm:py-4 shadow-[5px_5px_0_#C1121F] hover:translate-x-[-3px] hover:translate-y-[-3px] hover:shadow-[8px_8px_0_#C1121F] btn-pulse transition-all cursor-pointer w-full xs:w-auto"
+            className="font-heading font-extrabold text-sm sm:text-base lg:text-lg tracking-wider uppercase text-obsidian bg-marigold border-[3px] border-obsidian px-6 sm:px-8 py-3.5 sm:py-4 shadow-[5px_5px_0_#C1121F] hover:translate-x-[-3px] hover:translate-y-[-3px] hover:shadow-[8px_8px_0_#C1121F] btn-pulse transition-all cursor-pointer w-full xs:w-auto flex items-center justify-center gap-2"
           >
-            Register Free
+            <Ticket className="w-4 h-4 sm:w-5 sm:h-5" />
+            Get Your VYUGAM Pass
           </button>
           <a
             href="#arenas"
             className="font-heading font-bold text-sm sm:text-base lg:text-lg tracking-wider uppercase text-marigold bg-transparent border-[3px] border-marigold px-6 sm:px-8 py-3.5 sm:py-4 hover:bg-marigold hover:text-obsidian transition-colors inline-block text-center w-full xs:w-auto"
           >
-            Explore Events
+            Explore The Arenas
           </a>
         </div>
+
+        {/* Short tagline */}
+        <p className="font-mono text-xs sm:text-sm text-mustard/70 tracking-widest uppercase mt-4">
+          One pass. Multiple arenas. Zero confusion.
+        </p>
       </div>
 
       {/* Scroll Cue */}

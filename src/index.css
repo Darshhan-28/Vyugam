@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --obsidian: #050505;
+  --carbon: #101010;
+  --carbon-2: #161412;
+  --oxblood: #7A0606;
+  --crimson: #C1121F;
+  --ember: #FF4A12;
+  --marigold: #FDB515;
+  --mustard: #D99A00;
+  --cream: #F5E6B8;
+  --smoke: #F2F2EA;
+}
+
 /* ============================================================
    VYUGAM 2.0 — Custom styles that Tailwind can't handle inline
    Matching the obsidian/oxblood/ember/marigold comic-poster system
@@ -249,6 +262,26 @@
   background-size: 100% 100%, 40px 40px, 40px 40px;
   background-color: #050505;
 }
+
+/* ---- PassCTA section — ember-accented arena CTA ---- */
+.bg-pass-cta {
+  background-image:
+    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(255,74,18,0.18) 0%, rgba(122,6,6,0.55) 55%, transparent 85%),
+    linear-gradient(to right, rgba(255, 74, 18, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 74, 18, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  background-color: #080505;
+}
+
+/* ---- EventDay and FAQ sections ---- */
+#event-day { scroll-margin-top: 80px; }
+#faq { scroll-margin-top: 80px; }
+#pass-value { scroll-margin-top: 80px; }
+#pass-cta { scroll-margin-top: 80px; }
+
+/* FAQ open/close transition */
+.faq-answer-enter { max-height: 0; overflow: hidden; }
+.faq-answer-open  { max-height: 400px; }
 
 /* Badge tilt from original */
 .badge-tilt-1 { transform: rotate(-1.5deg); }

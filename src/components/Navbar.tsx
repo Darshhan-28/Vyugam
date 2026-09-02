@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X, Ticket } from 'lucide-react';
 
 interface NavbarProps {
   onOpenRegister: () => void;
@@ -14,7 +14,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
 
-      const sections = ['hero', 'signal', 'arenas', 'path', 'prizes', 'venue', 'members', 'contact'];
+      const sections = ['hero', 'signal', 'pass-value', 'arenas', 'path', 'prizes', 'venue', 'members', 'contact'];
       let current = 'hero';
       for (const section of sections) {
         const el = document.getElementById(section);
@@ -105,11 +105,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
           {/* CTA Button & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
             <button
+              id="navbar-pass-btn"
               onClick={onOpenRegister}
               className="hidden sm:inline-flex items-center gap-2 font-heading font-bold text-sm tracking-wider uppercase text-obsidian bg-marigold border-2 border-obsidian px-5 py-2 shadow-[3px_3px_0_#C1121F] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#C1121F] active:translate-y-0 transition-all"
             >
-              <Zap className="w-4 h-4 fill-current text-obsidian" />
-              Register Free
+              <Ticket className="w-4 h-4 text-obsidian" />
+              Get Your Pass
             </button>
 
             <button
@@ -138,13 +139,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
               </a>
             ))}
             <button
+              id="navbar-mobile-pass-btn"
               onClick={() => {
                 setIsOpen(false);
                 onOpenRegister();
               }}
-              className="w-full mt-2 font-heading font-extrabold text-base tracking-wider uppercase text-obsidian bg-marigold border-2 border-obsidian py-3 shadow-[4px_4px_0_#C1121F]"
+              className="w-full mt-2 font-heading font-extrabold text-base tracking-wider uppercase text-obsidian bg-marigold border-2 border-obsidian py-3 shadow-[4px_4px_0_#C1121F] flex items-center justify-center gap-2"
             >
-              ⚡ Register Free Now
+              <Ticket className="w-4 h-4" />
+              ⚡ Get Your VYUGAM Pass
             </button>
           </div>
         )}

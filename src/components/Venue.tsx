@@ -9,9 +9,13 @@ export const Venue: React.FC = () => {
           Venue Burst
         </span>
 
-        <h2 className="font-display text-4xl sm:text-5xl text-smoke uppercase tracking-tight mb-12">
+        <h2 className="font-display text-4xl sm:text-5xl text-smoke uppercase tracking-tight mb-3">
           The Arena Is Set
         </h2>
+
+        <p className="font-heading font-bold text-base sm:text-lg text-marigold uppercase tracking-wide mb-10">
+          One day. One campus. Five+ arenas.
+        </p>
 
         {/* Venue Details Card */}
         <div className="bg-carbon-2 border-2 sm:border-4 border-marigold p-5 sm:p-8 md:p-12 shadow-[6px_6px_0_#7A0606] sm:shadow-[8px_8px_0_#7A0606] max-w-3xl mx-auto">

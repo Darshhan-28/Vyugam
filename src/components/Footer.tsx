@@ -1,20 +1,24 @@
 import React from 'react';
-import { Phone, Mail, Instagram, MessageCircle, Linkedin, Code } from 'lucide-react';
+import { Phone, Mail, Instagram, MessageCircle, Linkedin, Code, Ticket } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenRegister: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenRegister }) => {
   return (
     <footer id="contact" className="py-20 px-4 bg-signal border-t-4 border-marigold relative overflow-hidden">
       <div className="max-w-6xl mx-auto text-center">
         <span className="font-heading font-extrabold text-sm uppercase tracking-widest bg-marigold text-obsidian px-5 py-2 clip-polygon shadow-[4px_4px_0_#7A0606] inline-block mb-4">
-          Ping Us
+          Need Help?
         </span>
 
         <h2 className="font-display text-4xl sm:text-5xl text-smoke uppercase tracking-tight mb-4">
-          Questions Before You Enter?
+          Need Help With Your Pass?
         </h2>
 
         <p className="font-body text-base text-cream/90 max-w-xl mx-auto mb-12">
-          Ask us about registration, event rules, or team participation — we'll get back fast.
+          Ask us about pass registration, payment verification, event participation, team requirements, or event-day access — we'll get back fast.
         </p>
 
         {/* Contact Chips */}
@@ -110,12 +114,12 @@ export const Footer: React.FC = () => {
           </a>
 
           <a
-            href="https://chat.whatsapp.com/EtqLdlkEg3V7eQI9r6ci8R?s=cl&p=a&ilr=1"
+            href="#"
             target="_blank"
             rel="noopener noreferrer"
             className="font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-cream border-2 border-marigold px-5 py-2.5 shadow-[3px_3px_0_#7A0606] hover:bg-marigold hover:text-obsidian hover:-translate-y-0.5 transition-all flex items-center gap-2"
           >
-            <MessageCircle className="w-4 h-4 text-emerald-400" /> Join WhatsApp Group
+            <MessageCircle className="w-4 h-4 text-emerald-400" /> Link Placeholder
           </a>
 
           <a
@@ -128,8 +132,30 @@ export const Footer: React.FC = () => {
           </a>
         </div>
 
-        <div className="font-heading font-extrabold text-lg sm:text-2xl text-marigold uppercase tracking-wider mb-4">
-          Bring your strategy. Build your vision. Enter the arena.
+        {/* Final CTA */}
+        <div className="py-10 border-y border-marigold/20 mb-10">
+          <div className="font-display text-3xl sm:text-4xl text-smoke uppercase leading-tight mb-2">
+            ONE PASS.
+          </div>
+          <div className="font-display text-3xl sm:text-4xl text-marigold uppercase leading-tight mb-2">
+            FIVE+ ARENAS.
+          </div>
+          <div className="font-display text-3xl sm:text-4xl text-smoke uppercase leading-tight mb-6">
+            ONE DAY TO MAKE YOUR MARK.
+          </div>
+
+          <p className="font-heading font-bold text-sm sm:text-base uppercase tracking-wider text-cream/60 mb-6">
+            Get your pass. Enter the arena.
+          </p>
+
+          <button
+            id="footer-pass-cta"
+            onClick={onOpenRegister}
+            className="inline-flex items-center gap-2 font-heading font-extrabold text-sm sm:text-base uppercase tracking-wider text-obsidian bg-marigold border-2 border-obsidian px-8 py-3.5 shadow-[4px_4px_0_#C1121F] hover:-translate-y-1 hover:shadow-[6px_6px_0_#C1121F] transition-all"
+          >
+            <Ticket className="w-4 h-4 sm:w-5 sm:h-5" />
+            Get Your VYUGAM Pass
+          </button>
         </div>
 
         <p className="font-mono text-xs text-mustard/70 tracking-wider mb-8">

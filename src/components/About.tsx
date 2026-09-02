@@ -51,14 +51,17 @@ export const About: React.FC = () => {
           </span>
 
           <h2 className="font-display text-3xl sm:text-5xl text-smoke uppercase leading-tight mb-6 text-shadow-sm">
-            One Day. Every Discipline. One Arena.
+            One Day. Five Arenas. One Pass.
           </h2>
 
           <p className="font-body text-base sm:text-lg text-cream max-w-3xl mx-auto leading-relaxed">
-            VYUGAM 2.0 is a one-day arena built for <strong className="text-marigold font-bold">builders, problem-solvers, designers, and presenters.</strong>{' '}
-            Five challenge tracks. One relentless clock. Students arrive with half-finished ideas and leave with
-            finished momentum — sharper skills, sharper teams, and a result they can point to.
-            This isn't a seminar to sit through. It's a signal to answer.
+            VYUGAM 2.0 is a one-day technical symposium built for{' '}
+            <strong className="text-marigold font-bold">builders, problem-solvers, designers, researchers, presenters, and competitors.</strong>{' '}
+            Across five distinct challenge arenas, students can test their technical skills, creativity, logic, presentation ability, and tactical thinking.
+          </p>
+
+          <p className="font-body text-base sm:text-lg text-cream/80 max-w-2xl mx-auto leading-relaxed mt-4">
+            Your <span className="text-marigold font-bold">VYUGAM Pass</span> is your key to the symposium. Get your pass once, explore the arenas, and make the most of the day.
           </p>
         </div>
 
@@ -72,7 +75,7 @@ export const About: React.FC = () => {
               </h3>
             </div>
             <p className="font-body text-sm sm:text-base text-cream leading-relaxed">
-              VYUGAM 2.0 is a premier technical symposium organized by the Department of Information Technology to showcase innovation, creativity, and technical excellence. It brings together students from across institutions to compete, collaborate, and celebrate technological advancement.
+              VYUGAM 2.0 is a premier technical symposium organized by the Department of Information Technology to showcase innovation, creativity, and technical excellence. Five arenas. One symposium. Students arrive with potential and leave with results they can point to.
             </p>
           </div>
 

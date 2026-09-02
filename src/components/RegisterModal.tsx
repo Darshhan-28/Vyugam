@@ -1,50 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Zap, Upload, CheckCircle, QrCode, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { EventTrack } from '../data/events';
 
 interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedTrack?: EventTrack | null;
   onShowToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
 }
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiwKcyftHjhj_tkzZxl1oF1r9cMiyqBY_uDnrYYaVAXC0mbpBRIGAgwNEwTNdgkbtFOw/exec';
-
-interface TeamMember {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-const getMemberCountFromTeamSize = (sizeStr: string): number => {
-  if (sizeStr.includes('Team of 4')) return 3;
-  if (sizeStr.includes('Team of 3')) return 2;
-  if (sizeStr.includes('Team of 2')) return 1;
-  return 0;
-};
-
-const getTeamOptionsForEvent = (eventName: string) => {
-  if (eventName.includes('Tech Tactics')) {
-    return [
-      { label: 'Individual (1 Member)', value: 'Individual (1 Member)' },
-      { label: 'Team of 2', value: 'Team of 2' },
-      { label: 'Team of 3', value: 'Team of 3' },
-      { label: 'Team of 4', value: 'Team of 4' },
-    ];
-  }
-  return [
-    { label: 'Individual (1 Member)', value: 'Individual (1 Member)' },
-  ];
-};
+// API endpoint — real backend
 
 export const RegisterModal: React.FC<RegisterModalProps> = ({
   isOpen,
   onClose,
-  selectedTrack,
   onShowToast,
 }) => {
+  const [step, setStep] = useState<1 | 2>(1);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -52,72 +23,17 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     college: '',
     year: '',
     dept: '',
-    event: '',
-    teamSize: 'Individual (1 Member)',
-    message: '',
+    utrId: '',
   });
-
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [paymentProof, setPaymentProof] = useState<string | null>(null);
+  const [paymentProofName, setPaymentProofName] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const syncTeamMembers = (teamSizeStr: string) => {
-    const targetCount = getMemberCountFromTeamSize(teamSizeStr);
-    setTeamMembers((prev) => {
-      if (prev.length === targetCount) return prev;
-      if (prev.length < targetCount) {
-        const added = Array.from({ length: targetCount - prev.length }, () => ({
-          name: '',
-          email: '',
-          phone: '',
-        }));
-        return [...prev, ...added];
-      }
-      return prev.slice(0, targetCount);
-    });
-  };
-
-  useEffect(() => {
-    if (selectedTrack) {
-      const options = getTeamOptionsForEvent(selectedTrack.title);
-      const initialSize = options[0].value;
-      setFormData((prev) => ({
-        ...prev,
-        event: selectedTrack.title,
-        teamSize: initialSize,
-      }));
-      syncTeamMembers(initialSize);
-    }
-  }, [selectedTrack]);
-
-  const handleEventChange = (eventName: string) => {
-    const options = getTeamOptionsForEvent(eventName);
-    const newSize = options[0].value;
-    setFormData((prev) => ({
-      ...prev,
-      event: eventName,
-      teamSize: newSize,
-    }));
-    syncTeamMembers(newSize);
-  };
-
-  const handleTeamSizeChange = (sizeStr: string) => {
-    setFormData((prev) => ({ ...prev, teamSize: sizeStr }));
-    syncTeamMembers(sizeStr);
-  };
-
-  const updateTeamMember = (index: number, field: keyof TeamMember, value: string) => {
-    setTeamMembers((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
-
   if (!isOpen) return null;
 
-  const validate = () => {
+  const validateStep1 = () => {
     const errs: Record<string, string> = {};
     if (!formData.name.trim()) errs.name = 'Please enter your full name';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()))
@@ -127,385 +43,410 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     if (!formData.college.trim()) errs.college = 'Please enter your college name';
     if (!formData.year) errs.year = 'Please select your year of study';
     if (!formData.dept.trim()) errs.dept = 'Please enter your department';
-    if (!formData.event) errs.event = 'Please select an event track';
-
-    teamMembers.forEach((m, idx) => {
-      if (!m.name.trim()) {
-        errs[`member_${idx}_name`] = `Please enter Member ${idx + 2}'s full name`;
-      }
-      if (m.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email.trim())) {
-        errs[`member_${idx}_email`] = `Valid email required for Member ${idx + 2}`;
-      }
-      if (m.phone.trim() && !/^[0-9]{10}$/.test(m.phone.trim())) {
-        errs[`member_${idx}_phone`] = `10-digit phone required for Member ${idx + 2}`;
-      }
-    });
-
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleStep1Next = (e: React.FormEvent) => {
     e.preventDefault();
+    if (validateStep1()) {
+      setStep(2);
+    } else {
+      onShowToast('Please fix the errors before continuing', 'error');
+    }
+  };
 
-    if (!validate()) {
-      onShowToast('Please fix errors in the form', 'error');
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 3 * 1024 * 1024) {
+      onShowToast('File size must be under 3MB', 'error');
       return;
     }
 
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setPaymentProof(ev.target?.result as string);
+      setPaymentProofName(file.name);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
-    const formattedTeamMembers = teamMembers
-      .map((m, idx) => `Member ${idx + 2}: ${m.name}${m.email ? ` (${m.email})` : ''}${m.phone ? ` [${m.phone}]` : ''}`)
-      .join('; ');
+    try {
+      // Extract base64 content and mime type separately for the API
+      let screenshotBase64: string | null = null;
+      let screenshotType: string | null = null;
+      if (paymentProof) {
+        const match = paymentProof.match(/^data:([^;]+);base64,(.+)$/);
+        if (match) {
+          screenshotType = match[1];
+          screenshotBase64 = match[2];
+        }
+      }
 
-    const payload = {
-      ...formData,
-      teamMembers: formattedTeamMembers,
-    };
-
-    // Instant ticket confirmation
-    setIsSuccess(true);
-    setIsSubmitting(false);
-
-    // Trigger Confetti
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#FDB515', '#FF4A12', '#C1121F'],
-    });
-
-    onShowToast('Registration successful!', 'success');
-
-    // Fire & Forget Background POST to Google Sheets
-    if (SCRIPT_URL) {
-      fetch(SCRIPT_URL, {
+      const response = await fetch('/api/register', {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload),
-      }).catch((err) => {
-        console.error('Background submission error:', err);
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          college: formData.college,
+          department: formData.dept,
+          year: formData.year,
+          utr: formData.utrId || null,
+          screenshotBase64,
+          screenshotType,
+        }),
       });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Duplicate email or validation error
+        onShowToast(result.error || 'Registration failed. Please try again.', 'error');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Success
+      setIsSuccess(true);
+
+      // Trigger celebratory confetti
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#FDB515', '#FF4A12', '#C1121F'],
+      });
+    } catch {
+      onShowToast('Network error. Please check your connection and try again.', 'error');
     }
+
+    setIsSubmitting(false);
   };
 
   const handleReset = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      college: '',
-      year: '',
-      dept: '',
-      event: '',
-      teamSize: 'Individual (1 Member)',
-      message: '',
-    });
-    setTeamMembers([]);
+    setFormData({ name: '', email: '', phone: '', college: '', year: '', dept: '', utrId: '' });
+    setPaymentProof(null);
+    setPaymentProofName('');
+    setErrors({});
+    setStep(1);
     setIsSuccess(false);
   };
 
+  const inputClass = (field: string) =>
+    `w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold transition-colors ${
+      errors[field] ? 'border-red-500' : 'border-carbon-2'
+    }`;
+
   return (
     <div className="fixed inset-0 z-[9000] flex items-center justify-center bg-obsidian/95 backdrop-blur-md p-3 sm:p-6 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-obsidian border-2 sm:border-4 border-marigold p-4 sm:p-8 shadow-[6px_6px_0_#7A0606] sm:shadow-[10px_10px_0_#7A0606] my-auto max-h-[92vh] overflow-y-auto scrollbar-thin">
-        {/* Close Button */}
+      <div className="relative w-full max-w-xl bg-obsidian border-2 sm:border-4 border-marigold p-4 sm:p-8 shadow-[6px_6px_0_#7A0606] sm:shadow-[10px_10px_0_#7A0606] my-auto max-h-[92vh] overflow-y-auto scrollbar-thin">
+
+        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 text-cream hover:text-marigold p-2 font-bold z-10 bg-carbon/90 sm:bg-transparent rounded-full border border-marigold/40 sm:border-none"
+          className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 text-cream hover:text-marigold p-2 font-bold z-10 bg-carbon/90 rounded-full border border-marigold/40 transition-colors"
           aria-label="Close registration modal"
         >
           <X className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
 
         {!isSuccess ? (
-          <div>
-            <div className="text-center mb-6 sm:mb-8 pt-6 sm:pt-0">
-              <span className="font-heading font-extrabold text-xs uppercase tracking-widest bg-marigold text-obsidian px-4 py-1 clip-polygon inline-block mb-2">
-                Register Free
+          <>
+            {/* Header */}
+            <div className="text-center mb-6 pt-6 sm:pt-0">
+              <span className="font-heading font-extrabold text-xs uppercase tracking-widest bg-marigold text-obsidian px-4 py-1 clip-polygon inline-block mb-3">
+                {step === 1 ? 'Step 1 of 2' : 'Step 2 of 2'}
               </span>
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-smoke uppercase">
-                Claim Your Spot In The Arena
+              <h2 className="font-display text-2xl sm:text-3xl text-smoke uppercase">
+                GET YOUR VYUGAM PASS
               </h2>
-              <p className="font-body text-sm text-cream/80 mt-1">
-                No entry fee. No catch. Fill out your details below.
+              <p className="font-mono text-xs text-mustard mt-1 tracking-wider uppercase">
+                {step === 1 ? 'Your Details' : 'Secure Your Pass'}
               </p>
-              <p className="font-mono text-xs text-red-400 font-bold bg-red-500/10 border border-red-500/30 px-3 py-2 rounded mt-3 inline-block">
-                ⚠️ Registration closes on 17 September 2026
-              </p>
+
+              {/* Step indicator */}
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <div className={`w-8 h-1 transition-colors ${step === 1 ? 'bg-marigold' : 'bg-marigold'}`} />
+                <div className={`w-8 h-1 transition-colors ${step === 2 ? 'bg-marigold' : 'bg-carbon-2'}`} />
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. John Doe"
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.name ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  />
-                  {errors.name && <p className="font-mono text-xs text-red-400 mt-1">{errors.name}</p>}
+            {/* STEP 1 */}
+            {step === 1 && (
+              <form onSubmit={handleStep1Next} className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">Full Name *</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g. Arjun Krishnan"
+                      className={inputClass('name')}
+                    />
+                    {errors.name && <p className="font-mono text-xs text-red-400 mt-1">{errors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">Email Address *</label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="e.g. arjun@college.edu"
+                      className={inputClass('email')}
+                    />
+                    {errors.email && <p className="font-mono text-xs text-red-400 mt-1">{errors.email}</p>}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="e.g. john@college.edu"
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.email ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  />
-                  {errors.email && <p className="font-mono text-xs text-red-400 mt-1">{errors.email}</p>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="10-digit Mobile Number"
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.phone ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  />
-                  {errors.phone && <p className="font-mono text-xs text-red-400 mt-1">{errors.phone}</p>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">Phone Number *</label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="10-digit Mobile Number"
+                      className={inputClass('phone')}
+                    />
+                    {errors.phone && <p className="font-mono text-xs text-red-400 mt-1">{errors.phone}</p>}
+                  </div>
+                  <div>
+                    <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">College / Institution *</label>
+                    <input
+                      type="text"
+                      value={formData.college}
+                      onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                      placeholder="Your College Name"
+                      className={inputClass('college')}
+                    />
+                    {errors.college && <p className="font-mono text-xs text-red-400 mt-1">{errors.college}</p>}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    College / Institution *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.college}
-                    onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                    placeholder="Your College Name"
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.college ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  />
-                  {errors.college && <p className="font-mono text-xs text-red-400 mt-1">{errors.college}</p>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Year of Study *
-                  </label>
-                  <select
-                    value={formData.year}
-                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.year ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  >
-                    <option value="">-- Select Year --</option>
-                    <option value="I Year">I Year</option>
-                    <option value="II Year">II Year</option>
-                    <option value="III Year">III Year</option>
-                    <option value="IV Year">IV Year</option>
-                  </select>
-                  {errors.year && <p className="font-mono text-xs text-red-400 mt-1">{errors.year}</p>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">Year of Study *</label>
+                    <select
+                      value={formData.year}
+                      onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                      className={inputClass('year')}
+                    >
+                      <option value="">-- Select Year --</option>
+                      <option value="I Year">I Year</option>
+                      <option value="II Year">II Year</option>
+                      <option value="III Year">III Year</option>
+                      <option value="IV Year">IV Year</option>
+                    </select>
+                    {errors.year && <p className="font-mono text-xs text-red-400 mt-1">{errors.year}</p>}
+                  </div>
+                  <div>
+                    <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">Department / Branch *</label>
+                    <input
+                      type="text"
+                      value={formData.dept}
+                      onChange={(e) => setFormData({ ...formData, dept: e.target.value })}
+                      placeholder="e.g. IT, CSE, ECE"
+                      className={inputClass('dept')}
+                    />
+                    {errors.dept && <p className="font-mono text-xs text-red-400 mt-1">{errors.dept}</p>}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Department / Branch *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.dept}
-                    onChange={(e) => setFormData({ ...formData, dept: e.target.value })}
-                    placeholder="e.g. IT, CSE, ECE"
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.dept ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  />
-                  {errors.dept && <p className="font-mono text-xs text-red-400 mt-1">{errors.dept}</p>}
-                </div>
-              </div>
+                <p className="font-mono text-[11px] text-red-400 font-bold bg-red-500/10 border border-red-500/30 px-3 py-2 rounded flex items-center gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  Pass registration closes on 17 September 2026
+                </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Event Track *
-                  </label>
-                  <select
-                    value={formData.event}
-                    onChange={(e) => handleEventChange(e.target.value)}
-                    className={`w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold ${
-                      errors.event ? 'border-red-500' : 'border-carbon-2'
-                    }`}
-                  >
-                    <option value="">-- Select Event Track --</option>
-                    <option value="Code Crusade">Code Crusade (Coding Challenge)</option>
-                    <option value="Logic Arena">Logic Arena (Quiz Competition)</option>
-                    <option value="UI/UX Studio">UI/UX Studio (Design Challenge)</option>
-                    <option value="Tech Tactics">Tech Tactics (Paper Presentation)</option>
-                    <option value="Pixel Pulse">Pixel Pulse (Poster Design)</option>
-                  </select>
-                  {errors.event && <p className="font-mono text-xs text-red-400 mt-1">{errors.event}</p>}
-                </div>
+                <button
+                  type="submit"
+                  className="w-full mt-1 font-display text-xl tracking-wider uppercase text-obsidian bg-marigold border-3 border-obsidian py-4 shadow-[5px_5px_0_#C1121F] hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#C1121F] active:translate-y-0 transition-all flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-5 h-5 fill-current" />
+                  Continue to Payment
+                </button>
+              </form>
+            )}
 
-                <div>
-                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                    Team Participation
-                  </label>
-                  <select
-                    value={formData.teamSize}
-                    onChange={(e) => handleTeamSizeChange(e.target.value)}
-                    className="w-full bg-carbon text-smoke border-2 border-carbon-2 p-3 font-body outline-none focus:border-marigold"
-                  >
-                    {getTeamOptionsForEvent(formData.event).map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {teamMembers.length > 0 && (
-                <div className="border-2 border-marigold/40 bg-carbon/50 p-4 space-y-4 rounded">
-                  <h4 className="font-heading font-extrabold text-xs uppercase tracking-wider text-marigold">
-                    Additional Team Member Details
-                  </h4>
-                  {teamMembers.map((member, index) => (
-                    <div key={index} className="space-y-2 border-t border-carbon-2 pt-3">
-                      <span className="font-heading font-bold text-xs text-smoke uppercase">
-                        Member {index + 2} Details
-                      </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                          <input
-                            type="text"
-                            placeholder={`Member ${index + 2} Full Name *`}
-                            value={member.name}
-                            onChange={(e) => updateTeamMember(index, 'name', e.target.value)}
-                            className={`w-full bg-carbon text-smoke border-2 p-2.5 text-xs font-body outline-none focus:border-marigold ${
-                              errors[`member_${index}_name`] ? 'border-red-500' : 'border-carbon-2'
-                            }`}
-                          />
-                          {errors[`member_${index}_name`] && (
-                            <p className="font-mono text-[10px] text-red-400 mt-1">
-                              {errors[`member_${index}_name`]}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <input
-                            type="email"
-                            placeholder={`Member ${index + 2} Email`}
-                            value={member.email}
-                            onChange={(e) => updateTeamMember(index, 'email', e.target.value)}
-                            className={`w-full bg-carbon text-smoke border-2 p-2.5 text-xs font-body outline-none focus:border-marigold ${
-                              errors[`member_${index}_email`] ? 'border-red-500' : 'border-carbon-2'
-                            }`}
-                          />
-                          {errors[`member_${index}_email`] && (
-                            <p className="font-mono text-[10px] text-red-400 mt-1">
-                              {errors[`member_${index}_email`]}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <input
-                            type="tel"
-                            placeholder={`Member ${index + 2} Phone`}
-                            value={member.phone}
-                            onChange={(e) => updateTeamMember(index, 'phone', e.target.value)}
-                            className={`w-full bg-carbon text-smoke border-2 p-2.5 text-xs font-body outline-none focus:border-marigold ${
-                              errors[`member_${index}_phone`] ? 'border-red-500' : 'border-carbon-2'
-                            }`}
-                          />
-                          {errors[`member_${index}_phone`] && (
-                            <p className="font-mono text-[10px] text-red-400 mt-1">
-                              {errors[`member_${index}_phone`]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+            {/* STEP 2 */}
+            {step === 2 && (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                {/* Pass Display */}
+                <div className="bg-carbon border-2 border-marigold p-5 shadow-[5px_5px_0_#7A0606] relative overflow-hidden">
+                  {/* Pass decorative stripe */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-ember via-marigold to-ember" />
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-mustard">VYUGAM SYMPOSIUM PASS</p>
+                      <p className="font-display text-3xl text-marigold leading-none">₹200</p>
                     </div>
-                  ))}
+                    <div className="text-right">
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-mustard">One Pass. Five+ Arenas.</p>
+                      <p className="font-heading font-extrabold text-sm text-smoke uppercase">24 Sept 2026</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-dashed border-marigold/40 pt-3 font-mono text-xs text-cream/70 flex items-center justify-between">
+                    <span>{formData.name || 'Participant'}</span>
+                    <span className="text-marigold font-bold">IT DEPT · PACET</span>
+                  </div>
                 </div>
-              )}
 
-              <div>
-                <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
-                  Additional Note / Query (Optional)
-                </label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Any questions or special requirements?"
-                  rows={2}
-                  className="w-full bg-carbon text-smoke border-2 border-carbon-2 p-3 font-body outline-none focus:border-marigold"
-                />
-              </div>
+                {/* QR Section */}
+                <div className="bg-obsidian border-2 border-marigold/60 p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <QrCode className="w-5 h-5 text-marigold" />
+                    <span className="font-heading font-extrabold text-sm uppercase tracking-wider text-smoke">Scan & Pay ₹200</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+                    <div className="flex-shrink-0 border-2 border-marigold p-2 bg-white shadow-[4px_4px_0_#7A0606]">
+                      <img
+                        src="/upi-qr.png"
+                        alt="VYUGAM UPI QR Code for payment"
+                        className="w-32 h-32 object-contain"
+                        onError={(e) => {
+                          // Fallback placeholder if QR not yet added
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent && !parent.querySelector('.qr-fallback')) {
+                            const fb = document.createElement('div');
+                            fb.className = 'qr-fallback w-32 h-32 bg-carbon flex items-center justify-center text-center p-2';
+                            fb.innerHTML = '<span style="color:#FDB515;font-size:10px;font-family:monospace;text-transform:uppercase;letter-spacing:0.1em">QR Code<br/>Coming Soon</span>';
+                            parent.appendChild(fb);
+                          }
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <p className="font-body text-sm text-cream/90 leading-relaxed">
+                        Scan using <span className="text-marigold font-bold">Google Pay</span> or any UPI app and complete the ₹200 payment.
+                      </p>
+                      <p className="font-mono text-xs text-mustard mt-2 uppercase tracking-wider">
+                        Amount: ₹200 · One-time · Full symposium access
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-2 font-display text-xl tracking-wider uppercase text-obsidian bg-marigold border-3 border-obsidian py-4 shadow-[5px_5px_0_#C1121F] hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#C1121F] active:translate-y-0 disabled:opacity-60 transition-all"
-              >
-                {isSubmitting ? 'Submitting Registration...' : '⚡ Complete Registration'}
-              </button>
-            </form>
-          </div>
+                {/* Upload Screenshot */}
+                <div>
+                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-2">
+                    Upload Payment Screenshot <span className="text-mustard/60 normal-case font-normal">(recommended)</span>
+                  </label>
+                  <label
+                    htmlFor="payment-proof"
+                    className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-marigold/50 hover:border-marigold bg-carbon/50 p-5 cursor-pointer transition-all group"
+                  >
+                    {paymentProofName ? (
+                      <>
+                        <CheckCircle className="w-6 h-6 text-emerald-400" />
+                        <span className="font-mono text-xs text-emerald-400 font-bold">{paymentProofName}</span>
+                        <span className="font-mono text-[10px] text-mustard/60 uppercase">Click to replace</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-marigold/60 group-hover:text-marigold transition-colors" />
+                        <span className="font-mono text-xs uppercase tracking-wider text-cream/60 group-hover:text-cream transition-colors">
+                          Click to upload screenshot
+                        </span>
+                        <span className="font-mono text-[10px] text-mustard/50 uppercase">PNG, JPG · Max 3MB</span>
+                      </>
+                    )}
+                    <input
+                      id="payment-proof"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                  </label>
+                </div>
+
+                {/* UTR */}
+                <div>
+                  <label className="block font-heading font-bold text-xs uppercase text-marigold mb-1">
+                    UPI Transaction ID / UTR <span className="text-mustard/60 normal-case font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.utrId}
+                    onChange={(e) => setFormData({ ...formData, utrId: e.target.value })}
+                    placeholder="e.g. 426789123456"
+                    className="w-full bg-carbon text-smoke border-2 border-carbon-2 p-3 font-body outline-none focus:border-marigold transition-colors"
+                  />
+                </div>
+
+                <p className="font-mono text-[11px] text-cream/50 bg-carbon/40 border border-marigold/20 px-3 py-2 rounded text-center">
+                  Payment is collected through UPI. Your pass is issued after manual verification by the VYUGAM team.
+                </p>
+
+                <div className="flex flex-col xs:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="font-heading font-bold text-sm uppercase tracking-wider text-marigold border-2 border-marigold px-5 py-3 hover:bg-marigold hover:text-obsidian transition-colors xs:w-auto"
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 font-display text-xl tracking-wider uppercase text-obsidian bg-marigold border-3 border-obsidian py-4 shadow-[5px_5px_0_#C1121F] hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#C1121F] active:translate-y-0 disabled:opacity-60 transition-all"
+                  >
+                    {isSubmitting ? 'Submitting...' : '⚡ Submit for Verification'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </>
         ) : (
-          /* Confirmation Ticket Pass */
+          /* Submission Confirmation */
           <div className="text-center py-4 pt-10 sm:pt-4">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-marigold text-obsidian flex items-center justify-center mx-auto mb-4 text-2xl sm:text-3xl font-bold shadow-[0_0_20px_rgba(253,181,21,0.6)]">
-              ✓
+            {/* Icon */}
+            <div className="w-16 h-16 rounded-full bg-carbon border-2 border-marigold flex items-center justify-center mx-auto mb-5 shadow-[0_0_24px_rgba(253,181,21,0.35)]">
+              <CheckCircle className="w-8 h-8 text-marigold" />
             </div>
-            <h3 className="font-display text-2xl sm:text-3xl text-marigold uppercase mb-2">
-              Registration Confirmed!
+
+            <span className="font-heading font-extrabold text-xs uppercase tracking-widest bg-marigold/20 text-marigold border border-marigold/50 px-4 py-1 inline-block mb-3">
+              Payment Submitted
+            </span>
+
+            <h3 className="font-display text-2xl sm:text-3xl text-smoke uppercase mb-2">
+              Registration Received
             </h3>
-            <p className="font-body text-sm text-smoke mb-6">
-              Welcome to VYUGAM 2.0. Your spot in the arena is reserved.
+
+            <p className="font-body text-sm text-cream/80 max-w-sm mx-auto mb-6 leading-relaxed">
+              Your registration and payment proof have been received. Your payment is now <span className="text-marigold font-bold">pending manual verification</span> by the VYUGAM team.
             </p>
 
-            <div className="bg-carbon border-2 border-marigold p-4 sm:p-5 text-left font-mono text-xs text-cream space-y-2 mb-6 shadow-inner">
-              <div className="flex flex-col xs:flex-row justify-between border-b border-carbon-2 pb-2 gap-1">
-                <span className="text-mustard">Participant:</span>
-                <strong className="text-smoke text-right">{formData.name} ({formData.year} - {formData.dept})</strong>
-              </div>
-              <div className="flex flex-col xs:flex-row justify-between border-b border-carbon-2 pb-2 gap-1">
-                <span className="text-mustard">Track:</span>
-                <strong className="text-marigold text-right">{formData.event}</strong>
-              </div>
-              <div className="flex flex-col xs:flex-row justify-between border-b border-carbon-2 pb-2 gap-1">
-                <span className="text-mustard">Team Size:</span>
-                <strong className="text-smoke text-right">{formData.teamSize}</strong>
-              </div>
-              {teamMembers.length > 0 && (
-                <div className="flex flex-col xs:flex-row justify-between border-b border-carbon-2 pb-2 gap-1">
-                  <span className="text-mustard">Team Members:</span>
-                  <strong className="text-smoke text-right">{teamMembers.map((m) => m.name).join(', ')}</strong>
+            {/* What happens next */}
+            <div className="bg-carbon border-2 border-marigold/40 p-4 sm:p-5 text-left font-mono text-xs text-cream/80 space-y-3 mb-6 shadow-inner">
+              <p className="text-marigold font-bold uppercase tracking-wider text-[11px] mb-2">What happens next?</p>
+              {[
+                'Your payment proof will be reviewed by the VYUGAM team.',
+                'Once verified, your personalized VYUGAM Pass will be sent to your registered email.',
+                'Save the pass on your phone and bring it to the symposium on 24 September 2026.',
+                'Event coordinators will scan your pass QR before you enter participating arenas.',
+              ].map((step, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="text-marigold font-bold flex-shrink-0">{i + 1}.</span>
+                  <span>{step}</span>
                 </div>
-              )}
-              <div className="flex flex-col xs:flex-row justify-between gap-1">
-                <span className="text-mustard">Date &amp; Venue:</span>
-                <strong className="text-emerald-400 text-right">24 Sept 2026 @ IT Hall, PACET</strong>
-              </div>
+              ))}
+            </div>
+
+            <div className="bg-obsidian border border-marigold/30 px-4 py-3 mb-6">
+              <p className="font-mono text-[11px] text-mustard/70 uppercase tracking-wider">
+                Pass will be sent to: <span className="text-cream font-bold">{formData.email}</span>
+              </p>
             </div>
 
             <button

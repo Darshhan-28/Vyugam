@@ -3,13 +3,13 @@ import { Star } from 'lucide-react';
 
 export const Schedule: React.FC = () => {
   const scheduleNodes = [
-    { time: '08:30 AM', title: 'Arrival', desc: 'Gates open. Squads assemble.' },
-    { time: '09:00 AM', title: 'Check-In', desc: 'Badges out. Track assignments locked.' },
-    { time: '09:30 AM', title: 'Prelims', desc: 'First cut. Prove you belong here.' },
-    { time: '12:00 PM', title: 'Finalist Stage', desc: 'Top squads. Full pressure. Full focus.' },
-    { time: '02:30 PM', title: 'Showcase', desc: 'Work goes on display for all.' },
-    { time: '04:00 PM', title: 'Results', desc: 'Winners named. Tension breaks.' },
-    { time: '04:30 PM', title: 'Closing Blast', desc: 'One last spark before the arena empties.' },
+    { time: '08:30 AM', title: 'Arrival', desc: 'Enter the VYUGAM arena.' },
+    { time: '09:00 AM', title: 'Check-In', desc: 'Get your pass verified and enter the experience.' },
+    { time: '09:30 AM', title: 'Challenges Begin', desc: 'The arenas go live.' },
+    { time: '12:00 PM', title: 'Finalist Stage', desc: 'Top performers face the next round.' },
+    { time: '02:30 PM', title: 'Showcase', desc: 'Ideas, designs, and creations take the spotlight.' },
+    { time: '04:00 PM', title: 'Results', desc: 'Champions are revealed.' },
+    { time: '04:30 PM', title: 'Closing Blast', desc: 'One final spark before the arena closes.' },
   ];
 
   return (
