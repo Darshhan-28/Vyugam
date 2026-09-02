@@ -24,7 +24,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const method = (req.method || 'GET').toUpperCase();
 
   // Helper to parse JSON body if needed
-  const body = (req.body && typeof req.body === 'object') ? req.body : {};
+  let body: Record<string, unknown> = {};
+  if (typeof req.body === 'string') {
+    try {
+      body = JSON.parse(req.body);
+    } catch {
+      body = {};
+    }
+  } else if (req.body && typeof req.body === 'object') {
+    body = req.body as Record<string, unknown>;
+  }
 
   try {
     // ── 1. PUBLIC: Participant Registration ─────────────────────
