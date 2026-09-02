@@ -63,7 +63,17 @@ const CONFIG = {
 
 function doPost(e) {
   try {
-    const payload = JSON.parse(e.postData.contents);
+    if (!e || !e.postData || !e.postData.contents) {
+      return jsonResponse({ error: 'Missing request payload' }, 400);
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(e.postData.contents);
+    } catch (parseErr) {
+      return jsonResponse({ error: 'Invalid JSON payload' }, 400);
+    }
+
     const { action, adminSecret, ...data } = payload;
 
     // Route to correct handler
@@ -137,12 +147,17 @@ function doPost(e) {
     if (err.message === 'UNAUTHORIZED') {
       return jsonResponse({ error: 'Unauthorized' }, 401);
     }
-    Logger.log('[doPost Error] ' + err.toString());
+    console.error('[doPost Error] ' + err.toString());
     return jsonResponse({ error: err.message || 'Internal error' }, 500);
   }
 }
 
 function doGet(e) {
+  if (e && e.parameter && e.parameter.action) {
+    if (e.parameter.action === 'healthCheck') {
+      return jsonResponse({ status: 'ok', event: 'VYUGAM 2.0 Backend' });
+    }
+  }
   return jsonResponse({ status: 'active', event: 'VYUGAM 2.0 Backend API' });
 }
 
