@@ -375,19 +375,48 @@ export const AdminPage: React.FC = () => {
 
   const fetchRegistrations = useCallback(async () => {
     setRefreshing(true);
-    const r = await fetch(`/api/admin/registrations?status=${filter}`);
-    if (r.ok) {
-      const j = await r.json();
-      setParticipants(j.participants || []);
+    try {
+      const r = await fetch(`/api/admin/registrations?status=${filter}`);
+      if (r.ok) {
+        const j = await r.json();
+        const rawList = Array.isArray(j) ? j : (j?.participants || j?.registrations || j?.data || []);
+        const normalized: Participant[] = rawList.map((p: any) => ({
+          id: String(p.id || ''),
+          pass_id: p.pass_id ? String(p.pass_id) : null,
+          name: String(p.name || 'Unnamed'),
+          email: String(p.email || ''),
+          phone: String(p.phone || ''),
+          college: String(p.college || '—'),
+          department: String(p.department || '—'),
+          year: String(p.year || '—'),
+          utr: p.utr ? String(p.utr) : null,
+          payment_status: p.payment_status || 'PENDING',
+          pass_status: p.pass_status || 'PENDING',
+          created_at: String(p.created_at || ''),
+          verified_at: p.verified_at ? String(p.verified_at) : null,
+          verified_by: p.verified_by ? String(p.verified_by) : null,
+          has_screenshot: Boolean(p.has_screenshot || p.payment_screenshot_url),
+          payment_screenshot_url: p.payment_screenshot_url || (p.has_screenshot ? `/api/admin/screenshot/${p.id}` : null),
+        }));
+        setParticipants(normalized);
+      }
+    } catch (err) {
+      console.error('[AdminPage] fetchRegistrations error:', err);
+    } finally {
+      setRefreshing(false);
     }
-    setRefreshing(false);
   }, [filter]);
 
   const fetchCheckins = useCallback(async () => {
     setRefreshing(true);
-    const r = await fetch('/api/admin/checkins');
-    if (r.ok) setCheckins(await r.json());
-    setRefreshing(false);
+    try {
+      const r = await fetch('/api/admin/checkins');
+      if (r.ok) setCheckins(await r.json());
+    } catch (err) {
+      console.error('[AdminPage] fetchCheckins error:', err);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -396,17 +425,21 @@ export const AdminPage: React.FC = () => {
   }, [tab, fetchRegistrations, fetchCheckins]);
 
   const handleAction = async (action: string, id: string) => {
-    const r = await fetch(`/api/admin/${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ participant_id: id }),
-    });
-    const j = await r.json();
-    if (r.ok) {
-      showToast(j.message || 'Done', 'ok');
-      fetchRegistrations();
-    } else {
-      showToast(j.error || 'Action failed', 'err');
+    try {
+      const r = await fetch(`/api/admin/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participant_id: id, participantId: id, id: id }),
+      });
+      const j = await r.json();
+      if (r.ok && (j.success || !j.error)) {
+        showToast(j.message || 'Action executed successfully', 'ok');
+        await fetchRegistrations();
+      } else {
+        showToast(j.error || 'Action failed', 'err');
+      }
+    } catch (err) {
+      showToast('Network error performing action', 'err');
     }
   };
 
@@ -415,10 +448,11 @@ export const AdminPage: React.FC = () => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
-      p.name.toLowerCase().includes(q) ||
-      p.email.toLowerCase().includes(q) ||
-      p.college.toLowerCase().includes(q) ||
-      (p.pass_id ?? '').toLowerCase().includes(q)
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.email || '').toLowerCase().includes(q) ||
+      (p.college || '').toLowerCase().includes(q) ||
+      (p.pass_id || '').toLowerCase().includes(q) ||
+      (p.phone || '').toLowerCase().includes(q)
     );
   });
 
