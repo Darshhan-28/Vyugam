@@ -20,7 +20,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Normalize request URL path
   const rawUrl = req.url || '';
   const urlObj = new URL(rawUrl, `http://${req.headers.host || 'localhost'}`);
-  const pathname = urlObj.pathname.replace(/\/$/, ''); // e.g. /api/register or /api/admin/registrations
+  let pathname = urlObj.pathname.replace(/\/$/, '');
+  if (req.query.path) {
+    const p = Array.isArray(req.query.path) ? req.query.path.join('/') : req.query.path;
+    pathname = `/api/${p}`.replace(/\/$/, '');
+  }
   const method = (req.method || 'GET').toUpperCase();
 
   // Helper to parse JSON body if needed
