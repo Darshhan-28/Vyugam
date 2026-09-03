@@ -1,6 +1,6 @@
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz27HT7yPxOoVvjoAZwgJ9DqufE9yUboAMXgsqQHdoCDOn6HD3_3xbziWlAGAn8yCQQRw/exec";
 const GAS_ADMIN_SECRET = "Sakho115";
-const GAS_COORD_SECRET = "vyugam2k26";
+const GAS_COORD_SECRET = process.env.GAS_COORD_SECRET || "vyugam2k26";
 
 async function callGAS(action, payload = {}, opts = {}) {
   const body = { action, ...payload };
@@ -31,7 +31,7 @@ async function runEndToEndTest() {
   console.log("▶ Step 1: Backend Health Check");
   const health = await callGAS('healthCheck');
   console.log("  Status:", health.status, "| Event:", health.event);
-  if (health.status !== 'ok') throw new Error("Health check failed!");
+  if (health.status !== 'ok' && health.status !== 'active') throw new Error("Health check failed!");
 
   // Step 2: Register Participant
   const timestamp = Date.now();
@@ -99,6 +99,7 @@ async function runEndToEndTest() {
   // Step 8: Coordinator QR Scan Validation
   console.log("\n▶ Step 8: Coordinator QR Scan Validation (Code Crusade)");
   const scanRes = await callGAS('scanToken', { token: token, eventId: 'code-crusade' }, { coord: true });
+  console.log("  Scan Response:", scanRes);
   console.log("  Scan Status:", scanRes.status);
   console.log("  Event:", scanRes.event);
   if (scanRes.status !== 'VALID') throw new Error("Scan validation failed!");

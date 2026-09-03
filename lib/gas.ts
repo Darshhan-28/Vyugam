@@ -19,7 +19,7 @@ export class GasError extends Error {
  */
 const DEFAULT_GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz27HT7yPxOoVvjoAZwgJ9DqufE9yUboAMXgsqQHdoCDOn6HD3_3xbziWlAGAn8yCQQRw/exec';
 const DEFAULT_GAS_ADMIN_SECRET = 'Sakho115';
-const DEFAULT_GAS_COORD_SECRET = 'vyugam2k26';
+const DEFAULT_GAS_COORD_SECRET = 'Vyugam2k26';
 
 export async function callGAS(
   action: string,
