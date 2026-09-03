@@ -625,13 +625,16 @@ function verifyPayment(participantId, adminId) {
 
     // Send confirmation email
     const passUrl = CONFIG.BASE_URL + '/pass/' + token;
-    sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], passId, passUrl);
+    const emailSent = sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], passId, passUrl);
 
     return {
       success: true,
       pass_id: passId,
       token: token,
-      message: 'Payment verified. Pass activated. Confirmation email sent.',
+      email_sent: emailSent,
+      message: emailSent
+        ? 'Payment verified. Pass activated. Confirmation email sent.'
+        : 'Payment verified. Pass activated. Email delivery failed.',
     };
   } finally {
     if (hasLock) {
@@ -680,9 +683,13 @@ function resendPassEmail(participantId) {
   }
 
   const passUrl = CONFIG.BASE_URL + '/pass/' + row[P_COL.TOKEN];
-  sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], row[P_COL.PASS_ID], passUrl);
+  const emailSent = sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], row[P_COL.PASS_ID], passUrl);
 
-  return { success: true, message: 'Pass email resent.' };
+  return {
+    success: true,
+    email_sent: emailSent,
+    message: emailSent ? 'Pass email resent successfully.' : 'Pass email delivery failed.',
+  };
 }
 
 // ── ADMIN — ATTENDANCE / CHECK-INS ───────────────────────────
@@ -943,12 +950,28 @@ function recordCheckin(participantId, eventId, coordinatorId) {
 function sendPassEmail(toEmail, name, college, passId, passUrl) {
   try {
     const subject = 'Your VYUGAM Pass Is Ready — ' + passId;
+    const plainTextBody = 'Hello ' + (name || 'Participant') + ',\n\n' +
+      'Your payment has been verified by the VYUGAM team.\n' +
+      'Your personalized VYUGAM Symposium Pass is now active and ready to use.\n\n' +
+      'Pass ID: ' + passId + '\n' +
+      'College: ' + (college || 'N/A') + '\n' +
+      'View Your Pass: ' + passUrl + '\n\n' +
+      'On Event Day:\n' +
+      '1. Open your VYUGAM Pass on your phone\n' +
+      '2. Keep the QR code visible and accessible\n' +
+      '3. Present your pass to event coordinators before participating\n' +
+      '4. One pass. Multiple arenas. No separate registrations.\n\n' +
+      '— VYUGAM 2.0 Team\n' +
+      'Department of Information Technology\n' +
+      'P.A. College of Engineering and Technology';
+
     const htmlBody = buildPassEmailHtml(name, college, passId, passUrl);
 
     try {
       MailApp.sendEmail({
         to: toEmail,
         subject: subject,
+        body: plainTextBody,
         htmlBody: htmlBody,
         name: CONFIG.EMAIL_FROM_NAME,
       });
@@ -956,7 +979,7 @@ function sendPassEmail(toEmail, name, college, passId, passUrl) {
       return true;
     } catch (mailErr) {
       Logger.log('[MailApp Error] ' + mailErr.toString() + ' — attempting GmailApp fallback...');
-      GmailApp.sendEmail(toEmail, subject, '', {
+      GmailApp.sendEmail(toEmail, subject, plainTextBody, {
         htmlBody: htmlBody,
         name: CONFIG.EMAIL_FROM_NAME,
       });

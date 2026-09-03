@@ -161,16 +161,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Single Registration Detail: GET /api/admin/registration/:id
       if (pathname.startsWith('/api/admin/registration') && method === 'GET') {
+        const startTime = Date.now();
+        console.log(`[AdminRegistration] request received: ${pathname}`);
+
         const pathParts = pathname.split('/');
         const idRaw = (pathParts.length > 4 ? pathParts[4] : null) || req.query.id || req.query.registrationId;
         const participantId = Array.isArray(idRaw) ? idRaw[0] : (idRaw as string | undefined);
+
+        console.log(`[AdminRegistration] participant ID: ${participantId || 'missing'}`);
 
         if (!participantId || participantId === 'undefined') {
           return res.status(400).json({ error: 'Participant ID is required' });
         }
 
+        console.log(`[AdminRegistration] GAS request started for ID: ${participantId}`);
+        const gasStartTime = Date.now();
         const result = (await callGAS('getRegistration', { id: participantId, participantId }, { admin: true })) as Record<string, unknown>;
-        if (result.error) return res.status(404).json({ error: result.error });
+        const gasDuration = Date.now() - gasStartTime;
+
+        console.log(`[AdminRegistration] GAS response received in ${gasDuration}ms`);
+        console.log(`[AdminRegistration] GAS status: ${result.error ? 'ERROR' : 'OK'}`);
+        console.log(`[AdminRegistration] GAS response body preview: ${JSON.stringify(result).slice(0, 200)}`);
+        console.log(`[AdminRegistration] response parsing started`);
+
+        if (result.error) {
+          console.log(`[AdminRegistration] total duration: ${Date.now() - startTime}ms`);
+          return res.status(404).json({ error: result.error });
+        }
+
+        console.log(`[AdminRegistration] total duration: ${Date.now() - startTime}ms`);
         return res.status(200).json(result);
       }
 

@@ -53,7 +53,9 @@ export async function callGAS(
   const targetUrl = urlObj.toString();
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), opts.timeoutMs ?? 28000);
+  const timeoutMs = opts.timeoutMs ?? 15000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const startTime = Date.now();
 
   try {
     const res = await fetch(targetUrl, {
@@ -67,13 +69,14 @@ export async function callGAS(
       redirect: 'follow',
     });
 
+    const duration = Date.now() - startTime;
     let json: unknown;
     let text = '';
     try {
       text = await res.text();
       json = JSON.parse(text);
     } catch {
-      console.error(`[GAS Client Error] Action "${action}" returned non-JSON. HTTP status: ${res.status}. Body: ${text.slice(0, 300)}`);
+      console.error(`[GAS Client Error] Action "${action}" returned non-JSON after ${duration}ms. HTTP status: ${res.status}. Body preview: ${text.slice(0, 300)}`);
       throw new GasError(502, 'GAS returned a non-JSON response. Check that the Web App URL is correct and deployed.');
     }
 
@@ -85,7 +88,7 @@ export async function callGAS(
     ) {
       const errMsg = (json as Record<string, string>).error;
       const targetId = (payload.id || payload.participantId || 'N/A') as string;
-      console.error(`[GAS Business Error] Action: "${action}" | Target ID: "${targetId}" | GAS Status: ${res.status} | Error: "${errMsg}"`);
+      console.error(`[GAS Business Error] Action: "${action}" | Target ID: "${targetId}" | Duration: ${duration}ms | GAS Status: ${res.status} | Error: "${errMsg}"`);
 
       const lower = errMsg.toLowerCase();
       if (errMsg === 'Unauthorized' || lower.includes('unauthorized')) {
@@ -102,12 +105,13 @@ export async function callGAS(
 
     return json;
   } catch (err) {
+    const duration = Date.now() - startTime;
     if (err instanceof GasError) throw err;
     if ((err as Error).name === 'AbortError') {
-      console.error(`[GAS Client Error] Action "${action}" timed out after 28 seconds.`);
-      throw new GasError(504, 'GAS request timed out after 28 seconds.');
+      console.error(`[GAS Client Error] Action "${action}" timed out after ${duration}ms (limit: ${timeoutMs}ms).`);
+      throw new GasError(504, `GAS request timed out after ${Math.round(timeoutMs / 1000)} seconds.`);
     }
-    console.error(`[GAS Client Error] Action "${action}" failed:`, (err as Error).message);
+    console.error(`[GAS Client Error] Action "${action}" failed after ${duration}ms:`, (err as Error).message);
     throw new GasError(502, 'Could not reach Google Apps Script: ' + (err as Error).message);
   } finally {
     clearTimeout(timeoutId);
