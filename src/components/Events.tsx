@@ -37,7 +37,7 @@ export const Events: React.FC = () => {
         {/* Announcement Banner */}
         <div className="inline-flex items-center justify-center gap-2 font-mono text-[11px] sm:text-sm font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/40 px-4 sm:px-6 py-2 sm:py-2.5 rounded mb-8 sm:mb-10 animate-spark max-w-full text-center flex-wrap">
           <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-          <span>VYUGAM Pass registrations are Open! Deadline: 17 Sept 2026. Get your pass and enter the experience.</span>
+          <span>VYUGAM Pass registrations are Open! Deadline: 19 Sept 2026. Get your pass and enter the experience.</span>
         </div>
 
         {/* Event Filter Pills */}

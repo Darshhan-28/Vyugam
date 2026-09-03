@@ -263,7 +263,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
 
                 <p className="font-mono text-[11px] text-red-400 font-bold bg-red-500/10 border border-red-500/30 px-3 py-2 rounded flex items-center gap-2">
                   <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  Pass registration closes on 17 September 2026
+                  Pass registration closes on 19 September 2026
                 </p>
 
                 <button
@@ -433,6 +433,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               {[
                 'Your payment proof will be reviewed by the VYUGAM team.',
                 'Once verified, your personalized VYUGAM Pass will be sent to your registered email.',
+                'Please check your Spam / Junk folder if you do not see the pass email in your Inbox.',
                 'Save the pass on your phone and bring it to the symposium on 24 September 2026.',
                 'Event coordinators will scan your pass QR before you enter participating arenas.',
               ].map((step, i) => (
@@ -446,6 +447,9 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
             <div className="bg-obsidian border border-marigold/30 px-4 py-3 mb-6">
               <p className="font-mono text-[11px] text-mustard/70 uppercase tracking-wider">
                 Pass will be sent to: <span className="text-cream font-bold">{formData.email}</span>
+              </p>
+              <p className="font-mono text-[10px] text-amber-400 mt-1 uppercase tracking-wider">
+                💡 Tip: Check your Spam / Junk folder if the email is not in your Inbox after verification.
               </p>
             </div>
 
