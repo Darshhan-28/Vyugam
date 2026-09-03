@@ -39,11 +39,24 @@ export async function callGAS(
   if (opts.admin) body.adminSecret = adminSecret;
   if (opts.coord) body.coordSecret = coordSecret;
 
+  // Build target URL with query parameters.
+  // When Node fetch follows Google Apps Script's 302 Redirect after a POST,
+  // Node fetch converts the HTTP method to GET and drops the POST request body.
+  // Appending action, id, adminSecret, coordSecret, etc. to the URL query string ensures that
+  // Google Apps Script preserves these parameters in e.parameter when handling the redirected GET request.
+  const urlObj = new URL(gasUrl);
+  Object.entries(body).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && typeof v !== 'object') {
+      urlObj.searchParams.set(k, String(v));
+    }
+  });
+  const targetUrl = urlObj.toString();
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), opts.timeoutMs ?? 28000);
 
   try {
-    const res = await fetch(gasUrl, {
+    const res = await fetch(targetUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

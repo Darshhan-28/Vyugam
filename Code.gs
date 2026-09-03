@@ -945,15 +945,26 @@ function sendPassEmail(toEmail, name, college, passId, passUrl) {
     const subject = 'Your VYUGAM Pass Is Ready — ' + passId;
     const htmlBody = buildPassEmailHtml(name, college, passId, passUrl);
 
-    GmailApp.sendEmail(toEmail, subject, '', {
-      htmlBody: htmlBody,
-      name: CONFIG.EMAIL_FROM_NAME,
-    });
-
-    Logger.log('[Email] Sent pass confirmation to: ' + toEmail);
-    return true;
+    try {
+      MailApp.sendEmail({
+        to: toEmail,
+        subject: subject,
+        htmlBody: htmlBody,
+        name: CONFIG.EMAIL_FROM_NAME,
+      });
+      Logger.log('[Email] Sent pass confirmation via MailApp to: ' + toEmail);
+      return true;
+    } catch (mailErr) {
+      Logger.log('[MailApp Error] ' + mailErr.toString() + ' — attempting GmailApp fallback...');
+      GmailApp.sendEmail(toEmail, subject, '', {
+        htmlBody: htmlBody,
+        name: CONFIG.EMAIL_FROM_NAME,
+      });
+      Logger.log('[Email] Sent pass confirmation via GmailApp to: ' + toEmail);
+      return true;
+    }
   } catch (err) {
-    Logger.log('[Email Error] ' + err.toString());
+    Logger.log('[Email Error] Failed to send email to ' + toEmail + ': ' + err.toString());
     return false;
   }
 }
