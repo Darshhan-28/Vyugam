@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import QRCode from 'qrcode';
 import { QrCode, MapPin, Calendar, AlertTriangle, XCircle, Clock, Loader2 } from 'lucide-react';
 
 interface PassData {
@@ -9,6 +10,7 @@ interface PassData {
   department?: string;
   year?: string;
   pass_id?: string;
+  secure_pass_token?: string;
   qr_data_url?: string;
   event_date?: string;
 }
@@ -27,8 +29,25 @@ export const PassPage: React.FC = () => {
 
     fetch(`/api/pass/${token}`)
       .then((r) => r.json())
-      .then((json) => {
-        setData(json as PassData);
+      .then(async (json) => {
+        const passData = json as PassData;
+        if (passData.status === 'ACTIVE') {
+          const passToken = passData.secure_pass_token || token;
+          try {
+            const qrUrl = await QRCode.toDataURL(passToken, {
+              margin: 1,
+              width: 256,
+              color: {
+                dark: '#050505',
+                light: '#FFFFFF',
+              },
+            });
+            passData.qr_data_url = qrUrl;
+          } catch (qrErr) {
+            console.error('[PassPage] Error generating QR code:', qrErr);
+          }
+        }
+        setData(passData);
         setLoading(false);
       })
       .catch(() => {

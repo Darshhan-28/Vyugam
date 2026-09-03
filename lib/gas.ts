@@ -47,7 +47,10 @@ export async function callGAS(
   const urlObj = new URL(gasUrl);
   Object.entries(body).forEach(([k, v]) => {
     if (v !== undefined && v !== null && typeof v !== 'object') {
-      urlObj.searchParams.set(k, String(v));
+      const valStr = String(v);
+      if (k !== 'base64' && valStr.length <= 500) {
+        urlObj.searchParams.set(k, valStr);
+      }
     }
   });
   const targetUrl = urlObj.toString();

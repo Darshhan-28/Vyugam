@@ -88,21 +88,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(500).json({ error: regResult.error || 'Registration failed. Please try again.' });
       }
 
-      // Upload payment screenshot if provided (non-blocking)
+      // Upload payment screenshot if provided (awaited so Vercel container stays active)
+      let screenshotUploaded = false;
       if (screenshotBase64) {
         const approxBytes = Math.ceil(screenshotBase64.length * 0.75);
         if (approxBytes <= 3 * 1024 * 1024) {
-          callGAS('uploadScreenshot', {
-            participantId: regResult.participantId,
-            base64: screenshotBase64,
-            mimeType: screenshotType || 'image/jpeg',
-          }).catch((err) => console.error('[Register] Screenshot upload error:', err));
+          try {
+            console.log(`[Register] Uploading screenshot for participant: ${regResult.participantId}`);
+            const upRes = (await callGAS('uploadScreenshot', {
+              participantId: regResult.participantId,
+              id: regResult.participantId,
+              base64: screenshotBase64,
+              mimeType: screenshotType || 'image/jpeg',
+            })) as { success?: boolean; fileId?: string; error?: string };
+
+            if (upRes?.success) {
+              screenshotUploaded = true;
+              console.log(`[Register] Screenshot uploaded successfully. File ID: ${upRes.fileId}`);
+            } else {
+              console.error(`[Register] Screenshot upload returned error:`, upRes?.error);
+            }
+          } catch (err) {
+            console.error('[Register] Screenshot upload failed:', err);
+          }
         }
       }
 
       return res.status(201).json({
         success: true,
         participant_id: regResult.participantId,
+        screenshot_uploaded: screenshotUploaded,
         message: 'Registration submitted. Payment pending verification.',
       });
     }
@@ -117,9 +132,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // ── 3. PUBLIC: Upload Screenshot ────────────────────────────
     if (pathname === '/api/upload-screenshot' && method === 'POST') {
-      const { participantId, base64, mimeType } = body as Record<string, string>;
-      if (!participantId || !base64) return res.status(400).json({ error: 'participantId and base64 required' });
-      const uploadResult = await callGAS('uploadScreenshot', { participantId, base64, mimeType });
+      const { participantId, id, base64, mimeType } = body as Record<string, string>;
+      const targetId = participantId || id;
+      if (!targetId || !base64) return res.status(400).json({ error: 'participantId and base64 required' });
+      const uploadResult = await callGAS('uploadScreenshot', {
+        participantId: targetId,
+        id: targetId,
+        base64,
+        mimeType: mimeType || 'image/jpeg',
+      });
       return res.status(200).json(uploadResult);
     }
 

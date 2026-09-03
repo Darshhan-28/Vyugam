@@ -54,6 +54,18 @@ async function runEndToEndTest() {
   const participantId = regRes.participantId;
   console.log("  ✓ Participant Created. ID:", participantId);
 
+  // Step 2.5: Google Drive Screenshot Upload Test
+  console.log("\n▶ Step 2.5: Google Drive Screenshot Upload Test");
+  const tinyPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  const upRes = await callGAS('uploadScreenshot', {
+    participantId: participantId,
+    base64: tinyPngBase64,
+    mimeType: 'image/png'
+  });
+  console.log("  Upload Response:", upRes);
+  if (!upRes || !upRes.success || !upRes.fileId) throw new Error("Screenshot upload failed!");
+  console.log("  ✓ Drive File Created! File ID:", upRes.fileId);
+
   // Step 3: Duplicate Email Prevention Test
   console.log("\n▶ Step 3: Duplicate Email Check");
   const dupCheck = await callGAS('checkEmailExists', { email: testEmail });
