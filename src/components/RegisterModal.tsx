@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Zap, Upload, CheckCircle, QrCode, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import upiQrImg from '../assets/upi-qr.png';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -308,12 +309,16 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                   <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
                     <div className="flex-shrink-0 border-2 border-marigold p-2 bg-white shadow-[4px_4px_0_#7A0606]">
                       <img
-                        src="/upi-qr.png"
+                        src={upiQrImg}
                         alt="VYUGAM UPI QR Code for payment"
                         className="w-32 h-32 object-contain"
                         onError={(e) => {
-                          // Fallback placeholder if QR not yet added
+                          // Fallback placeholder or retry root asset if QR fails
                           const target = e.target as HTMLImageElement;
+                          if (target.src !== '/upi-qr.png' && !target.src.endsWith('/upi-qr.png')) {
+                            target.src = '/upi-qr.png';
+                            return;
+                          }
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent && !parent.querySelector('.qr-fallback')) {
