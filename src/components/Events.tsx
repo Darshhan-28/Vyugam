@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EVENT_TRACKS } from '../data/events';
-import { Code, HelpCircle, Layout, FileText, Image as ImageIcon, Users, Sparkles } from 'lucide-react';
+import { Code, HelpCircle, Layout, FileText, Image as ImageIcon, Users, Sparkles, Download, ExternalLink } from 'lucide-react';
 
 export const Events: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
@@ -85,10 +85,35 @@ export const Events: React.FC = () => {
                 {track.description}
               </p>
 
-              <div className="font-mono text-xs font-bold text-marigold bg-marigold/10 border border-marigold/30 px-3 py-1.5 rounded inline-flex items-center gap-1.5">
+              <div className="font-mono text-xs font-bold text-marigold bg-marigold/10 border border-marigold/30 px-3 py-1.5 rounded inline-flex items-center gap-1.5 self-start">
                 <Users className="w-3.5 h-3.5" />
                 Team Size: {track.teamSizeLabel}
               </div>
+
+              {/* PPT Template Download Callout (High Visibility) */}
+              {track.templateUrl && (
+                <div className="mt-5 pt-4 border-t border-marigold/30 bg-carbon/60 p-4 border-2 border-marigold/70 shadow-[4px_4px_0_#7A0606] relative group/template">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-[9px] uppercase tracking-widest bg-marigold text-obsidian px-2 py-0.5 font-extrabold clip-polygon flex items-center gap-1 animate-pulse">
+                      <Sparkles className="w-3 h-3 fill-current" /> REQUIRED PPT FORMAT
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-mustard font-bold">Google Drive</span>
+                  </div>
+                  <p className="font-mono text-[11px] text-cream/80 mb-3 leading-snug">
+                    Use the official presentation template format for your Paper Presentation deck.
+                  </p>
+                  <a
+                    href={track.templateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 font-heading font-extrabold text-xs uppercase tracking-wider text-obsidian bg-marigold hover:bg-mustard border-2 border-obsidian px-4 py-2.5 shadow-[3px_3px_0_#C1121F] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#C1121F] active:translate-y-0 transition-all text-center"
+                  >
+                    <Download className="w-4 h-4 flex-shrink-0" />
+                    <span>{track.templateLabel || 'Download PPT Template'}</span>
+                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
+                  </a>
+                </div>
+              )}
 
               <div className="font-mono text-[11px] uppercase tracking-widest text-mustard/50 mt-4">
                 // {track.category}

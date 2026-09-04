@@ -64,6 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!college?.trim()) return res.status(400).json({ error: 'College is required' });
       if (!department?.trim()) return res.status(400).json({ error: 'Department is required' });
       if (!year?.trim()) return res.status(400).json({ error: 'Year is required' });
+      if (!screenshotBase64) return res.status(400).json({ error: 'Payment screenshot is required' });
 
       // Check email duplicate
       const checkResult = (await callGAS('checkEmailExists', { email: email.trim().toLowerCase() })) as { exists: boolean };

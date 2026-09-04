@@ -70,12 +70,24 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     reader.onload = (ev) => {
       setPaymentProof(ev.target?.result as string);
       setPaymentProofName(file.name);
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.paymentProof;
+        return copy;
+      });
     };
     reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!paymentProof) {
+      setErrors((prev) => ({ ...prev, paymentProof: 'Payment screenshot is required to complete registration' }));
+      onShowToast('Please upload your payment screenshot before submitting', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -344,11 +356,15 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                 {/* Upload Screenshot */}
                 <div>
                   <label className="block font-heading font-bold text-xs uppercase text-marigold mb-2">
-                    Upload Payment Screenshot <span className="text-mustard/60 normal-case font-normal">(recommended)</span>
+                    Upload Payment Screenshot * <span className="text-red-400 font-normal font-mono">(Required)</span>
                   </label>
                   <label
                     htmlFor="payment-proof"
-                    className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-marigold/50 hover:border-marigold bg-carbon/50 p-5 cursor-pointer transition-all group"
+                    className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed ${
+                      errors.paymentProof
+                        ? 'border-red-500 bg-red-500/10'
+                        : 'border-marigold/50 hover:border-marigold bg-carbon/50'
+                    } p-5 cursor-pointer transition-all group`}
                   >
                     {paymentProofName ? (
                       <>
@@ -358,9 +374,9 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                       </>
                     ) : (
                       <>
-                        <Upload className="w-6 h-6 text-marigold/60 group-hover:text-marigold transition-colors" />
+                        <Upload className={`w-6 h-6 ${errors.paymentProof ? 'text-red-400' : 'text-marigold/60 group-hover:text-marigold'} transition-colors`} />
                         <span className="font-mono text-xs uppercase tracking-wider text-cream/60 group-hover:text-cream transition-colors">
-                          Click to upload screenshot
+                          Click to upload payment screenshot *
                         </span>
                         <span className="font-mono text-[10px] text-mustard/50 uppercase">PNG, JPG · Max 3MB</span>
                       </>
@@ -373,6 +389,12 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                       onChange={handleFileUpload}
                     />
                   </label>
+                  {errors.paymentProof && (
+                    <p className="font-mono text-xs text-red-400 mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      {errors.paymentProof}
+                    </p>
+                  )}
                 </div>
 
                 {/* UTR */}
