@@ -6,6 +6,8 @@ export interface EventTrack {
   description: string;
   teamSizeLabel: string;
   iconName: string;
+  templateUrl?: string;
+  templateLabel?: string;
 }
 
 export const EVENT_TRACKS: EventTrack[] = [
@@ -44,6 +46,8 @@ export const EVENT_TRACKS: EventTrack[] = [
     description: 'Present innovative research and technical insights that challenge the room and showcase your ideas.',
     teamSizeLabel: '1–4 Members',
     iconName: 'FileText',
+    templateUrl: 'https://docs.google.com/presentation/d/1lkg87XsV1HrJGmz4iEbkHVXcj6-UPBfA/export/pptx',
+    templateLabel: 'Download Official PPT Template',
   },
   {
     id: 'pixel-pulse',

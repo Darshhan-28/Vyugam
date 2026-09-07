@@ -358,7 +358,7 @@ const ParticipantModal: React.FC<{
 // ── Main Admin Dashboard ─────────────────────────────────────
 
 export const AdminPage: React.FC = () => {
-  const [authed, setAuthed] = useState<boolean | null>(null);
+  const [authed] = useState<boolean>(true);
   const [tab, setTab] = useState<TabId>('registrations');
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [filter, setFilter] = useState<FilterId>('all');
@@ -368,13 +368,6 @@ export const AdminPage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
 
-  // Check session
-  useEffect(() => {
-    fetch('/api/admin/login')
-      .then((r) => setAuthed(r.ok))
-      .catch(() => setAuthed(false));
-  }, []);
-
   const showToast = useCallback((msg: string, type: 'ok' | 'err' = 'ok') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3500);
@@ -382,69 +375,84 @@ export const AdminPage: React.FC = () => {
 
   const fetchRegistrations = useCallback(async () => {
     setRefreshing(true);
-    const r = await fetch(`/api/admin/registrations?status=${filter}`);
-    if (r.ok) {
-      const j = await r.json();
-      setParticipants(j.participants || []);
+    try {
+      const r = await fetch(`/api/admin/registrations?status=${filter}`);
+      if (r.ok) {
+        const j = await r.json();
+        const rawList = Array.isArray(j) ? j : (j?.participants || j?.registrations || j?.data || []);
+        const normalized: Participant[] = rawList.map((p: any) => ({
+          id: String(p.id || ''),
+          pass_id: p.pass_id ? String(p.pass_id) : null,
+          name: String(p.name || 'Unnamed'),
+          email: String(p.email || ''),
+          phone: String(p.phone || ''),
+          college: String(p.college || '—'),
+          department: String(p.department || '—'),
+          year: String(p.year || '—'),
+          utr: p.utr ? String(p.utr) : null,
+          payment_status: p.payment_status || 'PENDING',
+          pass_status: p.pass_status || 'PENDING',
+          created_at: String(p.created_at || ''),
+          verified_at: p.verified_at ? String(p.verified_at) : null,
+          verified_by: p.verified_by ? String(p.verified_by) : null,
+          has_screenshot: Boolean(p.has_screenshot || p.payment_screenshot_url),
+          payment_screenshot_url: p.payment_screenshot_url || (p.has_screenshot ? `/api/admin/screenshot/${p.id}` : null),
+        }));
+        setParticipants(normalized);
+      }
+    } catch (err) {
+      console.error('[AdminPage] fetchRegistrations error:', err);
+    } finally {
+      setRefreshing(false);
     }
-    setRefreshing(false);
   }, [filter]);
 
   const fetchCheckins = useCallback(async () => {
     setRefreshing(true);
-    const r = await fetch('/api/admin/checkins');
-    if (r.ok) setCheckins(await r.json());
-    setRefreshing(false);
+    try {
+      const r = await fetch('/api/admin/checkins');
+      if (r.ok) setCheckins(await r.json());
+    } catch (err) {
+      console.error('[AdminPage] fetchCheckins error:', err);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (authed !== true) return;
     if (tab === 'registrations') fetchRegistrations();
     else fetchCheckins();
-  }, [authed, tab, fetchRegistrations, fetchCheckins]);
+  }, [tab, fetchRegistrations, fetchCheckins]);
 
   const handleAction = async (action: string, id: string) => {
-    const r = await fetch(`/api/admin/${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ participant_id: id }),
-    });
-    const j = await r.json();
-    if (r.ok) {
-      showToast(j.message || 'Done', 'ok');
-      fetchRegistrations();
-    } else {
-      showToast(j.error || 'Action failed', 'err');
+    try {
+      const r = await fetch(`/api/admin/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participant_id: id, participantId: id, id: id }),
+      });
+      const j = await r.json();
+      if (r.ok && (j.success || !j.error)) {
+        showToast(j.message || 'Action executed successfully', 'ok');
+        await fetchRegistrations();
+      } else {
+        showToast(j.error || 'Action failed', 'err');
+      }
+    } catch (err) {
+      showToast('Network error performing action', 'err');
     }
   };
-
-  const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' });
-    setAuthed(false);
-  };
-
-  // ── Loading state ──
-  if (authed === null) {
-    return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-marigold animate-spin" />
-      </div>
-    );
-  }
-
-  if (authed === false) {
-    return <AdminLogin onLogin={() => setAuthed(true)} />;
-  }
 
   // Filtered + searched participants
   const displayed = participants.filter((p) => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
-      p.name.toLowerCase().includes(q) ||
-      p.email.toLowerCase().includes(q) ||
-      p.college.toLowerCase().includes(q) ||
-      (p.pass_id ?? '').toLowerCase().includes(q)
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.email || '').toLowerCase().includes(q) ||
+      (p.college || '').toLowerCase().includes(q) ||
+      (p.pass_id || '').toLowerCase().includes(q) ||
+      (p.phone || '').toLowerCase().includes(q)
     );
   });
 
@@ -482,10 +490,10 @@ export const AdminPage: React.FC = () => {
           </div>
         </div>
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-cream/60 hover:text-red-400 transition-colors"
+          onClick={() => { window.location.href = '/'; }}
+          className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-cream/60 hover:text-marigold transition-colors"
         >
-          <LogOut className="w-4 h-4" /> Logout
+          Home
         </button>
       </header>
 

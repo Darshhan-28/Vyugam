@@ -193,7 +193,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
               <Clock className="w-4 h-4 text-red-500 animate-pulse" /> Pass Registration Deadline
             </span>
             <div className="font-display text-2xl sm:text-3xl text-smoke bg-obsidian border border-red-500/80 py-1 px-3 w-full text-center shadow-[3px_3px_0_#C1121F] tracking-wider">
-              17 SEPT 2026
+              19 SEPT 2026
             </div>
             <span className="font-heading font-extrabold text-[10px] sm:text-xs uppercase text-marigold tracking-wider mt-0.5">
               ⚡ Limited Passes Available

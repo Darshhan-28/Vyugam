@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Zap, Upload, CheckCircle, QrCode, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import upiQrImg from '../assets/upi-qr.png';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -69,12 +70,24 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     reader.onload = (ev) => {
       setPaymentProof(ev.target?.result as string);
       setPaymentProofName(file.name);
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.paymentProof;
+        return copy;
+      });
     };
     reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!paymentProof) {
+      setErrors((prev) => ({ ...prev, paymentProof: 'Payment screenshot is required to complete registration' }));
+      onShowToast('Please upload your payment screenshot before submitting', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -263,7 +276,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
 
                 <p className="font-mono text-[11px] text-red-400 font-bold bg-red-500/10 border border-red-500/30 px-3 py-2 rounded flex items-center gap-2">
                   <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  Pass registration closes on 17 September 2026
+                  Pass registration closes on 19 September 2026
                 </p>
 
                 <button
@@ -308,12 +321,16 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                   <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
                     <div className="flex-shrink-0 border-2 border-marigold p-2 bg-white shadow-[4px_4px_0_#7A0606]">
                       <img
-                        src="/upi-qr.png"
+                        src={upiQrImg}
                         alt="VYUGAM UPI QR Code for payment"
                         className="w-32 h-32 object-contain"
                         onError={(e) => {
-                          // Fallback placeholder if QR not yet added
+                          // Fallback placeholder or retry root asset if QR fails
                           const target = e.target as HTMLImageElement;
+                          if (target.src !== '/upi-qr.png' && !target.src.endsWith('/upi-qr.png')) {
+                            target.src = '/upi-qr.png';
+                            return;
+                          }
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent && !parent.querySelector('.qr-fallback')) {
@@ -339,11 +356,15 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                 {/* Upload Screenshot */}
                 <div>
                   <label className="block font-heading font-bold text-xs uppercase text-marigold mb-2">
-                    Upload Payment Screenshot <span className="text-mustard/60 normal-case font-normal">(recommended)</span>
+                    Upload Payment Screenshot * <span className="text-red-400 font-normal font-mono">(Required)</span>
                   </label>
                   <label
                     htmlFor="payment-proof"
-                    className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-marigold/50 hover:border-marigold bg-carbon/50 p-5 cursor-pointer transition-all group"
+                    className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed ${
+                      errors.paymentProof
+                        ? 'border-red-500 bg-red-500/10'
+                        : 'border-marigold/50 hover:border-marigold bg-carbon/50'
+                    } p-5 cursor-pointer transition-all group`}
                   >
                     {paymentProofName ? (
                       <>
@@ -353,9 +374,9 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                       </>
                     ) : (
                       <>
-                        <Upload className="w-6 h-6 text-marigold/60 group-hover:text-marigold transition-colors" />
+                        <Upload className={`w-6 h-6 ${errors.paymentProof ? 'text-red-400' : 'text-marigold/60 group-hover:text-marigold'} transition-colors`} />
                         <span className="font-mono text-xs uppercase tracking-wider text-cream/60 group-hover:text-cream transition-colors">
-                          Click to upload screenshot
+                          Click to upload payment screenshot *
                         </span>
                         <span className="font-mono text-[10px] text-mustard/50 uppercase">PNG, JPG · Max 3MB</span>
                       </>
@@ -368,6 +389,12 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
                       onChange={handleFileUpload}
                     />
                   </label>
+                  {errors.paymentProof && (
+                    <p className="font-mono text-xs text-red-400 mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      {errors.paymentProof}
+                    </p>
+                  )}
                 </div>
 
                 {/* UTR */}
@@ -433,6 +460,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               {[
                 'Your payment proof will be reviewed by the VYUGAM team.',
                 'Once verified, your personalized VYUGAM Pass will be sent to your registered email.',
+                'Please check your Spam / Junk folder if you do not see the pass email in your Inbox.',
                 'Save the pass on your phone and bring it to the symposium on 24 September 2026.',
                 'Event coordinators will scan your pass QR before you enter participating arenas.',
               ].map((step, i) => (
@@ -446,6 +474,9 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
             <div className="bg-obsidian border border-marigold/30 px-4 py-3 mb-6">
               <p className="font-mono text-[11px] text-mustard/70 uppercase tracking-wider">
                 Pass will be sent to: <span className="text-cream font-bold">{formData.email}</span>
+              </p>
+              <p className="font-mono text-[10px] text-amber-400 mt-1 uppercase tracking-wider">
+                💡 Tip: Check your Spam / Junk folder if the email is not in your Inbox after verification.
               </p>
             </div>
 

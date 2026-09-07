@@ -114,12 +114,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenRegister }) => {
           </a>
 
           <a
-            href="#"
+            href="https://chat.whatsapp.com/Iqlfm4bwioV1QYaPjAqVMy"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-cream border-2 border-marigold px-5 py-2.5 shadow-[3px_3px_0_#7A0606] hover:bg-marigold hover:text-obsidian hover:-translate-y-0.5 transition-all flex items-center gap-2"
+            className="font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-cream border-2 border-emerald-500/80 px-5 py-2.5 shadow-[3px_3px_0_#7A0606] hover:bg-emerald-500 hover:text-obsidian hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
           >
-            <MessageCircle className="w-4 h-4 text-emerald-400" /> Link Placeholder
+            <MessageCircle className="w-4 h-4 text-emerald-400 group-hover:text-obsidian transition-colors" />
+            Join Our WhatsApp Group
           </a>
 
           <a

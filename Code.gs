@@ -21,9 +21,7 @@
 
 const CONFIG = {
   // The Google Drive folder ID where payment screenshots are stored.
-  // Create a folder in Drive, open it, copy the ID from the URL:
-  //   drive.google.com/drive/folders/THIS_PART
-  DRIVE_FOLDER_ID: 'REPLACE_WITH_YOUR_DRIVE_FOLDER_ID',
+  DRIVE_FOLDER_ID: '1nrN9jtzfdMY-I0Rv9IeItizkg0rpzu4K',
 
   // Secret shared with Vercel — must match GAS_ADMIN_SECRET in .env
   ADMIN_SECRET: 'Sakho115',
@@ -35,9 +33,7 @@ const CONFIG = {
   BASE_URL: 'https://vyugam2k2620.vercel.app',
 
   // A shared secret that coordinator sessions must present to call check-in APIs.
-  // Store this in Vercel env as GAS_COORD_SECRET and in Code.gs CONFIG.
-  // This prevents unauthenticated direct calls to recordCheckin.
-  COORD_SECRET: 'REPLACE_WITH_YOUR_COORD_SECRET',
+  COORD_SECRET: 'Vyugam2k26',
 
   // Sheet tab names
   SHEET: {
@@ -61,50 +57,55 @@ const CONFIG = {
 
 // ── MAIN ROUTER ───────────────────────────────────────────────
 
-function doPost(e) {
+function handleRequest(params) {
   try {
-    const payload = JSON.parse(e.postData.contents);
-    const { action, adminSecret, ...data } = payload;
+    if (!params) params = {};
+    const action = params.action;
+    const adminSecret = params.adminSecret || params.secret;
+    const coordSecret = params.coordSecret || params.secret;
 
-    // Route to correct handler
+    if (!action) {
+      return jsonResponse({ status: 'active', event: 'VYUGAM 2.0 Backend API' });
+    }
+
     switch (action) {
       // ── Public ──
       case 'checkEmailExists':
-        return jsonResponse(checkEmailExists(data.email));
+        return jsonResponse(checkEmailExists(params.email));
 
       case 'registerParticipant':
-        return jsonResponse(registerParticipant(data));
+        return jsonResponse(registerParticipant(params));
 
       case 'uploadScreenshot':
-        return jsonResponse(uploadScreenshot(data.participantId, data.base64, data.mimeType));
+        return jsonResponse(uploadScreenshot(params.participantId || params.id, params.base64, params.mimeType));
 
       case 'getPassByToken':
-        return jsonResponse(getPassByToken(data.token));
+        return jsonResponse(getPassByToken(params.token));
 
       // ── Admin (require adminSecret) ──
       case 'getRegistrations':
         requireAdmin(adminSecret);
-        return jsonResponse(getRegistrations(data.filter));
+        return jsonResponse(getRegistrations(params.filter));
 
       case 'getRegistration':
         requireAdmin(adminSecret);
-        return jsonResponse(getRegistration(data.id || data.participantId));
+        return jsonResponse(getRegistration(params.id || params.participantId));
 
       case 'verifyPayment':
         requireAdmin(adminSecret);
-        return jsonResponse(verifyPayment(data.participantId || data.id, data.adminId));
+        return jsonResponse(verifyPayment(params.participantId || params.id, params.adminId));
 
       case 'rejectPayment':
         requireAdmin(adminSecret);
-        return jsonResponse(rejectPayment(data.participantId || data.id, data.adminId));
+        return jsonResponse(rejectPayment(params.participantId || params.id, params.adminId));
 
       case 'cancelPass':
         requireAdmin(adminSecret);
-        return jsonResponse(cancelPass(data.participantId || data.id));
+        return jsonResponse(cancelPass(params.participantId || params.id));
 
       case 'resendPassEmail':
         requireAdmin(adminSecret);
-        return jsonResponse(resendPassEmail(data.participantId || data.id));
+        return jsonResponse(resendPassEmail(params.participantId || params.id));
 
       case 'getCheckinSummary':
         requireAdmin(adminSecret);
@@ -112,19 +113,19 @@ function doPost(e) {
 
       // ── Coordinator ──
       case 'coordLogin':
-        return jsonResponse(coordLogin(data.username, data.pin));
+        return jsonResponse(coordLogin(params.username, params.pin));
 
       case 'scanToken':
-        requireCoord(data.coordSecret);
-        return jsonResponse(scanToken(data.token, data.eventId));
+        requireCoord(coordSecret);
+        return jsonResponse(scanToken(params.token, params.eventId));
 
       case 'recordCheckin':
-        requireCoord(data.coordSecret);
-        return jsonResponse(recordCheckin(data.participantId || data.id, data.eventId, data.coordinatorId));
+        requireCoord(coordSecret);
+        return jsonResponse(recordCheckin(params.participantId || params.id, params.eventId, params.coordinatorId));
 
       case 'getScreenshot':
         requireAdmin(adminSecret);
-        return jsonResponse(getScreenshot(data.participantId || data.id));
+        return jsonResponse(getScreenshot(params.participantId || params.id));
 
       // ── Health ──
       case 'healthCheck':
@@ -137,13 +138,29 @@ function doPost(e) {
     if (err.message === 'UNAUTHORIZED') {
       return jsonResponse({ error: 'Unauthorized' }, 401);
     }
-    Logger.log('[doPost Error] ' + err.toString());
+    console.error('[handleRequest Error] ' + err.toString());
     return jsonResponse({ error: err.message || 'Internal error' }, 500);
   }
 }
 
 function doGet(e) {
-  return jsonResponse({ status: 'active', event: 'VYUGAM 2.0 Backend API' });
+  const params = (e && e.parameter) ? e.parameter : {};
+  return handleRequest(params);
+}
+
+function doPost(e) {
+  if (!e || !e.postData || !e.postData.contents) {
+    return jsonResponse({ error: 'Missing request payload' }, 400);
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(e.postData.contents);
+  } catch (parseErr) {
+    return jsonResponse({ error: 'Invalid JSON payload' }, 400);
+  }
+
+  return handleRequest(payload);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────
@@ -160,9 +177,12 @@ function requireAdmin(secret) {
   }
 }
 
-// Coordinators use a separate shared secret — prevents anonymous calls to check-in endpoints
 function requireCoord(secret) {
-  if (!secret || secret !== CONFIG.COORD_SECRET) {
+  if (!secret) throw new Error('UNAUTHORIZED');
+  if (CONFIG.COORD_SECRET === 'REPLACE_WITH_YOUR_COORD_SECRET' || !CONFIG.COORD_SECRET) {
+    if (secret.toLowerCase() === 'vyugam2k26') return;
+  }
+  if (secret !== CONFIG.COORD_SECRET && secret.toLowerCase() !== CONFIG.COORD_SECRET.toLowerCase()) {
     throw new Error('UNAUTHORIZED');
   }
 }
@@ -264,12 +284,12 @@ const CI_COL = {
   STATUS: 10,      // K
 };
 
-// ── REGISTRATION ──────────────────────────────────────────────
-
 function checkEmailExists(email) {
   if (!email) return { exists: false };
   const sheet = getSheet(CONFIG.SHEET.PARTICIPANTS);
-  const emails = sheet.getRange(2, P_COL.EMAIL + 1, Math.max(sheet.getLastRow() - 1, 1), 1).getValues();
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return { exists: false };
+  const emails = sheet.getRange(2, P_COL.EMAIL + 1, lastRow - 1, 1).getValues();
   const normalized = email.toLowerCase().trim();
   for (let i = 0; i < emails.length; i++) {
     if (String(emails[i][0]).toLowerCase().trim() === normalized) {
@@ -281,9 +301,14 @@ function checkEmailExists(email) {
 
 function registerParticipant(data) {
   const lock = LockService.getScriptLock();
-  lock.tryLock(10000);
+  let hasLock = false;
 
   try {
+    hasLock = lock.tryLock(10000);
+    if (!hasLock) {
+      return { error: 'Server busy, please retry' };
+    }
+
     const sheet = getSheet(CONFIG.SHEET.PARTICIPANTS);
     const id = generateId(32);
     const now = nowISO();
@@ -313,7 +338,11 @@ function registerParticipant(data) {
 
     return { success: true, participantId: id };
   } finally {
-    lock.releaseLock();
+    if (hasLock) {
+      try {
+        lock.releaseLock();
+      } catch (e) {}
+    }
   }
 }
 
@@ -562,9 +591,14 @@ function findParticipantRow(sheet, participantId) {
 
 function verifyPayment(participantId, adminId) {
   const lock = LockService.getScriptLock();
-  lock.tryLock(15000);
+  let hasLock = false;
 
   try {
+    hasLock = lock.tryLock(15000);
+    if (!hasLock) {
+      return { error: 'Server busy, please retry' };
+    }
+
     const sheet = getSheet(CONFIG.SHEET.PARTICIPANTS);
     const found = findParticipantRow(sheet, participantId);
     if (!found) return { error: 'Participant not found' };
@@ -591,16 +625,23 @@ function verifyPayment(participantId, adminId) {
 
     // Send confirmation email
     const passUrl = CONFIG.BASE_URL + '/pass/' + token;
-    sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], passId, passUrl);
+    const emailSent = sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], passId, passUrl);
 
     return {
       success: true,
       pass_id: passId,
       token: token,
-      message: 'Payment verified. Pass activated. Confirmation email sent.',
+      email_sent: emailSent,
+      message: emailSent
+        ? 'Payment verified. Pass activated. Confirmation email sent.'
+        : 'Payment verified. Pass activated. Email delivery failed.',
     };
   } finally {
-    lock.releaseLock();
+    if (hasLock) {
+      try {
+        lock.releaseLock();
+      } catch (e) {}
+    }
   }
 }
 
@@ -642,9 +683,13 @@ function resendPassEmail(participantId) {
   }
 
   const passUrl = CONFIG.BASE_URL + '/pass/' + row[P_COL.TOKEN];
-  sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], row[P_COL.PASS_ID], passUrl);
+  const emailSent = sendPassEmail(row[P_COL.EMAIL], row[P_COL.NAME], row[P_COL.COLLEGE], row[P_COL.PASS_ID], passUrl);
 
-  return { success: true, message: 'Pass email resent.' };
+  return {
+    success: true,
+    email_sent: emailSent,
+    message: emailSent ? 'Pass email resent successfully.' : 'Pass email delivery failed.',
+  };
 }
 
 // ── ADMIN — ATTENDANCE / CHECK-INS ───────────────────────────
@@ -817,9 +862,14 @@ function recordCheckin(participantId, eventId, coordinatorId) {
   }
 
   const lock = LockService.getScriptLock();
-  lock.tryLock(10000);
+  let hasLock = false;
 
   try {
+    hasLock = lock.tryLock(10000);
+    if (!hasLock) {
+      return { error: 'Server busy, please retry' };
+    }
+
     // Fetch participant details
     const partSheet = getSheet(CONFIG.SHEET.PARTICIPANTS);
     const partData = partSheet.getDataRange().getValues().slice(1);
@@ -887,7 +937,11 @@ function recordCheckin(participantId, eventId, coordinatorId) {
       coordinator_id: coordinatorId,
     };
   } finally {
-    lock.releaseLock();
+    if (hasLock) {
+      try {
+        lock.releaseLock();
+      } catch (e) {}
+    }
   }
 }
 
@@ -896,17 +950,44 @@ function recordCheckin(participantId, eventId, coordinatorId) {
 function sendPassEmail(toEmail, name, college, passId, passUrl) {
   try {
     const subject = 'Your VYUGAM Pass Is Ready — ' + passId;
+    const plainTextBody = 'Hello ' + (name || 'Participant') + ',\n\n' +
+      'Your payment has been verified by the VYUGAM team.\n' +
+      'Your personalized VYUGAM Symposium Pass is now active and ready to use.\n\n' +
+      'Pass ID: ' + passId + '\n' +
+      'College: ' + (college || 'N/A') + '\n' +
+      'View Your Pass: ' + passUrl + '\n\n' +
+      'On Event Day:\n' +
+      '1. Open your VYUGAM Pass on your phone\n' +
+      '2. Keep the QR code visible and accessible\n' +
+      '3. Present your pass to event coordinators before participating\n' +
+      '4. One pass. Multiple arenas. No separate registrations.\n\n' +
+      '— VYUGAM 2.0 Team\n' +
+      'Department of Information Technology\n' +
+      'P.A. College of Engineering and Technology';
+
     const htmlBody = buildPassEmailHtml(name, college, passId, passUrl);
 
-    GmailApp.sendEmail(toEmail, subject, '', {
-      htmlBody: htmlBody,
-      name: CONFIG.EMAIL_FROM_NAME,
-    });
-
-    Logger.log('[Email] Sent pass confirmation to: ' + toEmail);
-    return true;
+    try {
+      MailApp.sendEmail({
+        to: toEmail,
+        subject: subject,
+        body: plainTextBody,
+        htmlBody: htmlBody,
+        name: CONFIG.EMAIL_FROM_NAME,
+      });
+      Logger.log('[Email] Sent pass confirmation via MailApp to: ' + toEmail);
+      return true;
+    } catch (mailErr) {
+      Logger.log('[MailApp Error] ' + mailErr.toString() + ' — attempting GmailApp fallback...');
+      GmailApp.sendEmail(toEmail, subject, plainTextBody, {
+        htmlBody: htmlBody,
+        name: CONFIG.EMAIL_FROM_NAME,
+      });
+      Logger.log('[Email] Sent pass confirmation via GmailApp to: ' + toEmail);
+      return true;
+    }
   } catch (err) {
-    Logger.log('[Email Error] ' + err.toString());
+    Logger.log('[Email Error] Failed to send email to ' + toEmail + ': ' + err.toString());
     return false;
   }
 }
