@@ -163,6 +163,39 @@ export const Footer: React.FC<FooterProps> = ({ onOpenRegister }) => {
           VYUGAM 2.0 &mdash; Dept. of Information Technology, P.A. College of Engineering and Technology (Autonomous), Pollachi, Coimbatore &ndash; 642002 &copy; 2026
         </p>
 
+        {/* Official Media Partner */}
+        <div className="pt-8 border-t border-marigold/20 mb-10">
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-marigold block mb-3">
+            Official Media Partner
+          </span>
+          <a
+            href="https://eventopia.in"
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-3.5 bg-carbon border-2 border-marigold px-5 sm:px-7 py-3 shadow-[4px_4px_0_#7A0606] hover:shadow-[6px_6px_0_#C1121F] hover:-translate-y-1 hover:border-cream transition-all group"
+          >
+            <div className="bg-white px-3 py-1 rounded flex items-center justify-center shadow-sm">
+              <img
+                src="/eventopia-logo.svg"
+                alt="Eventopia.in Logo"
+                width="120"
+                height="28"
+                loading="lazy"
+                decoding="async"
+                className="h-6 sm:h-7 w-auto object-contain"
+              />
+            </div>
+            <div className="text-left">
+              <span className="font-heading font-extrabold text-base sm:text-lg text-smoke group-hover:text-marigold transition-colors tracking-wide block leading-none">
+                EVENTOPIA.IN
+              </span>
+              <span className="font-mono text-[9px] sm:text-[10px] text-cream/60 tracking-wider block mt-0.5">
+                eventopia.in ↗
+              </span>
+            </div>
+          </a>
+        </div>
+
         {/* Built By */}
         <div className="mt-10 pt-8 border-t border-marigold/20">
           <div className="built-by-glow inline-flex items-center gap-2 mb-6">

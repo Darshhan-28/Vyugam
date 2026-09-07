@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Zap, Upload, CheckCircle, QrCode, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import upiQrImg from '../assets/upi-qr.png';
@@ -31,6 +31,26 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Handle ESC key and prevent body scroll when open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isSubmitting) {
+        onClose();
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, isSubmitting, onClose]);
 
   if (!isOpen) return null;
 
@@ -154,12 +174,17 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
   };
 
   const inputClass = (field: string) =>
-    `w-full bg-carbon text-smoke border-2 p-3 font-body outline-none focus:border-marigold transition-colors ${
+    `w-full bg-carbon text-smoke text-base sm:text-sm border-2 p-3 font-body outline-none focus:border-marigold transition-colors ${
       errors[field] ? 'border-red-500' : 'border-carbon-2'
     }`;
 
   return (
-    <div className="fixed inset-0 z-[9000] flex items-center justify-center bg-obsidian/95 backdrop-blur-md p-3 sm:p-6 overflow-y-auto">
+    <div
+      className="fixed inset-0 z-[9000] flex items-center justify-center bg-obsidian/95 backdrop-blur-md p-3 sm:p-6 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="register-modal-title"
+    >
       <div className="relative w-full max-w-xl bg-obsidian border-2 sm:border-4 border-marigold p-4 sm:p-8 shadow-[6px_6px_0_#7A0606] sm:shadow-[10px_10px_0_#7A0606] my-auto max-h-[92vh] overflow-y-auto scrollbar-thin">
 
         {/* Close */}
@@ -178,7 +203,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               <span className="font-heading font-extrabold text-xs uppercase tracking-widest bg-marigold text-obsidian px-4 py-1 clip-polygon inline-block mb-3">
                 {step === 1 ? 'Step 1 of 2' : 'Step 2 of 2'}
               </span>
-              <h2 className="font-display text-2xl sm:text-3xl text-smoke uppercase">
+              <h2 id="register-modal-title" className="font-display text-2xl sm:text-3xl text-smoke uppercase">
                 GET YOUR VYUGAM PASS
               </h2>
               <p className="font-mono text-xs text-mustard mt-1 tracking-wider uppercase">

@@ -116,7 +116,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden text-marigold p-1.5 focus:outline-none"
-              aria-label="Toggle Navigation Menu"
+              aria-label={isOpen ? "Close Navigation Menu" : "Open Navigation Menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav-drawer"
             >
               {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
             </button>
@@ -125,7 +127,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
 
         {/* Mobile Drawer */}
         {isOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-obsidian border-b-2 border-marigold p-6 flex flex-col gap-4 shadow-2xl animate-fadeIn">
+          <div
+            id="mobile-nav-drawer"
+            className="md:hidden absolute top-full left-0 right-0 bg-obsidian border-b-2 border-marigold p-6 flex flex-col gap-4 shadow-2xl animate-fadeIn"
+          >
             {navItems.map((item) => (
               <a
                 key={item.id}

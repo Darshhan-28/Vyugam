@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
@@ -16,10 +16,18 @@ import { Team } from './components/Team';
 import { Footer } from './components/Footer';
 import { RegisterModal } from './components/RegisterModal';
 import { ToastContainer, ToastMessage } from './components/Toast';
-import { PassPage } from './pages/PassPage';
-import { AdminPage } from './pages/AdminPage';
-import { ScanPage } from './pages/ScanPage';
-import { ArrowUp, Ticket } from 'lucide-react';
+import { ArrowUp, Ticket, Loader2 } from 'lucide-react';
+
+const PassPage = lazy(() => import('./pages/PassPage').then(m => ({ default: m.PassPage })));
+const AdminPage = lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
+const ScanPage = lazy(() => import('./pages/ScanPage').then(m => ({ default: m.ScanPage })));
+
+const PageLoader: React.FC = () => (
+  <div className="min-h-screen bg-obsidian flex flex-col items-center justify-center gap-3">
+    <Loader2 className="w-8 h-8 text-marigold animate-spin" />
+    <span className="font-mono text-xs uppercase tracking-widest text-mustard/70">Loading...</span>
+  </div>
+);
 
 // ── Public website layout ─────────────────────────────────────
 
@@ -115,22 +123,24 @@ const PublicSite: React.FC = () => {
 // ── Root App with Routes ──────────────────────────────────────
 
 export const App: React.FC = () => (
-  <Routes>
-    {/* Public website */}
-    <Route path="/" element={<PublicSite />} />
+  <Suspense fallback={<PageLoader />}>
+    <Routes>
+      {/* Public website */}
+      <Route path="/" element={<PublicSite />} />
 
-    {/* Participant pass page — no link on public site */}
-    <Route path="/pass/:token" element={<PassPage />} />
+      {/* Participant pass page — no link on public site */}
+      <Route path="/pass/:token" element={<PassPage />} />
 
-    {/* Admin panel — no link on public site */}
-    <Route path="/admin" element={<AdminPage />} />
+      {/* Admin panel — no link on public site */}
+      <Route path="/admin" element={<AdminPage />} />
 
-    {/* Coordinator scanner — no link on public site, no public mention */}
-    <Route path="/scan" element={<ScanPage />} />
+      {/* Coordinator scanner — no link on public site, no public mention */}
+      <Route path="/scan" element={<ScanPage />} />
 
-    {/* Catch-all: redirect to home */}
-    <Route path="*" element={<PublicSite />} />
-  </Routes>
+      {/* Catch-all: redirect to home */}
+      <Route path="*" element={<PublicSite />} />
+    </Routes>
+  </Suspense>
 );
 
 export default App;

@@ -69,6 +69,7 @@ export const FAQ: React.FC = () => {
                 onClick={() => toggle(idx)}
                 className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 text-left"
                 aria-expanded={openIdx === idx}
+                aria-controls={`faq-answer-${idx}`}
               >
                 <span className={`font-heading font-extrabold text-sm sm:text-base uppercase tracking-wider transition-colors ${
                   openIdx === idx ? 'text-marigold' : 'text-smoke'
@@ -83,7 +84,12 @@ export const FAQ: React.FC = () => {
               </button>
 
               {openIdx === idx && (
-                <div className="px-4 sm:px-5 pb-4 sm:pb-5 border-t border-marigold/20">
+                <div
+                  id={`faq-answer-${idx}`}
+                  role="region"
+                  aria-labelledby={`faq-item-${idx}`}
+                  className="px-4 sm:px-5 pb-4 sm:pb-5 border-t border-marigold/20"
+                >
                   {item.a.includes('\n') ? (
                     <ol className="font-body text-sm text-cream/80 leading-relaxed mt-3 space-y-1">
                       {item.a.split('\n').map((line, li) => (

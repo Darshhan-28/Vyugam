@@ -115,6 +115,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
               <img
                 src="/pacet-logo-nobg.png"
                 alt="P.A. College of Engineering and Technology Logo"
+                width="96"
+                height="96"
+                decoding="async"
                 className="w-full h-full object-contain rounded-full"
               />
             </div>
@@ -122,6 +125,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
               <img
                 src="/it-dept-logo.png"
                 alt="Department of Information Technology Logo"
+                width="96"
+                height="96"
+                decoding="async"
                 className="w-full h-full object-contain rounded-full"
               />
             </div>
@@ -138,6 +144,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegister }) => {
             <img
               src="/it-dept-logo.png"
               alt="Department of Information Technology Logo"
+              width="96"
+              height="96"
+              decoding="async"
               className="w-full h-full object-contain rounded-full"
             />
           </div>
