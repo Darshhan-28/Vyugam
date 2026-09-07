@@ -165,35 +165,32 @@ export const Footer: React.FC<FooterProps> = ({ onOpenRegister }) => {
 
         {/* Official Media Partner */}
         <div className="pt-8 border-t border-marigold/20 mb-10">
-          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-marigold block mb-3">
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-marigold block mb-3 text-center">
             Official Media Partner
           </span>
-          <a
-            href="https://eventopia.in"
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-3.5 bg-carbon border-2 border-marigold px-5 sm:px-7 py-3 shadow-[4px_4px_0_#7A0606] hover:shadow-[6px_6px_0_#C1121F] hover:-translate-y-1 hover:border-cream transition-all group"
-          >
-            <div className="bg-white px-3 py-1 rounded flex items-center justify-center shadow-sm">
-              <img
-                src="/eventopia-logo.svg"
-                alt="Eventopia.in Logo"
-                width="120"
-                height="28"
-                loading="lazy"
-                decoding="async"
-                className="h-6 sm:h-7 w-auto object-contain"
-              />
-            </div>
-            <div className="text-left">
-              <span className="font-heading font-extrabold text-base sm:text-lg text-smoke group-hover:text-marigold transition-colors tracking-wide block leading-none">
+          <div className="flex justify-center">
+            <a
+              href="https://eventopia.in"
+              target="_blank"
+              rel="noopener"
+              className="group inline-flex items-center gap-3 bg-[#0d0d0d] border border-marigold/30 px-5 sm:px-7 py-3 hover:border-[#ffb703] transition-all duration-300 hover:brightness-110"
+            >
+              <div className="bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded flex items-center justify-center">
+                <img
+                  src="/eventopia-logo.svg"
+                  alt="Eventopia.in Logo"
+                  width="120"
+                  height="28"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-6 sm:h-7 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <span className="font-heading font-extrabold text-sm sm:text-lg text-cream group-hover:text-[#ffb703] transition-colors duration-300 tracking-wide leading-none">
                 EVENTOPIA.IN
               </span>
-              <span className="font-mono text-[9px] sm:text-[10px] text-cream/60 tracking-wider block mt-0.5">
-                eventopia.in ↗
-              </span>
-            </div>
-          </a>
+            </a>
+          </div>
         </div>
 
         {/* Built By */}
