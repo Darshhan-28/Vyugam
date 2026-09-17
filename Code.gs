@@ -790,9 +790,19 @@ function scanToken(token, eventId) {
   const data = sheet.getDataRange().getValues().slice(1);
 
   let participant = null;
+  const targetToken = String(token || '').trim().toLowerCase();
   for (let i = 0; i < data.length; i++) {
-    if (data[i][P_COL.TOKEN] === token) {
-      participant = data[i];
+    const row = data[i];
+    const rowToken = String(row[P_COL.TOKEN] || '').trim().toLowerCase();
+    const rowPassId = String(row[P_COL.PASS_ID] || '').trim().toLowerCase();
+    const rowId = String(row[P_COL.ID] || '').trim().toLowerCase();
+
+    if (
+      (rowToken && rowToken === targetToken) ||
+      (rowPassId && rowPassId === targetToken) ||
+      (rowId && rowId === targetToken)
+    ) {
+      participant = row;
       break;
     }
   }

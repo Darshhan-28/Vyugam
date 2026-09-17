@@ -40,16 +40,22 @@ function formatTime(iso: string): string {
 }
 
 function extractTokenFromUrl(raw: string): string | null {
+  if (!raw || typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
   try {
-    const url = new URL(raw);
-    // Matches /v/TOKEN or /pass/TOKEN
-    const match = url.pathname.match(/^\/(v|pass)\/([a-f0-9]{64})$/);
-    if (match) return match[2];
+    const url = new URL(trimmed);
+    const parts = url.pathname.split('/').filter(Boolean);
+    if (parts.length > 0) {
+      const last = parts[parts.length - 1];
+      if (last && last.trim()) return last.trim();
+    }
   } catch {
-    // Not a URL — check if it's just the 64-char hex token directly
-    if (/^[a-f0-9]{64}$/.test(raw.trim())) return raw.trim();
+    // Not a URL — return raw input (token or Pass ID)
+    return trimmed;
   }
-  return null;
+  return trimmed;
 }
 
 // ── Coordinator Login ────────────────────────────────────────
@@ -220,7 +226,7 @@ const Scanner: React.FC<{
       const r = await fetch('/api/coordinator/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, event_id: selectedEvent }),
+        body: JSON.stringify({ token, eventId: selectedEvent, event_id: selectedEvent }),
       });
 
       if (!r.ok) {
@@ -278,22 +284,28 @@ const Scanner: React.FC<{
   const confirmEntry = useCallback(async () => {
     if (scanState.phase !== 'valid') return;
     const { participant_id } = scanState;
+    const participantName = scanState.participant.name;
     setScanState({ phase: 'confirming' });
 
     try {
       const r = await fetch('/api/coordinator/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ participant_id, event_id: selectedEvent }),
+        body: JSON.stringify({ participantId: participant_id, participant_id, eventId: selectedEvent, event_id: selectedEvent }),
       });
 
       const data = await r.json();
 
-      if (!r.ok) {
-        if (data.status === 'ALREADY_CHECKED_IN') {
-          setScanState({ phase: 'duplicate', name: 'Participant', event: data.event, checked_in_at: new Date().toISOString() });
+      if (!r.ok || data.error || data.success === false) {
+        if (data.status === 'ALREADY_CHECKED_IN' || data.error === 'Already checked in') {
+          setScanState({
+            phase: 'duplicate',
+            name: data.participant_name || participantName,
+            event: data.event || EVENTS[selectedEvent],
+            checked_in_at: data.scanned_at || new Date().toISOString()
+          });
         } else {
-          setScanState({ phase: 'network_error' });
+          setScanState({ phase: 'invalid', reason: 'PASS_NOT_ACTIVE' });
         }
         scheduleReset();
         return;
@@ -301,9 +313,9 @@ const Scanner: React.FC<{
 
       setScanState({
         phase: 'approved',
-        name: data.participant_name,
-        event: data.event,
-        time: data.scanned_at,
+        name: data.participant_name || participantName,
+        event: data.event || EVENTS[selectedEvent],
+        time: data.scanned_at || new Date().toISOString(),
       });
 
       // Auto-return to scanning after success

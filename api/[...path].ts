@@ -305,20 +305,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (pathname.startsWith('/api/coordinator') || pathname === '/api/scan' || pathname === '/api/checkin') {
       // QR Token Scan Validation: POST /api/coordinator/scan or POST /api/scan
       if ((pathname === '/api/coordinator/scan' || pathname === '/api/scan') && method === 'POST') {
-        const { token, eventId } = body as Record<string, string>;
-        if (!token || !eventId) return res.status(400).json({ error: 'token and eventId are required' });
+        const token = body.token as string;
+        const targetEventId = (body.eventId || body.event_id) as string;
+        if (!token || !targetEventId) return res.status(400).json({ error: 'token and eventId are required' });
 
-        const result = await callGAS('scanToken', { token, eventId }, { coord: true });
+        const result = (await callGAS('scanToken', { token, eventId: targetEventId }, { coord: true })) as Record<string, unknown>;
+        if (result.error) return res.status(400).json(result);
         return res.status(200).json(result);
       }
 
       // Check-in Record Entry: POST /api/coordinator/checkin or POST /api/checkin
       if ((pathname === '/api/coordinator/checkin' || pathname === '/api/checkin') && method === 'POST') {
-        const { participantId, eventId, id, coordinatorId } = body as Record<string, string>;
-        const targetId = participantId || id;
-        if (!targetId || !eventId) return res.status(400).json({ error: 'participantId and eventId are required' });
+        const targetId = (body.participantId || body.participant_id || body.id) as string;
+        const targetEventId = (body.eventId || body.event_id) as string;
+        const coordinatorId = (body.coordinatorId || body.coordinator_id || 'CR-01') as string;
+        if (!targetId || !targetEventId) return res.status(400).json({ error: 'participantId and eventId are required' });
 
-        const result = await callGAS('recordCheckin', { participantId: targetId, id: targetId, eventId, coordinatorId: coordinatorId || 'CR-01' }, { coord: true });
+        const result = (await callGAS('recordCheckin', { participantId: targetId, id: targetId, eventId: targetEventId, coordinatorId }, { coord: true })) as Record<string, unknown>;
+        if (result.error || result.success === false) return res.status(400).json(result);
         return res.status(200).json(result);
       }
     }
