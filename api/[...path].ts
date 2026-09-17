@@ -177,7 +177,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Registrations List: GET /api/admin/registrations
       if (pathname === '/api/admin/registrations' && method === 'GET') {
         const statusFilter = (req.query.status as string) || 'all';
-        const result = await callGAS('getRegistrations', { filter: statusFilter }, { admin: true });
+        const result = await callGAS('getRegistrations', { filter: statusFilter }, { admin: true, timeoutMs: 28000 });
+        res.setHeader('Cache-Control', 'private, max-age=15, stale-while-revalidate=60');
         return res.status(200).json(result);
       }
 
@@ -198,13 +199,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         console.log(`[AdminRegistration] GAS request started for ID: ${participantId}`);
         const gasStartTime = Date.now();
-        const result = (await callGAS('getRegistration', { id: participantId, participantId }, { admin: true })) as Record<string, unknown>;
+        const result = (await callGAS('getRegistration', { id: participantId, participantId }, { admin: true, timeoutMs: 20000 })) as Record<string, unknown>;
         const gasDuration = Date.now() - gasStartTime;
 
         console.log(`[AdminRegistration] GAS response received in ${gasDuration}ms`);
-        console.log(`[AdminRegistration] GAS status: ${result.error ? 'ERROR' : 'OK'}`);
-        console.log(`[AdminRegistration] GAS response body preview: ${JSON.stringify(result).slice(0, 200)}`);
-        console.log(`[AdminRegistration] response parsing started`);
 
         if (result.error) {
           console.log(`[AdminRegistration] total duration: ${Date.now() - startTime}ms`);
@@ -212,6 +210,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         console.log(`[AdminRegistration] total duration: ${Date.now() - startTime}ms`);
+        res.setHeader('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
         return res.status(200).json(result);
       }
 
@@ -253,7 +252,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Attendance Analytics: GET /api/admin/checkins or GET /api/admin/summary
       if ((pathname === '/api/admin/checkins' || pathname === '/api/admin/summary') && method === 'GET') {
-        const result = await callGAS('getCheckinSummary', {}, { admin: true });
+        const result = await callGAS('getCheckinSummary', {}, { admin: true, timeoutMs: 28000 });
+        res.setHeader('Cache-Control', 'private, max-age=20, stale-while-revalidate=60');
         return res.status(200).json(result);
       }
 
@@ -267,7 +267,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(400).json({ error: 'Participant ID is required' });
         }
 
-        const result = (await callGAS('getScreenshot', { participantId, id: participantId }, { admin: true })) as {
+        const result = (await callGAS('getScreenshot', { participantId, id: participantId }, { admin: true, timeoutMs: 25000 })) as {
           success?: boolean;
           base64?: string;
           mimeType?: string;
@@ -283,7 +283,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         res.setHeader('Content-Type', mimeType);
         res.setHeader('Content-Length', buffer.length);
-        res.setHeader('Cache-Control', 'private, no-store');
+        res.setHeader('Cache-Control', 'private, max-age=60, stale-while-revalidate=120');
         return res.status(200).send(buffer);
       }
     }

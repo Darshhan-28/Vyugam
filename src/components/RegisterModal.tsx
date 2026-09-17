@@ -301,7 +301,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
 
                 <p className="font-mono text-[11px] text-red-400 font-bold bg-red-500/10 border border-red-500/30 px-3 py-2 rounded flex items-center gap-2">
                   <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  Pass registration closes on 19 September 2026
+                  Pass registration closes on 22 September 2026
                 </p>
 
                 <button

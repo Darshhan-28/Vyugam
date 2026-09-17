@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import {
   LogOut, CheckCircle, XCircle, Clock, RefreshCw, Ban, Send,
   Users, Ticket, TrendingUp, Eye, ChevronDown, X, Loader2,
@@ -47,23 +47,49 @@ interface CheckinSummary {
 type TabId = 'registrations' | 'attendance';
 type FilterId = 'all' | 'pending' | 'verified' | 'rejected' | 'active' | 'cancelled';
 
+// ── Perf: client caches + pagination ──────────────────────────
+
+const PAGE_SIZE = 25;
+const REG_TTL_MS = 45_000;
+const CHECKIN_TTL_MS = 60_000;
+const DETAIL_TTL_MS = 60_000;
+
+const regCache = new Map<string, { data: Participant[]; ts: number }>();
+const detailCache = new Map<string, { data: Participant; ts: number }>();
+let checkinCache: { data: CheckinSummary; ts: number } | null = null;
+
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(t);
+  }, [value, delayMs]);
+  return debounced;
+}
+
 // ── Helpers ──────────────────────────────────────────────────
 
+const timeFmtCache = new Map<string, string>();
 function formatTime(raw?: string | null): string {
   if (!raw || typeof raw !== 'string' || !raw.trim()) return '—';
+  const cached = timeFmtCache.get(raw);
+  if (cached) return cached;
   try {
     const d = new Date(raw);
     if (isNaN(d.getTime())) return '—';
-    return d.toLocaleString('en-IN', {
+    const out = d.toLocaleString('en-IN', {
       dateStyle: 'short',
       timeStyle: 'short',
     });
+    if (timeFmtCache.size > 1000) timeFmtCache.clear();
+    timeFmtCache.set(raw, out);
+    return out;
   } catch {
     return '—';
   }
 }
 
-function PaymentBadge({ status }: { status: Participant['payment_status'] }) {
+const PaymentBadge = memo(function PaymentBadge({ status }: { status: Participant['payment_status'] }) {
   const cfg = {
     PENDING: 'bg-amber-500/15 text-amber-400 border-amber-500/40',
     VERIFIED: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40',
@@ -74,9 +100,9 @@ function PaymentBadge({ status }: { status: Participant['payment_status'] }) {
       {status}
     </span>
   );
-}
+});
 
-function PassBadge({ status }: { status: Participant['pass_status'] }) {
+const PassBadge = memo(function PassBadge({ status }: { status: Participant['pass_status'] }) {
   const cfg = {
     PENDING: 'bg-carbon text-cream/50 border-carbon-2',
     ACTIVE: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40',
@@ -87,7 +113,7 @@ function PassBadge({ status }: { status: Participant['pass_status'] }) {
       {status}
     </span>
   );
-}
+});
 
 // ── Admin Login ──────────────────────────────────────────────
 
@@ -191,25 +217,45 @@ const ParticipantModal: React.FC<{
   const [detail, setDetail] = useState<Participant>(participant);
 
   useEffect(() => {
-    fetch(`/api/admin/registration/${participant.id}`)
+    setDetail(participant);
+    const cached = detailCache.get(participant.id);
+    if (cached && Date.now() - cached.ts < DETAIL_TTL_MS) {
+      setDetail(cached.data);
+      return;
+    }
+    const ctrl = new AbortController();
+    fetch(`/api/admin/registration/${participant.id}`, { signal: ctrl.signal })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       })
       .then((j) => {
-        if (j && !j.error) setDetail(j);
+        if (j && !j.error) {
+          detailCache.set(participant.id, { data: j, ts: Date.now() });
+          if (!ctrl.signal.aborted) setDetail(j);
+        }
       })
       .catch((err) => {
+        if ((err as Error).name === 'AbortError') return;
         console.error('[ParticipantModal] Error loading detail:', err);
       });
+    return () => ctrl.abort();
   }, [participant.id]);
 
   const handleAction = async (action: 'verify' | 'reject' | 'cancel' | 'resend') => {
     setLoading(action);
     await onAction(action, detail.id);
-    // Refresh detail
-    const r = await fetch(`/api/admin/registration/${detail.id}`);
-    if (r.ok) setDetail(await r.json());
+    // Refresh detail once (bypass cache) — parent already patched the list optimistically
+    try {
+      const r = await fetch(`/api/admin/registration/${detail.id}`);
+      if (r.ok) {
+        const j = await r.json();
+        if (j && !j.error) {
+          detailCache.set(detail.id, { data: j, ts: Date.now() });
+          setDetail(j);
+        }
+      }
+    } catch { /* keep optimistic detail on network error */ }
     setLoading(null);
   };
 
@@ -272,6 +318,8 @@ const ParticipantModal: React.FC<{
                 <img
                   src={detail.payment_screenshot_url}
                   alt="Payment screenshot"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full max-h-96 object-contain bg-white"
                 />
               </div>
@@ -355,6 +403,38 @@ const ParticipantModal: React.FC<{
   );
 };
 
+const ParticipantRow = memo(function ParticipantRow({
+  p, stripe, onSelect,
+}: {
+  p: Participant; stripe: boolean; onSelect: (p: Participant) => void;
+}) {
+  const registered = useMemo(() => formatTime(p.created_at), [p.created_at]);
+  return (
+    <tr
+      className={`border-b border-carbon-2 hover:bg-obsidian/60 transition-colors cursor-pointer ${stripe ? '' : 'bg-obsidian/20'}`}
+      onClick={() => onSelect(p)}
+    >
+      <td className="px-4 py-3 font-mono text-xs text-marigold">{p.pass_id || '—'}</td>
+      <td className="px-4 py-3">
+        <p className="font-heading font-bold text-sm text-smoke">{p.name}</p>
+        <p className="font-mono text-[10px] text-cream/40">{p.email}</p>
+      </td>
+      <td className="px-4 py-3 font-mono text-xs text-cream/70 max-w-[150px] truncate">{p.college}</td>
+      <td className="px-4 py-3"><PaymentBadge status={p.payment_status} /></td>
+      <td className="px-4 py-3"><PassBadge status={p.pass_status} /></td>
+      <td className="px-4 py-3 font-mono text-[10px] text-cream/40">{registered}</td>
+      <td className="px-4 py-3">
+        <button
+          onClick={(e) => { e.stopPropagation(); onSelect(p); }}
+          className="font-mono text-[10px] uppercase text-marigold border border-marigold/40 px-2 py-1 hover:bg-marigold/10 flex items-center gap-1"
+        >
+          <Eye className="w-3 h-3" /> View
+        </button>
+      </td>
+    </tr>
+  );
+});
+
 // ── Main Admin Dashboard ─────────────────────────────────────
 
 export const AdminPage: React.FC = () => {
@@ -367,52 +447,87 @@ export const AdminPage: React.FC = () => {
   const [checkins, setCheckins] = useState<CheckinSummary | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
+  const [page, setPage] = useState(1);
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const regAbortRef = useRef<AbortController | null>(null);
+  const checkinAbortRef = useRef<AbortController | null>(null);
+  const reqSeqRef = useRef(0);
 
   const showToast = useCallback((msg: string, type: 'ok' | 'err' = 'ok') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3500);
   }, []);
 
-  const fetchRegistrations = useCallback(async () => {
+  const normalizeList = useCallback((j: any): Participant[] => {
+    const rawList = Array.isArray(j) ? j : (j?.participants || j?.registrations || j?.data || []);
+    return rawList.map((p: any) => ({
+      id: String(p.id || ''),
+      pass_id: p.pass_id ? String(p.pass_id) : null,
+      name: String(p.name || 'Unnamed'),
+      email: String(p.email || ''),
+      phone: String(p.phone || ''),
+      college: String(p.college || '—'),
+      department: String(p.department || '—'),
+      year: String(p.year || '—'),
+      utr: p.utr ? String(p.utr) : null,
+      payment_status: p.payment_status || 'PENDING',
+      pass_status: p.pass_status || 'PENDING',
+      created_at: String(p.created_at || ''),
+      verified_at: p.verified_at ? String(p.verified_at) : null,
+      verified_by: p.verified_by ? String(p.verified_by) : null,
+      has_screenshot: Boolean(p.has_screenshot || p.payment_screenshot_url),
+      payment_screenshot_url: p.payment_screenshot_url || (p.has_screenshot ? `/api/admin/screenshot/${p.id}` : null),
+    }));
+  }, []);
+
+  const fetchRegistrations = useCallback(async (force = false) => {
+    const cached = regCache.get(filter);
+    if (!force && cached && Date.now() - cached.ts < REG_TTL_MS) {
+      setParticipants(cached.data);
+      return;
+    }
+    regAbortRef.current?.abort();
+    const ctrl = new AbortController();
+    regAbortRef.current = ctrl;
+    const seq = ++reqSeqRef.current;
     setRefreshing(true);
     try {
-      const r = await fetch(`/api/admin/registrations?status=${filter}`);
-      if (r.ok) {
-        const j = await r.json();
-        const rawList = Array.isArray(j) ? j : (j?.participants || j?.registrations || j?.data || []);
-        const normalized: Participant[] = rawList.map((p: any) => ({
-          id: String(p.id || ''),
-          pass_id: p.pass_id ? String(p.pass_id) : null,
-          name: String(p.name || 'Unnamed'),
-          email: String(p.email || ''),
-          phone: String(p.phone || ''),
-          college: String(p.college || '—'),
-          department: String(p.department || '—'),
-          year: String(p.year || '—'),
-          utr: p.utr ? String(p.utr) : null,
-          payment_status: p.payment_status || 'PENDING',
-          pass_status: p.pass_status || 'PENDING',
-          created_at: String(p.created_at || ''),
-          verified_at: p.verified_at ? String(p.verified_at) : null,
-          verified_by: p.verified_by ? String(p.verified_by) : null,
-          has_screenshot: Boolean(p.has_screenshot || p.payment_screenshot_url),
-          payment_screenshot_url: p.payment_screenshot_url || (p.has_screenshot ? `/api/admin/screenshot/${p.id}` : null),
-        }));
-        setParticipants(normalized);
-      }
+      const r = await fetch(`/api/admin/registrations?status=${filter}`, { signal: ctrl.signal });
+      if (!r.ok) return;
+      const j = await r.json();
+      if (ctrl.signal.aborted || seq !== reqSeqRef.current) return;
+      const normalized = normalizeList(j);
+      regCache.set(filter, { data: normalized, ts: Date.now() });
+      setParticipants(normalized);
+      setPage(1);
     } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
       console.error('[AdminPage] fetchRegistrations error:', err);
     } finally {
-      setRefreshing(false);
+      if (seq === reqSeqRef.current) setRefreshing(false);
     }
-  }, [filter]);
+  }, [filter, normalizeList]);
 
-  const fetchCheckins = useCallback(async () => {
+  const fetchCheckins = useCallback(async (force = false) => {
+    if (!force && checkinCache && Date.now() - checkinCache.ts < CHECKIN_TTL_MS) {
+      setCheckins(checkinCache.data);
+      return;
+    }
+    checkinAbortRef.current?.abort();
+    const ctrl = new AbortController();
+    checkinAbortRef.current = ctrl;
     setRefreshing(true);
     try {
-      const r = await fetch('/api/admin/checkins');
-      if (r.ok) setCheckins(await r.json());
+      const r = await fetch('/api/admin/checkins', { signal: ctrl.signal });
+      if (r.ok) {
+        const j = await r.json();
+        if (!ctrl.signal.aborted) {
+          checkinCache = { data: j, ts: Date.now() };
+          setCheckins(j);
+        }
+      }
     } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
       console.error('[AdminPage] fetchCheckins error:', err);
     } finally {
       setRefreshing(false);
@@ -424,7 +539,23 @@ export const AdminPage: React.FC = () => {
     else fetchCheckins();
   }, [tab, fetchRegistrations, fetchCheckins]);
 
+  // Reset page when filter/search changes
+  useEffect(() => { setPage(1); }, [filter, debouncedSearch]);
+
+  const patchParticipant = useCallback((id: string, patch: Partial<Participant>) => {
+    setParticipants((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    for (const [k, v] of regCache) {
+      regCache.set(k, { data: v.data.map((p) => (p.id === id ? { ...p, ...patch } : p)), ts: v.ts });
+    }
+    detailCache.delete(id);
+    setSelected((s) => (s && s.id === id ? { ...s, ...patch } : s));
+  }, []);
+
   const handleAction = async (action: string, id: string) => {
+    // Optimistic patch so UI updates instantly without a full refetch
+    if (action === 'verify') patchParticipant(id, { payment_status: 'VERIFIED', pass_status: 'ACTIVE' });
+    else if (action === 'reject') patchParticipant(id, { payment_status: 'REJECTED', pass_status: 'PENDING' });
+    else if (action === 'cancel') patchParticipant(id, { pass_status: 'CANCELLED' });
     try {
       const r = await fetch(`/api/admin/${action}`, {
         method: 'POST',
@@ -434,27 +565,41 @@ export const AdminPage: React.FC = () => {
       const j = await r.json();
       if (r.ok && (j.success || !j.error)) {
         showToast(j.message || 'Action executed successfully', 'ok');
-        await fetchRegistrations();
+        if (action === 'verify' && (j as any).pass_id) {
+          patchParticipant(id, { pass_id: String((j as any).pass_id) });
+        }
+        // Soft background revalidate (uses cache TTL; force refresh of current filter only)
+        regCache.delete(filter);
+        fetchRegistrations(true).catch(() => {});
       } else {
         showToast(j.error || 'Action failed', 'err');
+        regCache.delete(filter);
+        fetchRegistrations(true).catch(() => {});
       }
     } catch (err) {
       showToast('Network error performing action', 'err');
     }
   };
 
-  // Filtered + searched participants
-  const displayed = participants.filter((p) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return (
+  // Filtered + searched participants (debounced, memoized)
+  const displayed = useMemo(() => {
+    const q = debouncedSearch.trim().toLowerCase();
+    if (!q) return participants;
+    return participants.filter((p) => (
       (p.name || '').toLowerCase().includes(q) ||
       (p.email || '').toLowerCase().includes(q) ||
       (p.college || '').toLowerCase().includes(q) ||
       (p.pass_id || '').toLowerCase().includes(q) ||
       (p.phone || '').toLowerCase().includes(q)
-    );
-  });
+    ));
+  }, [participants, debouncedSearch]);
+
+  const totalPages = Math.max(1, Math.ceil(displayed.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const paged = useMemo(() => {
+    const start = (safePage - 1) * PAGE_SIZE;
+    return displayed.slice(start, start + PAGE_SIZE);
+  }, [displayed, safePage]);
 
   const FILTERS: { id: FilterId; label: string }[] = [
     { id: 'all', label: 'All' },
@@ -554,7 +699,7 @@ export const AdminPage: React.FC = () => {
                   </button>
                 ))}
                 <button
-                  onClick={fetchRegistrations}
+                  onClick={() => fetchRegistrations(true)}
                   className="font-mono text-[10px] uppercase tracking-wider text-marigold border border-marigold/40 px-3 py-1.5 hover:bg-marigold/10 transition-colors flex items-center gap-1.5"
                 >
                   <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
@@ -565,15 +710,25 @@ export const AdminPage: React.FC = () => {
 
             {/* Count */}
             <p className="font-mono text-[10px] text-mustard/60 uppercase mb-3">
-              {displayed.length} participant{displayed.length !== 1 ? 's' : ''}
+              {displayed.length} participant{displayed.length !== 1 ? 's' : ''} · page {safePage}/{totalPages}
+              {search !== debouncedSearch ? ' · typing…' : ''}
             </p>
 
             {/* Table */}
             {displayed.length === 0 ? (
-              <div className="bg-carbon border-2 border-carbon-2 p-12 text-center">
-                <p className="font-mono text-sm text-cream/30">No registrations found</p>
-              </div>
+              refreshing ? (
+                <div className="bg-carbon border-2 border-carbon-2 p-12 text-center">
+                  <p className="font-mono text-sm text-cream/30 flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Loading registrations…
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-carbon border-2 border-carbon-2 p-12 text-center">
+                  <p className="font-mono text-sm text-cream/30">No registrations found</p>
+                </div>
+              )
             ) : (
+              <>
               <div className="bg-carbon border-2 border-carbon-2 overflow-x-auto">
                 <table className="w-full text-left min-w-[600px]">
                   <thead>
@@ -587,34 +742,33 @@ export const AdminPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {displayed.map((p, i) => (
-                      <tr
-                        key={p.id}
-                        className={`border-b border-carbon-2 hover:bg-obsidian/60 transition-colors cursor-pointer ${i % 2 === 0 ? '' : 'bg-obsidian/20'}`}
-                        onClick={() => setSelected(p)}
-                      >
-                        <td className="px-4 py-3 font-mono text-xs text-marigold">{p.pass_id || '—'}</td>
-                        <td className="px-4 py-3">
-                          <p className="font-heading font-bold text-sm text-smoke">{p.name}</p>
-                          <p className="font-mono text-[10px] text-cream/40">{p.email}</p>
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs text-cream/70 max-w-[150px] truncate">{p.college}</td>
-                        <td className="px-4 py-3"><PaymentBadge status={p.payment_status} /></td>
-                        <td className="px-4 py-3"><PassBadge status={p.pass_status} /></td>
-                        <td className="px-4 py-3 font-mono text-[10px] text-cream/40">{formatTime(p.created_at)}</td>
-                        <td className="px-4 py-3">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setSelected(p); }}
-                            className="font-mono text-[10px] uppercase text-marigold border border-marigold/40 px-2 py-1 hover:bg-marigold/10 flex items-center gap-1"
-                          >
-                            <Eye className="w-3 h-3" /> View
-                          </button>
-                        </td>
-                      </tr>
+                    {paged.map((p, i) => (
+                      <ParticipantRow key={p.id} p={p} stripe={i % 2 === 0} onSelect={setSelected} />
                     ))}
                   </tbody>
                 </table>
               </div>
+              {/* Pagination */}
+              <div className="flex items-center justify-between mt-4">
+                <button
+                  disabled={safePage <= 1}
+                  onClick={() => setPage((v) => Math.max(1, v - 1))}
+                  className="font-mono text-[10px] uppercase tracking-wider text-marigold border border-marigold/40 px-3 py-1.5 disabled:opacity-40 hover:bg-marigold/10 transition-colors"
+                >
+                  ← Prev
+                </button>
+                <span className="font-mono text-[10px] text-cream/50 uppercase">
+                  {paged.length} of {displayed.length} · {safePage}/{totalPages}
+                </span>
+                <button
+                  disabled={safePage >= totalPages}
+                  onClick={() => setPage((v) => Math.min(totalPages, v + 1))}
+                  className="font-mono text-[10px] uppercase tracking-wider text-marigold border border-marigold/40 px-3 py-1.5 disabled:opacity-40 hover:bg-marigold/10 transition-colors"
+                >
+                  Next →
+                </button>
+              </div>
+              </>
             )}
           </div>
         )}
@@ -624,7 +778,7 @@ export const AdminPage: React.FC = () => {
           <div>
             <div className="flex justify-end mb-4">
               <button
-                onClick={fetchCheckins}
+                onClick={() => fetchCheckins(true)}
                 className="font-mono text-[10px] uppercase tracking-wider text-marigold border border-marigold/40 px-3 py-1.5 hover:bg-marigold/10 transition-colors flex items-center gap-1.5"
               >
                 <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
