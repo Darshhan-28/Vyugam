@@ -1,68 +1,156 @@
-import React from 'react';
-import { Ticket, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, Ticket } from 'lucide-react';
 
-interface PassCTAProps {
+interface NavbarProps {
   onOpenRegister: () => void;
 }
 
-export const PassCTA: React.FC<PassCTAProps> = ({ onOpenRegister }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+
+      const sections = ['hero', 'signal', 'pass-value', 'arenas', 'path', 'prizes', 'venue', 'members', 'contact'];
+      let current = 'hero';
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el) {
+          const top = el.offsetTop - 120;
+          if (window.scrollY >= top) {
+            current = section;
+          }
+        }
+      }
+      setActiveSection(current);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navItems = [
+    { label: 'Home', href: '#hero', id: 'hero' },
+    { label: 'About', href: '#signal', id: 'signal' },
+    { label: 'Events', href: '#arenas', id: 'arenas' },
+    { label: 'Schedule', href: '#path', id: 'path' },
+    { label: 'Prizes', href: '#prizes', id: 'prizes' },
+    { label: 'Venue', href: '#venue', id: 'venue' },
+    { label: 'Team', href: '#members', id: 'members' },
+    { label: 'Contact', href: '#contact', id: 'contact' },
+  ];
+
   return (
-    <section id="pass-cta" className="py-20 sm:py-28 px-4 bg-arenas border-t-4 border-ember relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-ember/8 rounded-full blur-3xl" />
+    <>
+      <div
+        className={`fixed top-0 left-0 right-0 z-[501] bg-obsidian border-b border-oxblood transition-transform duration-300 ${
+          scrolled ? '-translate-y-full' : 'translate-y-0'
+        }`}
+      >
+        <div className="flex items-center justify-center gap-2 sm:gap-3 py-1 sm:py-1.5 px-3 sm:px-4 text-[10px] sm:text-xs flex-wrap">
+          <span className="font-heading font-extrabold uppercase tracking-widest text-obsidian bg-marigold px-2 sm:px-2.5 py-0.5 clip-polygon">
+            Learn
+          </span>
+          <span className="font-mono text-cream/90 text-[10px] sm:text-[11px] text-center">
+            An Autonomous Institution &middot; Accredited by NBA &amp; NAAC with &apos;A&apos; Grade
+          </span>
+          <span className="font-heading font-extrabold uppercase tracking-widest text-obsidian bg-marigold px-2 sm:px-2.5 py-0.5 clip-polygon">
+            Work
+          </span>
+          <span className="font-mono text-cream/90 text-[10px] sm:text-[11px] hidden sm:inline">
+            Pollachi, Coimbatore &ndash; 642002
+          </span>
+          <span className="font-heading font-extrabold uppercase tracking-widest text-obsidian bg-marigold px-2 sm:px-2.5 py-0.5 clip-polygon">
+            Succeed
+          </span>
+        </div>
       </div>
 
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <span className="font-heading font-extrabold text-sm uppercase tracking-widest bg-ember text-obsidian px-5 py-2 clip-polygon shadow-[4px_4px_0_#7A0606] inline-block mb-6">
-          Enter The Arena
-        </span>
+      <nav
+        className={`fixed left-0 right-0 z-[500] transition-all duration-300 border-b-2 border-marigold backdrop-blur-md bg-obsidian/90 ${
+          scrolled ? 'top-0 py-2 sm:py-3 px-4 sm:px-6 md:px-12' : 'top-[28px] sm:top-7 py-2.5 sm:py-4 px-4 sm:px-6 md:px-12'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <a href="#hero" className="font-display text-xl md:text-2xl text-marigold tracking-wide flex items-center gap-2">
+            <span className="w-2.5 h-2.5 bg-ember inline-block animate-spark clip-spark" />
+            VYUGAM 2.0
+          </a>
 
-        <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl text-smoke uppercase tracking-tight leading-none mb-4 drop-shadow-hero">
-          Ready To
-          <br />
-          <span className="text-marigold">Enter?</span>
-        </h2>
+          <ul className="hidden md:flex items-center gap-6 list-none">
+            {navItems.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={item.href}
+                  className={`font-heading font-bold text-sm tracking-widest uppercase transition-colors relative py-1 hover:text-marigold ${
+                    activeSection === item.id ? 'text-marigold' : 'text-cream'
+                  }`}
+                >
+                  {item.label}
+                  {activeSection === item.id && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-marigold animate-pulse" />
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        <p className="font-heading font-extrabold text-lg sm:text-2xl text-smoke uppercase tracking-wide mb-4">
-          Get your VYUGAM Pass for ₹200.
-        </p>
+          <div className="flex items-center gap-4">
+            <button
+              id="navbar-pass-btn"
+              onClick={onOpenRegister}
+              className="hidden sm:inline-flex items-center gap-2 font-heading font-bold text-sm tracking-wider uppercase text-obsidian bg-marigold border-2 border-obsidian px-5 py-2 shadow-[3px_3px_0_#C1121F] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#C1121F] active:translate-y-0 transition-all"
+            >
+              <Ticket className="w-4 h-4 text-obsidian" />
+              Register for aivora
+            </button>
 
-        <p className="font-body text-sm sm:text-base text-cream/70 max-w-md mx-auto mb-10">
-          One registration. One personalized pass. Five+ arenas waiting for you.
-        </p>
-
-        {/* Pass visual strip */}
-        <div className="flex justify-center mb-10">
-          <div className="bg-carbon border-2 border-marigold px-6 sm:px-10 py-4 shadow-[6px_6px_0_#7A0606] relative overflow-hidden max-w-sm w-full">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-marigold to-transparent" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-mustard">Symposium Pass</p>
-                <p className="font-display text-3xl text-marigold leading-none">₹200</p>
-              </div>
-              <div className="text-right">
-                <p className="font-heading font-extrabold text-sm text-smoke uppercase">5+ Arenas</p>
-                <p className="font-mono text-[9px] text-cream/40">24 Sept 2026</p>
-              </div>
-            </div>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden text-marigold p-1.5 focus:outline-none"
+              aria-label={isOpen ? "Close Navigation Menu" : "Open Navigation Menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav-drawer"
+            >
+              {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            </button>
           </div>
         </div>
 
-        <button
-          id="pass-cta-main-btn"
-          onClick={onOpenRegister}
-          className="inline-flex items-center gap-3 font-heading font-extrabold text-base sm:text-lg lg:text-xl tracking-wider uppercase text-obsidian bg-marigold border-[3px] border-obsidian px-8 sm:px-12 py-4 sm:py-5 shadow-[6px_6px_0_#C1121F] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0_#C1121F] btn-pulse transition-all"
-        >
-          <Ticket className="w-5 h-5 sm:w-6 sm:h-6" />
-          Get My VYUGAM Pass
-          <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
-        </button>
-
-        <p className="font-mono text-xs text-cream/40 tracking-wider mt-5 uppercase">
-          Payment is made through UPI. Your pass is issued after payment verification.
-        </p>
-      </div>
-    </section>
+        {isOpen && (
+          <div
+            id="mobile-nav-drawer"
+            className="md:hidden absolute top-full left-0 right-0 bg-obsidian border-b-2 border-marigold p-6 flex flex-col gap-4 shadow-2xl animate-fadeIn"
+          >
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={`font-heading font-bold text-base tracking-widest uppercase py-2 border-b border-carbon ${
+                  activeSection === item.id ? 'text-marigold' : 'text-cream'
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+            <button
+              id="navbar-mobile-pass-btn"
+              onClick={() => {
+                setIsOpen(false);
+                onOpenRegister();
+              }}
+              className="w-full mt-2 font-heading font-extrabold text-base tracking-wider uppercase text-obsidian bg-marigold border-2 border-obsidian py-3 shadow-[4px_4px_0_#C1121F] flex items-center justify-center gap-2"
+            >
+              <Ticket className="w-4 h-4" />
+              Register for aivora
+            </button>
+          </div>
+        )}
+      </nav>
+    </>
   );
 };

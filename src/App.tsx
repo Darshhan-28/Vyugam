@@ -95,7 +95,7 @@ const PublicSite: React.FC = () => {
             id="floating-pass-btn"
             className="floating-register-btn font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider text-obsidian bg-marigold border-2 border-obsidian px-3 sm:px-5 py-2 sm:py-3 shadow-[4px_4px_0_#C1121F] hover:-translate-y-1 transition-all"
           >
-            Register for aivora 2k26
+            Register for aivora
           </a>
           <button onClick={scrollToTop} aria-label="Back to Top" className="w-9 h-9 sm:w-12 sm:h-12 bg-carbon text-marigold border-2 border-marigold flex items-center justify-center shadow-[3px_3px_0_#7A0606] hover:bg-marigold hover:text-obsidian transition-all">
             <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
