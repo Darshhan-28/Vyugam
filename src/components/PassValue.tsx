@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Code, HelpCircle, Layout, FileText, Image as ImageIcon, Award, Utensils, Ticket } from 'lucide-react';
+import { Code, HelpCircle, Layout, FileText, Image as ImageIcon, Award, Utensils, Ticket, Sparkles, ExternalLink } from 'lucide-react';
+import { AIVORA_REGISTRATION_URL } from './RegisterModal';
 
 interface PassValueProps {
   onOpenRegister: () => void;
@@ -145,14 +146,17 @@ export const PassValue: React.FC<PassValueProps> = ({ onOpenRegister }) => {
             Five arenas. One symposium. Your pass unlocks it all.
           </p>
 
-          <button
+          <a
             id="pass-value-cta"
-            onClick={onOpenRegister}
+            href={AIVORA_REGISTRATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 font-heading font-extrabold text-sm sm:text-base tracking-wider uppercase text-obsidian bg-marigold border-[3px] border-obsidian px-6 sm:px-10 py-3.5 sm:py-4 shadow-[5px_5px_0_#C1121F] hover:translate-x-[-3px] hover:translate-y-[-3px] hover:shadow-[8px_8px_0_#C1121F] btn-pulse transition-all"
           >
-            <Ticket className="w-4 h-4 sm:w-5 sm:h-5" />
-            Get Your VYUGAM Pass
-          </button>
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+            Register for AIVORA 2K26
+            <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
+          </a>
         </div>
       </div>
     </section>

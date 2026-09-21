@@ -1,66 +1,239 @@
 import React from 'react';
-import { Ticket, Zap } from 'lucide-react';
+import { Phone, Mail, Instagram, MessageCircle, Linkedin, Code, Sparkles, ExternalLink } from 'lucide-react';
+import { AIVORA_REGISTRATION_URL } from './RegisterModal';
 
-interface PassCTAProps {
+interface FooterProps {
   onOpenRegister: () => void;
 }
 
-export const PassCTA: React.FC<PassCTAProps> = ({ onOpenRegister }) => {
+export const Footer: React.FC<FooterProps> = () => {
   return (
-    <section id="pass-cta" className="py-20 sm:py-28 px-4 bg-arenas border-t-4 border-ember relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-ember/8 rounded-full blur-3xl" />
-      </div>
-
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <span className="font-heading font-extrabold text-sm uppercase tracking-widest bg-ember text-obsidian px-5 py-2 clip-polygon shadow-[4px_4px_0_#7A0606] inline-block mb-6">
-          Enter The Arena
+    <footer id="contact" className="py-20 px-4 bg-signal border-t-4 border-marigold relative overflow-hidden">
+      <div className="max-w-6xl mx-auto text-center">
+        <span className="font-heading font-extrabold text-sm uppercase tracking-widest bg-marigold text-obsidian px-5 py-2 clip-polygon shadow-[4px_4px_0_#7A0606] inline-block mb-4">
+          Need Help?
         </span>
 
-        <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl text-smoke uppercase tracking-tight leading-none mb-4 drop-shadow-hero">
-          Ready To
-          <br />
-          <span className="text-marigold">Enter?</span>
+        <h2 className="font-display text-4xl sm:text-5xl text-smoke uppercase tracking-tight mb-4">
+          Need Help With Your Pass?
         </h2>
 
-        <p className="font-heading font-extrabold text-lg sm:text-2xl text-smoke uppercase tracking-wide mb-4">
-          Register for aivora.
+        <p className="font-body text-base text-cream/90 max-w-xl mx-auto mb-12">
+          Ask us about pass registration, payment verification, event participation, team requirements, or event-day access — we'll get back fast.
         </p>
 
-        <p className="font-body text-sm sm:text-base text-cream/70 max-w-md mx-auto mb-10">
-          One registration. One personalized pass. Five+ arenas waiting for you.
-        </p>
-
-        <div className="flex justify-center mb-10">
-          <div className="bg-carbon border-2 border-marigold px-6 sm:px-10 py-4 shadow-[6px_6px_0_#7A0606] relative overflow-hidden max-w-sm w-full">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-marigold to-transparent" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-mustard">Symposium Pass</p>
-                <p className="font-display text-3xl text-marigold leading-none">₹200</p>
-              </div>
-              <div className="text-right">
-                <p className="font-heading font-extrabold text-sm text-smoke uppercase">5+ Arenas</p>
-                <p className="font-mono text-[9px] text-cream/40">24 Sept 2026</p>
-              </div>
+        {/* Contact Chips */}
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 text-left mb-12">
+          <a
+            href="https://wa.me/917558108034"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-carbon border-2 border-mustard p-4 hover:border-marigold transition-all group"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-widest text-marigold block mb-1">
+              Mr. H. Abhilash
+            </span>
+            <div className="font-body font-semibold text-smoke text-sm flex items-center gap-2">
+              <Phone className="w-4 h-4 text-marigold" /> 7558108034
             </div>
+          </a>
+
+          <a
+            href="https://wa.me/916381359507"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-carbon border-2 border-mustard p-4 hover:border-marigold transition-all group"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-widest text-marigold block mb-1">
+              Ms. S. Madhusree
+            </span>
+            <div className="font-body font-semibold text-smoke text-sm flex items-center gap-2">
+              <Phone className="w-4 h-4 text-marigold" /> 6381359507
+            </div>
+          </a>
+
+          <a
+            href="https://wa.me/918610234748"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-carbon border-2 border-mustard p-4 hover:border-marigold transition-all group"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-widest text-marigold block mb-1">
+              Mr. S. Oviyan
+            </span>
+            <div className="font-body font-semibold text-smoke text-sm flex items-center gap-2">
+              <Phone className="w-4 h-4 text-marigold" /> 8610234748
+            </div>
+          </a>
+
+          <a
+            href="https://wa.me/917598682797"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-carbon border-2 border-mustard p-4 hover:border-marigold transition-all group"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-widest text-marigold block mb-1">
+              Mr. M. Kabilan
+            </span>
+            <div className="font-body font-semibold text-smoke text-sm flex items-center gap-2">
+              <Phone className="w-4 h-4 text-marigold" /> 7598682797
+            </div>
+          </a>
+
+          <a
+            href="mailto:Vyugam2k262.0@gmail.com"
+            className="bg-carbon border-2 border-mustard p-4 hover:border-marigold transition-all group col-span-1 xs:col-span-2 lg:col-span-1"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-widest text-marigold block mb-1">
+              Official Email
+            </span>
+            <div className="font-body font-semibold text-smoke text-xs flex items-center gap-2 break-all">
+              <Mail className="w-4 h-4 text-marigold flex-shrink-0" /> Vyugam2k262.0@gmail.com
+            </div>
+          </a>
+        </div>
+
+        {/* Steve Jobs Quote */}
+        <div className="my-8 sm:my-10 py-6 border-y border-marigold/20">
+          <p className="font-heading italic text-lg sm:text-xl md:text-2xl text-marigold tracking-wide px-2">
+            &quot;Innovation distinguishes between a leader and a follower.&quot;
+          </p>
+          <p className="font-mono text-xs uppercase tracking-widest text-mustard mt-2">
+            — Steve Jobs
+          </p>
+        </div>
+
+        {/* Social Chips */}
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-10 sm:mb-12">
+          <a
+            href="https://www.instagram.com/pacet_castle"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-cream border-2 border-marigold px-5 py-2.5 shadow-[3px_3px_0_#7A0606] hover:bg-marigold hover:text-obsidian hover:-translate-y-0.5 transition-all flex items-center gap-2"
+          >
+            <Instagram className="w-4 h-4" /> Instagram @pacet_castle
+          </a>
+
+          <a
+            href="https://chat.whatsapp.com/Iqlfm4bwioV1QYaPjAqVMy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-cream border-2 border-emerald-500/80 px-5 py-2.5 shadow-[3px_3px_0_#7A0606] hover:bg-emerald-500 hover:text-obsidian hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
+          >
+            <MessageCircle className="w-4 h-4 text-emerald-400 group-hover:text-obsidian transition-colors" />
+            Join Our WhatsApp Group
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/pacet-pollachi-5a003a2b7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-heading font-bold text-xs sm:text-sm uppercase tracking-wider bg-carbon text-cream border-2 border-marigold px-5 py-2.5 shadow-[3px_3px_0_#7A0606] hover:bg-marigold hover:text-obsidian hover:-translate-y-0.5 transition-all flex items-center gap-2"
+          >
+            <Linkedin className="w-4 h-4 text-blue-400" /> LinkedIn PACET
+          </a>
+        </div>
+
+        {/* Final CTA */}
+        <div className="py-10 border-y border-marigold/20 mb-10">
+          <div className="font-display text-3xl sm:text-4xl text-smoke uppercase leading-tight mb-2">
+            REGISTRATION CLOSED.
+          </div>
+          <div className="font-display text-3xl sm:text-4xl text-marigold uppercase leading-tight mb-2">
+            JOIN AIVORA 2K26.
+          </div>
+          <div className="font-display text-3xl sm:text-4xl text-smoke uppercase leading-tight mb-6">
+            ONE DAY TO MAKE YOUR MARK.
+          </div>
+
+          <p className="font-heading font-bold text-sm sm:text-base uppercase tracking-wider text-marigold mb-6">
+            Registration Closed for VYUGAM 2.0 &bull; Register for AIVORA 2K26
+          </p>
+
+          <a
+            id="footer-pass-cta"
+            href={AIVORA_REGISTRATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-heading font-extrabold text-sm sm:text-base uppercase tracking-wider text-obsidian bg-marigold border-2 border-obsidian px-8 py-3.5 shadow-[4px_4px_0_#C1121F] hover:-translate-y-1 hover:shadow-[6px_6px_0_#C1121F] transition-all"
+          >
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+            Register for AIVORA 2K26
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        </div>
+
+        <p className="font-mono text-xs text-mustard/70 tracking-wider mb-8">
+          VYUGAM 2.0 &mdash; Dept. of Information Technology, P.A. College of Engineering and Technology (Autonomous), Pollachi, Coimbatore &ndash; 642002 &copy; 2026
+        </p>
+
+        {/* Official Media Partner */}
+        <div className="pt-8 border-t border-marigold/20 mb-10">
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-marigold block mb-3 text-center">
+            Official Media Partner
+          </span>
+          <div className="flex justify-center">
+            <a
+              href="https://eventopia.in"
+              target="_blank"
+              rel="noopener"
+              className="group inline-flex items-center gap-3 bg-[#0d0d0d] border border-marigold/30 px-5 sm:px-7 py-3 hover:border-[#ffb703] transition-all duration-300 hover:brightness-110"
+            >
+              <div className="bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded flex items-center justify-center">
+                <img
+                  src="/eventopia-logo.svg"
+                  alt="Eventopia.in Logo"
+                  width="120"
+                  height="28"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-6 sm:h-7 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <span className="font-heading font-extrabold text-sm sm:text-lg text-cream group-hover:text-[#ffb703] transition-colors duration-300 tracking-wide leading-none">
+                EVENTOPIA.IN
+              </span>
+            </a>
           </div>
         </div>
 
-        <button
-          id="pass-cta-main-btn"
-          onClick={onOpenRegister}
-          className="inline-flex items-center gap-3 font-heading font-extrabold text-base sm:text-lg lg:text-xl tracking-wider uppercase text-obsidian bg-marigold border-[3px] border-obsidian px-8 sm:px-12 py-4 sm:py-5 shadow-[6px_6px_0_#C1121F] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0_#C1121F] btn-pulse transition-all"
-        >
-          <Ticket className="w-5 h-5 sm:w-6 sm:h-6" />
-          Register for aivora
-          <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
-        </button>
+        {/* Built By */}
+        <div className="mt-10 pt-8 border-t border-marigold/20">
+          <div className="built-by-glow inline-flex items-center gap-2 mb-6">
+            <Code className="w-4 h-4 text-marigold" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-mustard/60">
+              Built with
+            </span>
+            <span className="text-crimson text-sm animate-heartbeat">&#9829;</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-mustard/60">
+              by
+            </span>
+            <Code className="w-4 h-4 text-marigold" />
+          </div>
 
-        <p className="font-mono text-xs text-cream/40 tracking-wider mt-5 uppercase">
-          Payment is made through UPI. Your pass is issued after payment verification.
-        </p>
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+            <span className="font-heading font-extrabold text-base sm:text-lg text-cream/90 tracking-wide hover:text-marigold transition-colors duration-300 cursor-default">
+              Mr. S.P. Darshhan
+            </span>
+
+            <span className="w-1.5 h-1.5 rounded-full bg-marigold/50 hidden sm:block" />
+
+            <span className="font-heading font-extrabold text-lg sm:text-xl text-marigold tracking-wide built-by-pulse cursor-default">
+              Mr. H. Abhilash
+            </span>
+
+            <span className="w-1.5 h-1.5 rounded-full bg-marigold/50 hidden sm:block" />
+
+            <span className="font-heading font-extrabold text-base sm:text-lg text-cream/90 tracking-wide hover:text-marigold transition-colors duration-300 cursor-default">
+              Mr. R. Ashok
+            </span>
+          </div>
+
+          <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-mustard/40 mt-5">
+            Dept. of Information Technology &mdash; PACET
+          </p>
+        </div>
       </div>
-    </section>
+    </footer>
   );
 };

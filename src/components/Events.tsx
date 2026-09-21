@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EVENT_TRACKS } from '../data/events';
-import { Code, HelpCircle, Layout, FileText, Image as ImageIcon, Users, Sparkles, Download, ExternalLink } from 'lucide-react';
+import { Code, HelpCircle, Layout, FileText, Image as ImageIcon, Users, Sparkles, Download, ExternalLink, AlertTriangle } from 'lucide-react';
+import { AIVORA_REGISTRATION_URL } from './RegisterModal';
 
 export const Events: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
@@ -35,9 +36,9 @@ export const Events: React.FC = () => {
         </p>
 
         {/* Announcement Banner */}
-        <div className="inline-flex items-center justify-center gap-2 font-mono text-[11px] sm:text-sm font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/40 px-4 sm:px-6 py-2 sm:py-2.5 rounded mb-8 sm:mb-10 animate-spark max-w-full text-center flex-wrap">
-          <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-          <span>VYUGAM Pass registrations are Open! Deadline: 22 Sept 2026. Get your pass and enter the experience.</span>
+        <div className="inline-flex items-center justify-center gap-2 font-mono text-[11px] sm:text-sm font-bold uppercase tracking-wider text-red-400 bg-red-500/10 border border-red-500/40 px-4 sm:px-6 py-2 sm:py-2.5 rounded mb-8 sm:mb-10 max-w-full text-center flex-wrap">
+          <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+          <span>Registration Closed &bull; VYUGAM 2.0 pass registrations are officially closed. <a href={AIVORA_REGISTRATION_URL} target="_blank" rel="noopener noreferrer" className="text-marigold hover:underline font-bold inline-flex items-center gap-1 ml-1">Register for AIVORA 2K26 <ExternalLink className="w-3.5 h-3.5" /></a></span>
         </div>
 
         {/* Event Filter Pills */}
